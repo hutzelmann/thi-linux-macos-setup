@@ -3,18 +3,25 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: My account, password, quota or hardware
-    url: https://help.thi.de/
+  - name: My account, password, quota or hardware — official IT
+    url: https://www.thi.de/service/it-service/
     about: >
-      Official THI IT support. Anything about your account, print quota, licences
-      or university hardware belongs there — they can act on it and this project
-      cannot.
+      The university's own IT pages. Anything about your account, print quota,
+      licences or university hardware belongs there — they can act on it and
+      this project cannot.
 
-  - name: Something is broken and I need help right now
-    url: https://help.thi.de/
+  - name: Ask THI IT directly — support@thi.de
+    url: mailto:support@thi.de
     about: >
-      This project has no support desk and makes no promises about response time.
-      For an urgent problem, the official channel is faster.
+      The IT service currently answers by mail. Use this for an actual problem
+      with your account or a campus system. Faster than us, and they can
+      actually change things.
+
+  - name: Official knowledge base
+    url: https://help.thi.de/help/de-de
+    about: >
+      THI's own public articles. Mostly Windows-oriented, which is why this
+      project exists, but it is the authoritative source where it overlaps.
 
   - name: How this project works
     url: https://hutzelmann.github.io/thi-linux-macos-setup/en/about/how-this-works

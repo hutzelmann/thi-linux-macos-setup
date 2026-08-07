@@ -12,8 +12,9 @@ body:
         paste. `<kennung>` and `/home/<kennung>` are fine as placeholders. This
         repository is public.
 
-        If your own account or hardware is the problem, [help.thi.de](https://help.thi.de/)
-        can actually fix it; this project cannot.
+        If your own account or hardware is the problem, THI IT can actually fix it and
+        this project cannot — write to support@thi.de or see the
+        [IT service pages](https://www.thi.de/service/it-service/).
 
   - type: input
     id: page

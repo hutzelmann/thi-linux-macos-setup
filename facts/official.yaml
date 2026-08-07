@@ -1,0 +1,23 @@
+# Official THI channels.
+#
+# Three separate things that are easy to conflate, and each page links the one
+# that actually helps:
+#
+#   service_url  Public information pages. No login. Link this when pointing at
+#                "the official documentation for this topic".
+#   kb_url       The public knowledge base at help.thi.de/help. No login.
+#                Note the /help path — help.thi.de on its own is the ticket
+#                system, a JavaScript application that shows a blank splash to
+#                anyone not signed in. Never link the bare host as "support".
+#   support_mail Where a person actually answers. The IT pages state that
+#                support is currently by mail only.
+#   ticket_url   The ticket system itself. Requires a login, so it is offered as
+#                a secondary route rather than the first thing a reader meets.
+
+service_url: https://www.thi.de/service/it-service/
+kb_url: https://help.thi.de/help/de-de
+support_mail: support@thi.de
+ticket_url: https://help.thi.de/
+
+# Department name as it calls itself, for when a page needs to name it.
+department: Zentraler IT Service

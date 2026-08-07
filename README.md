@@ -6,8 +6,9 @@ Wi-Fi, VPN, network shares.
 **[Read the site →](https://hutzelmann.github.io/thi-linux-macos-setup/)**
 
 > **Unofficial.** Not affiliated with, endorsed by, or speaking for university IT. No
-> guarantees of any kind. For accounts, quotas and hardware, use the official channel:
-> [help.thi.de](https://help.thi.de/).
+> guarantees of any kind. For accounts, quotas and hardware use the official channels:
+> [THI IT service](https://www.thi.de/service/it-service/),
+> [knowledge base](https://help.thi.de/help/de-de), or write to support@thi.de.
 
 ## Why
 

@@ -13,13 +13,18 @@ cd "$(dirname "$0")/../.."
 
 fail=0
 
+# Published role addresses are not personal data — they belong to a function,
+# not a person, and pointing at the official one is the whole point of R28.
+ROLE_ADDRESSES='(support|info|poststelle)(\.[a-z]+)?@(thi|fh-ingolstadt)\.de'
+
 # check <description> <ERE pattern> <hint> [extra pathspec ...]
 check() {
   local description="$1" pattern="$2" hint="$3"
   shift 3
   local hits
   if hits=$(git grep -nIE --untracked -- "$pattern" \
-      ':!scripts/ci/check-no-personal-data.sh' "$@" 2>/dev/null); then
+      ':!scripts/ci/check-no-personal-data.sh' "$@" 2>/dev/null |
+      grep -vE "$ROLE_ADDRESSES"); then
     echo "✗ ${description}"
     echo "$hits" | sed 's/^/  /'
     echo "  fix: ${hint}"

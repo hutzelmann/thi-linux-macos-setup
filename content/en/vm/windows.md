@@ -25,7 +25,7 @@ afterwards, from inside Windows, once you already hold administrator rights.
 
 ## Get the image
 
-1. [Azure Dev Tools for Teaching](https://www.thi.de/service/it-service/softwareangebote/microsoft-imagine)
+1. [Azure Dev Tools for Teaching](${facts.official.service_url}softwareangebote/microsoft-imagine)
    ([direct](https://azureforeducation.microsoft.com/devtools)), sign in with campus
    credentials.
 2. Search for "education" → **Azure Education | Overview** → *Free Software* → **Explore

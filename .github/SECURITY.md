@@ -21,5 +21,5 @@ enough, because the content is already distributed.
 
 ## Reporting a problem with THI systems
 
-Not here. Contact [help.thi.de](https://help.thi.de/). This project is not affiliated with
-university IT, cannot act on their systems, and cannot forward anything on your behalf.
+Not here. Write to support@thi.de. This project is not affiliated with university IT,
+cannot act on their systems, and cannot forward anything on your behalf.

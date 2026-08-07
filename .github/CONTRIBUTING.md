@@ -115,8 +115,9 @@ should not require equal exposure.
 ## What this project will not do
 
 It will not become a help desk. Issues are for the pages, not for individual machines —
-if your account is locked or your printer quota is empty, the official channel is
-[help.thi.de](https://help.thi.de/) and it will be faster than we are.
+if your account is locked or your printer quota is empty, write to support@thi.de or see
+the [THI IT service pages](https://www.thi.de/service/it-service/). They will be faster
+than we are, and they can actually change things.
 
 Nobody here can make commitments on the project's behalf, in an issue thread or anywhere
 else. There are none to make.

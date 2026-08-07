@@ -38,7 +38,7 @@ not have to rediscover it.
 
 **It is not official.** Nobody here speaks for university IT, nothing is guaranteed, and
 there is no support desk behind it. For accounts, quotas and hardware, go to
-[help.thi.de](https://help.thi.de/). What this project offers instead is a feedback loop:
+[THI IT service](${facts.official.service_url}). What this project offers instead is a feedback loop:
 if something here is wrong, [say so](https://github.com/hutzelmann/thi-linux-macos-setup/issues)
 and it gets fixed.
 

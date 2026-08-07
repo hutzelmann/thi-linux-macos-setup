@@ -11,7 +11,7 @@ Gets you printing to the ${facts.printing.model} in building MARB from Linux or
 macOS, including double-sided, hole-punched and stapled output.
 
 Official documentation: [THI printing service](${facts.printing.official_url}) ·
-[help.thi.de printing articles](https://help.thi.de/help/de-de/8-drucken). Account or
+[knowledge base: printing](${facts.official.kb_url}/8-drucken). Account or
 quota problems belong there, not here.
 
 ## Two things that surprise everyone

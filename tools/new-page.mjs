@@ -60,8 +60,8 @@ os: [${osList.join(', ')}]
 
 What this page gets you, in one sentence.
 
-Official documentation: [link](https://help.thi.de/). Account and hardware problems
-belong there, not here.
+Official documentation: [link](https://www.thi.de/service/it-service/). Account and
+hardware problems belong there, not here.
 
 ## Documented values
 

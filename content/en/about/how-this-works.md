@@ -20,8 +20,18 @@ There are no commitments here — no accuracy guarantee, no promise that any top
 covered, no response time. The one thing this project does offer is a feedback loop: if
 something is wrong, say so, and it gets corrected in the open.
 
-For anything involving your account, your quota or your hardware:
-[help.thi.de](https://help.thi.de/).
+For anything involving your account, your quota or your hardware, the official channels
+are the ones that can actually change something:
+
+- **[${facts.official.department}](${facts.official.service_url})** — the university's own
+  information pages.
+- **[Knowledge base](${facts.official.kb_url})** — THI's public articles. Mostly
+  Windows-oriented, which is why this project exists, but authoritative where it overlaps.
+- **${facts.official.support_mail}** — where a person answers. The IT pages state that
+  support is currently by mail.
+
+Note that [${facts.official.ticket_url}](${facts.official.ticket_url}) on its own is the
+ticket system and needs a login; the knowledge base lives under `/help` on the same host.
 
 ## Why pages carry dates instead of checkmarks
 

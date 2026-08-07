@@ -15,7 +15,7 @@ point of this page.
 The requirements come from a letter from the university management. Where this page and
 the official text disagree, the official text is what counts, and it is the version you
 should read: search MyTHI for *"sicher an der THI"*, or see
-[IT-Sicherheitsrichtlinien](https://help.thi.de/help/de-de/1-it/177-it-sicherheitsrichtlinien).
+[IT-Sicherheitsrichtlinien](${facts.official.kb_url}/1-it/177-it-sicherheitsrichtlinien).
 Nobody here has confirmed that the mappings below satisfy an audit.
 :::
 

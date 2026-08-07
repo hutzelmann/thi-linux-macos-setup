@@ -2,7 +2,7 @@
 layout: home
 title: Linux und macOS an der THI
 titleTemplate: false
-translatedFrom: 858ede85a745e59897f0d636369aeff427023feb
+translatedFrom: 59cc206e13f37a54a396a69fa0c93f8e59c18693
 description: Von der Community gepflegte Anleitungen für Linux und macOS an der Technischen Hochschule Ingolstadt. Drucken, WLAN, VPN, Netzlaufwerke. Inoffiziell.
 
 hero:
@@ -34,4 +34,4 @@ Campus-Systeme sind für Windows dokumentiert. Das meiste läuft auch unter Linu
 
 Hier stehen sie an einem Ort, öffentlich, damit die nächste Person sie nicht neu herausfinden muss.
 
-**Das hier ist nicht offiziell.** Niemand spricht hier für die Hochschul-IT, nichts ist zugesichert, und es steht kein Support dahinter. Für Konten, Guthaben und Hardware: [help.thi.de](https://help.thi.de/). Was dieses Projekt stattdessen bietet, ist eine Rückmeldeschleife: Wenn etwas falsch ist, [sag Bescheid](https://github.com/hutzelmann/thi-linux-macos-setup/issues), dann wird es korrigiert.
+**Das hier ist nicht offiziell.** Niemand spricht hier für die Hochschul-IT, nichts ist zugesichert, und es steht kein Support dahinter. Für Konten, Guthaben und Hardware: [THI IT service](${facts.official.service_url}). Was dieses Projekt stattdessen bietet, ist eine Rückmeldeschleife: Wenn etwas falsch ist, [sag Bescheid](https://github.com/hutzelmann/thi-linux-macos-setup/issues), dann wird es korrigiert.

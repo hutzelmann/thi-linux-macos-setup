@@ -111,7 +111,10 @@ export default defineConfig({
         docFooter: { prev: 'Previous', next: 'Next' },
         footer: {
           message:
-            'Community-maintained and unofficial. Not affiliated with, endorsed by, or speaking for THI IT. Official support: <a href="https://help.thi.de/">help.thi.de</a>',
+            'Community-maintained and unofficial. Not affiliated with, endorsed by, or speaking for THI IT. '
+            + 'Official: <a href="https://www.thi.de/service/it-service/">THI IT service</a> · '
+            + '<a href="https://help.thi.de/help/de-de">knowledge base</a> · '
+            + '<a href="mailto:support@thi.de">support@thi.de</a>',
           copyright: 'Released into the public domain under CC0 1.0.'
         }
       }
@@ -135,7 +138,10 @@ export default defineConfig({
         docFooter: { prev: 'Zurück', next: 'Weiter' },
         footer: {
           message:
-            'Von der Community gepflegt, inoffiziell. Keine Verbindung zur THI-IT, kein offizieller Support. Offizieller Support: <a href="https://help.thi.de/">help.thi.de</a>',
+            'Von der Community gepflegt, inoffiziell. Keine Verbindung zur THI-IT, kein offizieller Support. '
+            + 'Offiziell: <a href="https://www.thi.de/service/it-service/">THI IT-Service</a> · '
+            + '<a href="https://help.thi.de/help/de-de">Wissensdatenbank</a> · '
+            + '<a href="mailto:support@thi.de">support@thi.de</a>',
           copyright: 'Gemeinfrei veröffentlicht unter CC0 1.0.'
         }
       }

@@ -3,7 +3,7 @@ title: Drucken auf ${facts.printing.queue}
 description: Die Warteschlange des ${facts.printing.model} unter Arch, Debian und macOS einrichten, mit lp-Rezepten für Duplex, Lochung, Heftung und Etiketten.
 status: structured
 os: [arch, debian, macos]
-translatedFrom: 513e4a20d8c556192abf59a22d8ddd699f6aa204
+translatedFrom: 77b03ed28d7bea5b60eace1a3ce3aca80a91b6ad
 ---
 
 # Drucken auf ${facts.printing.queue}
@@ -12,7 +12,7 @@ Bringt Druckaufträge von Linux oder macOS auf den ${facts.printing.model} im Ge
 MARB — beidseitig, gelocht und geheftet inklusive.
 
 Offizielle Dokumentation: [Druckservice der THI](${facts.printing.official_url}) ·
-[Artikel auf help.thi.de](https://help.thi.de/help/de-de/8-drucken). Fragen zu Konto oder
+[Wissensdatenbank: Drucken](${facts.official.kb_url}/8-drucken). Fragen zu Konto oder
 Druckguthaben gehören dorthin, nicht hierher.
 
 ## Zwei Dinge, die alle überraschen
