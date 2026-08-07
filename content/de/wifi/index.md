@@ -3,7 +3,7 @@ title: WLAN am Campus — eduroam und @thi
 description: eduroam und @thi unter Linux und macOS einrichten, mit den Zertifikatsprüfungen, die verhindern, dass ein gefälschter Accesspoint das Hochschulpasswort abgreift.
 status: structured
 os: [arch, debian, macos]
-translatedFrom: 507e09d5f1520786b0996e47f1ca75e95c240f98
+translatedFrom: 39f9057d3ac411a6fb4465e35225791c050113be
 ---
 
 # WLAN am Campus
@@ -156,10 +156,7 @@ Es gelten dieselben zwei Zertifikatseinstellungen, mit `802-1x.eap ttls`.
 
 ## Prüfen
 
-```bash
-./scripts/wifi/verify.sh          # lesbar
-./scripts/wifi/verify.sh --json   # für eine Fehlermeldung
-```
+<ScriptDownload file="wifi-verify.sh" does="Meldet, ob deine Profile den Anmeldeserver wirklich prüfen" />
 
 Wichtig an der Ausgabe ist nicht, ob du verbunden bist — sondern ob das Profil den Server
 prüft. Von Hand:

@@ -134,15 +134,10 @@ sudo lpadmin -p ${facts.printing.queue} -E \
 
 :::
 
-Or run the script, which reads the values above from the shared facts file and falls
-back between the two PPD forms automatically:
+Or run the script, which carries the values above and falls back between the two PPD
+forms automatically:
 
-```bash
-./scripts/printing/install.sh --dry-run   # show the commands
-./scripts/printing/install.sh             # run them
-```
-
-<<< @/../scripts/printing/install.sh{sh}
+<ScriptDownload file="printing-install.sh" does="Adds the queue to CUPS, trying both PPD forms" sudo />
 
 At the first print job CUPS asks for credentials. Username is your campus login, domain
 is `${facts.printing.smb_domain}`. If the dialogue has no separate domain field, combine
@@ -162,10 +157,7 @@ The device is fitted with an inserter and a punch unit. A folding unit may or ma
 be installed — if an option is missing from `lpoptions`, the corresponding hardware is
 not configured on the device or not present in the PPD.
 
-```bash
-./scripts/printing/verify.sh          # readable
-./scripts/printing/verify.sh --json   # for an issue report, identifiers stripped
-```
+<ScriptDownload file="printing-verify.sh" does="Checks the queue, the server and the finishing options" />
 
 ## Recipes
 

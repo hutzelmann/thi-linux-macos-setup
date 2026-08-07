@@ -83,21 +83,14 @@ command runs; `Ctrl+C` disconnects.
 Or use the script, which checks the chain first and explains the failure instead of
 printing a TLS error:
 
-```bash
-./scripts/vpn/connect.sh --dry-run   # show what it would run
-./scripts/vpn/connect.sh
-```
-
-<<< @/../scripts/vpn/connect.sh{sh}
+<ScriptDownload file="vpn-connect.sh" does="Connects, with a readable diagnosis if the chain is incomplete" sudo />
 
 ## Verify
 
-```bash
-./scripts/vpn/verify.sh          # readable
-./scripts/vpn/verify.sh --json   # for an issue report
-```
+<ScriptDownload file="vpn-verify.sh" does="Checks the gateway and whether the documented chain fix is in place" />
 
-Without the script, the chain check by hand:
+Nothing is connected and no credentials are used — it observes the TLS handshake only.
+By hand:
 
 ```bash
 echo | openssl s_client -connect ${facts.vpn.host}:${facts.vpn.port} \

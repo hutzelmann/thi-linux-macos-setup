@@ -3,7 +3,7 @@ title: Drucken auf ${facts.printing.queue}
 description: Die Warteschlange des ${facts.printing.model} unter Arch, Debian und macOS einrichten, mit lp-Rezepten für Duplex, Lochung, Heftung und Etiketten.
 status: structured
 os: [arch, debian, macos]
-translatedFrom: 77b03ed28d7bea5b60eace1a3ce3aca80a91b6ad
+translatedFrom: 52dfbfb6e2573ea9be659a1757448ba947c9fef9
 ---
 
 # Drucken auf ${facts.printing.queue}
@@ -135,13 +135,10 @@ sudo lpadmin -p ${facts.printing.queue} -E \
 
 :::
 
-Oder das Skript nutzen: Es liest die Werte oben aus der gemeinsamen Faktendatei und
-probiert die beiden PPD-Formen automatisch nacheinander.
+Oder das Skript nutzen: Es kennt die Werte oben und probiert die beiden PPD-Formen
+automatisch nacheinander.
 
-```bash
-./scripts/printing/install.sh --dry-run   # Befehle anzeigen
-./scripts/printing/install.sh             # ausführen
-```
+<ScriptDownload file="printing-install.sh" does="Legt die Warteschlange in CUPS an, mit beiden PPD-Formen" sudo />
 
 Beim ersten Druckauftrag fragt CUPS nach Zugangsdaten. Benutzername ist die
 Hochschulkennung, Domäne `${facts.printing.smb_domain}`. Hat der Dialog kein eigenes
@@ -161,10 +158,7 @@ Das Gerät ist mit Inserter und Locheinheit ausgestattet. Eine Falteinheit ist
 möglicherweise nicht installiert — fehlt eine Option in `lpoptions`, ist die zugehörige
 Hardware am Gerät nicht konfiguriert oder nicht im PPD hinterlegt.
 
-```bash
-./scripts/printing/verify.sh          # lesbar
-./scripts/printing/verify.sh --json   # für eine Fehlermeldung
-```
+<ScriptDownload file="printing-verify.sh" does="Prüft Warteschlange, Server und Finishing-Optionen" />
 
 ## Rezepte
 

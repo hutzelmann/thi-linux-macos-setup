@@ -152,10 +152,7 @@ The same two certificate settings apply, with `802-1x.eap ttls`.
 
 ## Verify
 
-```bash
-./scripts/wifi/verify.sh          # readable
-./scripts/wifi/verify.sh --json   # for an issue report
-```
+<ScriptDownload file="wifi-verify.sh" does="Reports whether your profiles actually validate the authentication server" />
 
 The important part of the output is not whether you are connected — it is whether the
 profile validates the server. By hand:

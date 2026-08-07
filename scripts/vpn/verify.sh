@@ -67,6 +67,9 @@ main() {
   fi
 }
 
+# Entry point. Guarded so tests can source this file and call individual
+# functions; the glob also matches the standalone build, which is named
+# <domain>-verify.sh.
 case "${0##*/}" in
-  verify.sh) main "$@" ;;
+  *verify.sh) main "$@" ;;
 esac

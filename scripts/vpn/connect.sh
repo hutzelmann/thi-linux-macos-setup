@@ -54,6 +54,9 @@ main() {
   run sudo openfortivpn "$(fact vpn host)" --saml-login
 }
 
+# Entry point. Guarded so tests can source this file and call individual
+# functions; the glob also matches the standalone build, which is named
+# <domain>-connect.sh.
 case "${0##*/}" in
-  connect.sh) main "$@" ;;
+  *connect.sh) main "$@" ;;
 esac

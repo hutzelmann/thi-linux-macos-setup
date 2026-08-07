@@ -70,7 +70,9 @@ main() {
   log "Then release the job at the device with your campus card."
 }
 
-# Guard so tests can source this file and call functions individually.
+# Entry point. Guarded so tests can source this file and call individual
+# functions; the glob also matches the standalone build, which is named
+# <domain>-install.sh.
 case "${0##*/}" in
-  install.sh) main "$@" ;;
+  *install.sh) main "$@" ;;
 esac

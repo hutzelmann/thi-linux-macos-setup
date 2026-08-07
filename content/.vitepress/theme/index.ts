@@ -5,6 +5,7 @@ import OSSwitcher from './OSSwitcher.vue'
 import NavExtra from './NavExtra.vue'
 import PageStatus from './PageStatus.vue'
 import ReportButton from './ReportButton.vue'
+import ScriptDownload from './ScriptDownload.vue'
 import './os.css'
 
 export default {
@@ -20,5 +21,7 @@ export default {
   },
   enhanceApp({ app }) {
     app.component('OSSwitcher', OSSwitcher)
+    // Used directly in markdown, so it must be globally registered.
+    app.component('ScriptDownload', ScriptDownload)
   }
 } satisfies Theme

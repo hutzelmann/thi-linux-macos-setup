@@ -1,7 +1,7 @@
 ---
 title: Secure device configuration
 description: What the university requires of a work computer, and what each rule means on Linux and macOS.
-status: imported
+status: structured
 os: [arch, debian, macos]
 ---
 
@@ -91,10 +91,52 @@ This page cannot resolve that for you. If you have a written answer from IT abou
 satisfies the requirement on Linux, it would be the single most useful contribution to
 this page.
 
----
+## Verify
 
-::: info Imported notes
-Requirements transcribed from the policy; the per-OS mappings are this project's
-interpretation and have not been confirmed by anyone official. Treat them as a starting
-point for a conversation, not as compliance.
+There is no compliance check to run — nothing here reports to anyone, and this page cannot
+tell you whether an auditor would agree. What you can do is confirm each setting is in the
+state you think it is:
+
+::: os arch
+
+```bash
+hostnamectl                          # name matches the sticker
+sudo ufw status verbose              # active, default deny incoming
+lsblk -o NAME,TYPE,MOUNTPOINTS,FSTYPE # look for crypto_LUKS on the root device
+```
+
 :::
+
+::: os debian
+
+```bash
+hostnamectl
+sudo ufw status verbose
+lsblk -o NAME,TYPE,MOUNTPOINTS,FSTYPE
+systemctl status unattended-upgrades
+```
+
+:::
+
+::: os macos
+
+```bash
+scutil --get ComputerName
+/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate
+fdesetup status                      # FileVault
+softwareupdate --schedule
+```
+
+:::
+
+## Known quirks
+
+**The monthly four-hour rule is about Windows update delivery.** It exists so managed
+Windows machines get their updates from campus infrastructure. On Linux and macOS the
+equivalent obligation is simply keeping the system current, which you do anyway — but the
+policy text does not say that, and this page cannot say it on the policy's behalf.
+
+**Nobody here has confirmed these mappings satisfy an audit.** They are a reasonable
+reading of a Windows-shaped document. If you have a written answer from IT about what
+satisfies the requirements on Linux, that would be the single most valuable contribution
+to this page — ask at ${facts.official.support_mail} and share what comes back.

@@ -3,7 +3,7 @@ title: VPN unter Linux und macOS
 description: Mit openfortivpn und SSO-Anmeldung ins Campusnetz, inklusive der Zertifikatskette, die das Gateway nicht mitliefert.
 status: structured
 os: [arch, debian, macos]
-translatedFrom: 83435f26e778087a7ff1932e8d0133cd612dc556
+translatedFrom: 7845dad5577d68692c1abdfd231e12f7c4caa47d
 ---
 
 # VPN unter Linux und macOS
@@ -85,21 +85,14 @@ solange der Befehl läuft; `Strg+C` trennt ihn.
 Oder das Skript nutzen, das zuerst die Kette prüft und den Fehler erklärt, statt einen
 TLS-Fehler auszugeben:
 
-```bash
-./scripts/vpn/connect.sh --dry-run   # nur anzeigen
-./scripts/vpn/connect.sh
-```
-
-<<< @/../scripts/vpn/connect.sh{sh}
+<ScriptDownload file="vpn-connect.sh" does="Verbindet und erklärt verständlich, wenn die Zertifikatskette unvollständig ist" sudo />
 
 ## Prüfen
 
-```bash
-./scripts/vpn/verify.sh          # lesbar
-./scripts/vpn/verify.sh --json   # für eine Fehlermeldung
-```
+<ScriptDownload file="vpn-verify.sh" does="Prüft das Gateway und ob die dokumentierte Kette installiert ist" />
 
-Ohne Skript, die Kette von Hand:
+Es wird nichts verbunden und keine Zugangsdaten verwendet — geprüft wird nur der
+TLS-Handshake. Von Hand:
 
 ```bash
 echo | openssl s_client -connect ${facts.vpn.host}:${facts.vpn.port} \

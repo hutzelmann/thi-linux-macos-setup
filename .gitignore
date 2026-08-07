@@ -3,3 +3,4 @@ content/.vitepress/cache/
 content/.vitepress/dist/
 *.log
 .DS_Store
+content/public/scripts/

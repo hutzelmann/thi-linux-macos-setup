@@ -1,62 +1,76 @@
 ---
-title: OneDrive on Linux
-description: What works and what does not for OneDrive sync on Linux at THI.
-status: imported
+title: OneDrive and Microsoft 365 files
+description: What works for OneDrive on Linux, why third-party clients cannot sign in, and what to use instead.
+status: structured
 os: [arch, debian, macos]
 ---
 
-# OneDrive on Linux
+# OneDrive and Microsoft 365 files
 
-There is no supported native OneDrive client for Linux. The browser interface works, and
-so does the macOS client.
+Short version: **the browser works everywhere, the native client works only on macOS, and
+third-party Linux clients cannot sign in at all.** The reason is a tenant policy rather
+than a packaging problem, so it is worth understanding before spending an evening on it.
 
-## The blocker for third-party clients
+Official documentation: [${facts.official.department}](${facts.official.service_url}).
 
-Applications that request access to the organisation's Microsoft 365 tenant need approval
-from IT before they can authenticate. Open-source OneDrive clients fall into that
-category.
+## Why Linux clients fail
 
-Approval for [abraunegg/onedrive](https://abraunegg.github.io/) was requested in June
-2025 and not granted. Without approval the client cannot complete sign-in — this is a
-tenant policy, not a packaging problem, so no amount of local configuration works around
-it.
+Applications that want access to the university's Microsoft 365 tenant must be approved by
+IT before they can complete sign-in. Open-source OneDrive clients register as exactly such
+an application.
 
-## What works today
+Approval for [abraunegg/onedrive](https://abraunegg.github.io/) was requested in June 2025
+and not granted. Until that changes, the client gets as far as the login screen and then
+fails — no local configuration can work around a decision made on the server.
+
+Worth knowing so you can recognise the symptom: a sign-in that ends with a message about
+needing administrator approval is this, not a broken installation.
+
+## What works
 
 ::: os arch
 
-The web interface at [office.com](https://office.com). Files can be opened and edited in
-the browser and downloaded individually.
+**The web interface** at [office.com](https://office.com). Open, edit and download
+individual files. Nothing to install.
+
+For files that need to exist on disk — a build, a script, a backup —
+[network shares](/en/shares/smb) are the supported route and need no third-party
+software.
 
 :::
 
 ::: os debian
 
-The web interface at [office.com](https://office.com). Files can be opened and edited in
-the browser and downloaded individually.
+**The web interface** at [office.com](https://office.com). Open, edit and download
+individual files. Nothing to install.
+
+For files that need to exist on disk — a build, a script, a backup —
+[network shares](/en/shares/smb) are the supported route and need no third-party
+software.
 
 :::
 
 ::: os macos
 
-The official Microsoft OneDrive client works normally. Sign in with your campus account.
+**The official Microsoft OneDrive client** works normally. Install it, sign in with your
+campus account, done — the tenant approves Microsoft's own client.
 
 :::
 
-For files that need to be on disk rather than in a browser tab,
-[network shares](/en/shares/smb) are the supported alternative and need no third-party
-software.
+## Verify
 
-## Untested
+There is nothing to check on the machine; the question is whether the tenant policy has
+changed. Try signing in with the client you want and watch for an approval message.
 
-[Insync](https://www.insynchq.com/) is a commercial client that may or may not be
-affected by the same approval requirement. Nobody has tried it here. If you do, a
-[check record](https://github.com/hutzelmann/thi-linux-macos-setup/issues/new?template=check-record.yml)
-would close this gap.
+If a client that previously failed now works, that is a real finding — please
+[report it](https://github.com/hutzelmann/thi-linux-macos-setup/issues/new?template=check-record.yml),
+because this page currently tells people not to bother.
 
----
+## Known quirks
 
-::: info Imported notes
-From personal notes, last touched in 2025. Tenant policies change; if a client works for
-you now, please report it.
-:::
+**Nobody has tried [Insync](https://www.insynchq.com/) here.** It is commercial and may
+or may not hit the same approval requirement. Untested, so this page cannot say.
+
+**Requesting approval is a legitimate route.** If enough people ask IT for a specific
+client, the answer can change. That request goes to ${facts.official.support_mail}, not to
+this project.

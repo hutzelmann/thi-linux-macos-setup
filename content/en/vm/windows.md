@@ -1,7 +1,7 @@
 ---
 title: Windows in a virtual machine
 description: Installing Windows 11 Education in a VM on Linux and keeping local administrator rights while joining the campus account.
-status: imported
+status: structured
 os: [arch, debian, macos]
 ---
 
@@ -72,16 +72,30 @@ policies then apply, and several things happen in sequence:
 
 Afterwards Microsoft applications can use the campus identity.
 
-## Untested
+## Verify
 
-Setting up [without a network
-connection](https://learn.microsoft.com/en-us/answers/questions/2350856/set-up-windows-11-without-internet-oobebypassnro)
-is sometimes needed to get a local account. The Education image did not appear to require
-it.
+Three things tell you the VM came out right:
 
----
+1. **You are a local administrator.** `net localgroup administrators` in an elevated
+   prompt lists your local account.
+2. **Secure Boot and TPM are active**, if you plan to attach the campus account: run
+   `msinfo32` and check *Secure Boot State: On*, and `tpm.msc` reports a ready TPM.
+3. **The campus account attached cleanly.** Settings → Accounts shows it under *Access
+   work or school*, and you still have your local administrator account alongside it.
 
-::: info Imported notes
-From personal notes, originally written in German and translated for this page. Not
-re-checked against a current Windows 11 build; Microsoft changes the setup flow often.
-:::
+If the third succeeded but the first now fails, the OOBE mistake above happened — the
+fastest fix is reinstalling rather than unpicking it.
+
+## Known quirks
+
+**Setting up without a network connection** is sometimes needed to force a local account.
+The Education image did not appear to require it, but if setup insists on a Microsoft
+account, [the OOBE bypass](https://learn.microsoft.com/en-us/answers/questions/2350856/set-up-windows-11-without-internet-oobebypassnro)
+is the usual route.
+
+**BitLocker recovery keys must leave the VM.** A key stored only inside the machine it
+unlocks is not a backup. Print it, or copy it to the host before you need it.
+
+**Microsoft changes the setup flow often.** This page describes what worked at the time
+of writing; if a step has moved, please
+[report it](https://github.com/hutzelmann/thi-linux-macos-setup/issues/new?template=check-record.yml).
