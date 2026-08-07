@@ -58,11 +58,16 @@ export default defineConfig({
     ]
   },
 
+  // Both locales live in a subdirectory — there is no `root` locale — so that
+  // /en/ and /de/ mirror each other exactly. That symmetry is what lets the
+  // language switcher, the sidebar and the translation-staleness check all work
+  // by swapping one path segment. The cost is that `/` needs its own redirect,
+  // which content/index.md provides.
   locales: {
-    root: {
+    en: {
       label: 'English',
       lang: 'en',
-      dir: 'en',
+      link: '/en/',
       themeConfig: {
         nav: [
           { text: 'Start here', link: '/en/start/new-machine' },
@@ -87,7 +92,7 @@ export default defineConfig({
     de: {
       label: 'Deutsch',
       lang: 'de',
-      dir: 'de',
+      link: '/de/',
       themeConfig: {
         nav: [
           { text: 'WLAN', link: '/de/wifi/' },
@@ -140,7 +145,9 @@ export default defineConfig({
         }
       }
     },
-    socialLinks: [{ icon: 'github', link: `https://github.com/${REPO}` }]
+    // No socialLinks here on purpose: the built-in ones render before the
+    // navbar's after-slot, which would put GitHub ahead of the OS switcher.
+    // Both are rendered together in theme/NavExtra.vue instead.
   },
 
   sitemap: {

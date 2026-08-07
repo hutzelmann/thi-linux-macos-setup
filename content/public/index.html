@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Linux and macOS at THI</title>
+    <meta
+      name="description"
+      content="Community setup notes for Linux and macOS at Technische Hochschule Ingolstadt. Printing, Wi-Fi, VPN, network shares. Unofficial."
+    />
+
+    <!--
+      Both locales live under a prefix (/en/, /de/) so they mirror each other
+      exactly — that symmetry is what makes the language switcher, the sidebar
+      and the translation-staleness check a single path swap. The site root is
+      therefore a chooser rather than a page.
+
+      Static rather than a VitePress page on purpose: a markdown page here would
+      belong to no locale, and the theme has nothing sensible to render around
+      it. The meta refresh works with JavaScript disabled, the script makes the
+      choice language-aware, and the visible links catch whatever both miss.
+    -->
+    <meta http-equiv="refresh" content="0; url=./en/" />
+    <link rel="canonical" href="https://hutzelmann.github.io/thi-linux-macos-setup/en/" />
+    <link rel="alternate" hreflang="en" href="https://hutzelmann.github.io/thi-linux-macos-setup/en/" />
+    <link rel="alternate" hreflang="de" href="https://hutzelmann.github.io/thi-linux-macos-setup/de/" />
+
+    <script>
+      // Runs before the meta refresh fires. German speakers land on the German
+      // side; everyone else on English.
+      ;(function () {
+        var lang = (navigator.language || 'en').toLowerCase()
+        location.replace(lang.indexOf('de') === 0 ? './de/' : './en/')
+      })()
+    </script>
+
+    <style>
+      :root {
+        color-scheme: light dark;
+        --fg: #3c3c43;
+        --fg-dim: #67676c;
+        --bg: #ffffff;
+        --border: #e2e2e3;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --fg: #dfdfd6;
+          --fg-dim: #98989f;
+          --bg: #1b1b1f;
+          --border: #2e2e32;
+        }
+      }
+      body {
+        margin: 0;
+        display: grid;
+        place-content: center;
+        min-height: 100vh;
+        padding: 24px;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      p {
+        margin: 12px 0 0;
+        color: var(--fg-dim);
+      }
+      .links {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 28px;
+      }
+      a {
+        padding: 8px 24px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        color: inherit;
+        font-weight: 500;
+        text-decoration: none;
+      }
+      a:hover {
+        border-color: currentColor;
+      }
+      .note {
+        margin-top: 28px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Linux and macOS at THI</h1>
+      <p>Community setup notes for campus printing, Wi-Fi, VPN and network shares.</p>
+      <div class="links">
+        <a href="./en/">English</a>
+        <a href="./de/">Deutsch</a>
+      </div>
+      <p class="note">Unofficial. Not THI IT Support.</p>
+    </main>
+  </body>
+</html>
