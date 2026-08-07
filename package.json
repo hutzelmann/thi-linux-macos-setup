@@ -1,0 +1,28 @@
+{
+  "name": "thi-linux-macos-setup",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Community setup notes for Linux and macOS at Technische Hochschule Ingolstadt. Unofficial.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vitepress dev content",
+    "build": "vitepress build content",
+    "preview": "vitepress preview content",
+    "new-page": "node tools/new-page.mjs",
+    "check": "npm run check:shell && npm run check:facts && npm run check:private && npm run check:translations",
+    "check:shell": "shellcheck -x --severity=warning $(find scripts -name '*.sh')",
+    "check:facts": "bash scripts/ci/check-facts.sh",
+    "check:private": "bash scripts/ci/check-no-personal-data.sh",
+    "check:translations": "bash scripts/ci/check-translations.sh",
+    "check:vpn-chain": "bash scripts/ci/check-vpn-chain.sh"
+  },
+  "devDependencies": {
+    "@types/markdown-it-container": "^4.0.0",
+    "markdown-it-container": "^4.0.0",
+    "vitepress": "1.6.4",
+    "yaml": "^2.6.0"
+  }
+}

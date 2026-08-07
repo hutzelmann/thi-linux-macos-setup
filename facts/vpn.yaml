@@ -1,0 +1,28 @@
+# VPN — documented configuration values.
+
+# FortiGate SSL-VPN gateway.
+host: vpn.thi.de
+port: "443"
+
+# Authentication is SAML/SSO in a browser. No password is handed to the client.
+auth: saml
+
+# The gateway serves its leaf certificate WITHOUT the intermediate, so a stock
+# client cannot build a chain and refuses to connect. Supplying the intermediate
+# once fixes it permanently — see content/en/vpn/openfortivpn.md.
+#
+# Deliberately no fingerprint is recorded here. Pinning would mean re-recording
+# trust material every time the leaf rotates (R27), and the chain fix makes it
+# unnecessary.
+issuer: GEANT TLS ECC 1
+root_ca: HARICA TLS ECC Root CA 2021
+
+# Published in the leaf's Authority Information Access extension. Fetching from
+# here is how the chain is completed; the file is a public CA certificate.
+intermediate_url: http://crt.harica.gr/HARICA-GEANT-TLS-E1.cer
+
+# Local filename used by the pages and the script.
+intermediate_file: HARICA-GEANT-TLS-E1.pem
+
+# Official VPN documentation.
+official_url: https://www.thi.de/service/it-service/vpn/

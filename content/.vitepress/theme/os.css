@@ -1,0 +1,29 @@
+/*
+ * OS visibility.
+ *
+ * Every OS variant is present in the DOM; CSS decides which one is shown, keyed
+ * off html[data-os] set by the blocking head script. Consequences worth keeping
+ * in mind before changing this:
+ *
+ *   - No flash of the wrong OS, because the attribute exists before first paint.
+ *   - Local search indexes all variants, so a macOS reader still finds a page
+ *     whose Arch section matched their query.
+ *   - Selectors target .os-block, never VitePress internals like .vp-code —
+ *     that class is removed in VitePress 2 and would break on upgrade.
+ */
+
+.os-block {
+  display: none;
+}
+
+html[data-os='arch'] .os-block[data-os-block='arch'],
+html[data-os='debian'] .os-block[data-os-block='debian'],
+html[data-os='macos'] .os-block[data-os-block='macos'] {
+  display: block;
+}
+
+/* Before JS runs on a client with no stored choice, show the default rather
+   than nothing at all. Matters for readers with JS disabled and for crawlers. */
+html:not([data-os]) .os-block[data-os-block='arch'] {
+  display: block;
+}

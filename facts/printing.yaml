@@ -1,0 +1,44 @@
+# Printing — documented configuration values.
+#
+# Every value here is referenced from pages as ${facts.printing.<key>} and never
+# typed into a page directly. See AGENTS.md.
+
+# Print server hosting the departmental queues (SMB).
+server: rz-print-marb.rz.fh-ingolstadt.de
+
+# Former print server name. Kept so the rename stays discoverable by search —
+# people still have the old host in working configs and in old notes.
+server_previous: marb-mfp.rz.fh-ingolstadt.de
+
+# Colour queue in building MARB.
+queue: MARB-color
+
+# Student queue, reachable under the RZ-PRT server name.
+queue_students: STUD-color
+
+# Device behind the MARB-color queue.
+model: Kyocera TASKalfa 6054ci
+
+# Windows domain used for SMB authentication against the print and file servers.
+smb_domain: ESPL_001
+
+# PPD as installed by the Kyocera Linux driver package.
+ppd_path: /usr/share/kyocera10.0/ppd10.0/Kyocera_TASKalfa_6054ci.ppd
+
+# Same PPD addressed through the CUPS model catalogue. Some CUPS builds accept
+# only this form for -m; the absolute path fails.
+ppd_model: kyocera/Kyocera_TASKalfa_6054ci.ppd
+
+# Vendor driver bundle. One tarball for all models, roughly 250 MB.
+driver_url: https://www.kyoceradocumentsolutions.us/en/support/downloads.name-L3VzL2VuL21mcC9UQVNLQUxGQTYwNTRDSQ==.html#tab=driver
+
+# Debian/Ubuntu package inside the tarball. The EU variant carries the European
+# finishing options such as 2HoleEUR.
+driver_deb: Ubuntu/EU/kyodialog_amd64/kyodialog_10.0-0_amd64.deb
+
+# Browser-based printing. Needs no driver and no queue — the fallback when CUPS
+# fights back.
+webprint_url: https://print.thi.de
+
+# Official printing documentation.
+official_url: https://www.thi.de/service/it-service/drucken/

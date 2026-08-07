@@ -1,0 +1,17 @@
+# Network shares (SMB).
+
+# Personal home directory.
+home_server: rz-home.rz.fh-ingolstadt.de
+
+# Departmental and group shares.
+file_server: rz-fs.rz.fh-ingolstadt.de
+
+# Research-cluster shares (CARISSMA).
+research_server: carissma.rz.fh-ingolstadt.de
+
+# Windows domain for authentication. Some clients cannot set the domain
+# separately and need it prefixed to the username instead.
+domain: ESPL_001
+
+
+official_url: https://help.thi.de/help/de-de/6-netzlaufwerke

@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # check-translations compares against the English source's blob hash,
+          # which needs real history rather than a shallow clone.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Shell scripts
+        run: npm run check:shell
+
+      - name: No hardcoded values outside facts/
+        run: npm run check:facts
+
+      - name: No personal data
+        run: npm run check:private
+
+      - name: Translations match their source
+        run: npm run check:translations
+
+      - name: Build (fails on dead links)
+        run: npm run build
+
+      # The built site, downloadable from the run summary. GitHub Pages has no
+      # native pull-request previews, and asking a first-time contributor to
+      # install Node just to see their own change is how contributions die.
+      - name: Upload preview
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-preview
+          path: content/.vitepress/dist
+          retention-days: 7
+
+  # Separate job: this one reaches the public internet, so a network blip must
+  # not fail a documentation pull request.
+  vpn-chain:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: VPN certificate chain still behaves as documented
+        run: npm run check:vpn-chain

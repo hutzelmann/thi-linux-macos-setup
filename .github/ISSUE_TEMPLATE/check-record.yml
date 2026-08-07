@@ -1,0 +1,68 @@
+name: I followed a page — here is what happened
+description: Report that the steps worked (or did not) on a real machine, so the page can carry a date.
+title: "[check] "
+labels: [check-record]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is what turns written-down into verified.
+
+        Most pages here have never been followed by a second person. A dated report —
+        even "it worked, nothing to add" — is worth more than a new page.
+
+        **Please remove usernames, addresses and home paths** from anything you paste.
+
+  - type: input
+    id: page
+    attributes:
+      label: Which page
+      placeholder: /en/wifi/
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: What did you run it on
+      options:
+        - Arch Linux
+        - Debian / Ubuntu
+        - macOS
+        - Other Linux
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Optional, but it helps the next person judge whether this still applies.
+      placeholder: Ubuntu 26.04, macOS 16.2, rolling
+
+  - type: input
+    id: date
+    attributes:
+      label: Date you did this
+      placeholder: 2026-08-07
+    validations:
+      required: true
+
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: How did it go
+      options:
+        - Worked exactly as written
+        - Worked, but a step needed adjusting
+        - Did not work
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: What differed, if anything
+      description: >
+        The detail that cost you time is exactly what belongs in the page's "known
+        quirks" section.

@@ -1,0 +1,62 @@
+name: Something is wrong on a page
+description: A step does not work, a value has changed, or something is missing.
+title: "[page] "
+labels: [page-feedback]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks — this is the most useful kind of report.
+
+        **Please remove usernames, mail addresses and home paths** from anything you
+        paste. `<kennung>` and `/home/<kennung>` are fine as placeholders. This
+        repository is public.
+
+        If your own account or hardware is the problem, [help.thi.de](https://help.thi.de/)
+        can actually fix it; this project cannot.
+
+  - type: input
+    id: page
+    attributes:
+      label: Which page
+      description: The address, or just its name.
+      placeholder: /en/printing/marb-color
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Arch Linux
+        - Debian / Ubuntu
+        - macOS
+        - Other Linux
+        - Not relevant
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What went wrong
+      description: What you expected, and what happened instead. Half a sentence is fine.
+      placeholder: The PPD path in step 2 does not exist on Ubuntu 26.04.
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Command output, if any
+      description: >
+        Optional. `./scripts/<area>/verify.sh --json` produces output with identifiers
+        already stripped.
+      render: shell
+
+  - type: textarea
+    id: fix
+    attributes:
+      label: Do you know what the correct answer is?
+      description: Optional, and no problem if not — knowing something is wrong is already useful.
