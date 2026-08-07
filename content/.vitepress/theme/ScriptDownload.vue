@@ -34,15 +34,25 @@ const commands = computed(() =>
 
 <template>
   <div class="script-download">
+    <!--
+      Name and action on one line, description under it. The description is a
+      sentence and will wrap; keeping it out of the same row stops it pushing
+      the button onto a line of its own.
+    -->
     <div class="head">
-      <div class="meta">
-        <code>{{ file }}</code>
-        <span class="does">{{ does }}</span>
-      </div>
+      <code class="name">{{ file }}</code>
       <a class="button" :href="href" :download="file">
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M8 1a.75.75 0 0 1 .75.75v6.44l2.22-2.22a.75.75 0 1 1 1.06 1.06l-3.5 3.5a.75.75 0 0 1-1.06 0l-3.5-3.5a.75.75 0 0 1 1.06-1.06l2.22 2.22V1.75A.75.75 0 0 1 8 1ZM2.75 12.5a.75.75 0 0 1 .75.75v.25h9v-.25a.75.75 0 0 1 1.5 0v.5a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 2 13.75v-.5a.75.75 0 0 1 .75-.75Z"
+          />
+        </svg>
         {{ de ? 'Herunterladen' : 'Download' }}
       </a>
     </div>
+
+    <p class="does">{{ does }}</p>
 
     <div class="language-bash"><pre><code>{{ commands }}</code></pre></div>
 
@@ -71,44 +81,47 @@ const commands = computed(() =>
 
 .head {
   display: flex;
-  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   justify-content: space-between;
 }
 
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-  align-items: baseline;
-}
-
-.meta code {
+.name {
   font-size: 14px;
   font-weight: 600;
 }
 
 .does {
+  margin: 8px 0 0;
   font-size: 14px;
+  line-height: 1.6;
   color: var(--vp-c-text-2);
 }
 
+/* Matches the default theme's brand button, so a download reads as the same
+   kind of action as every other primary control on the site. */
 .button {
+  display: inline-flex;
   flex: none;
-  padding: 6px 18px;
-  border: 1px solid var(--vp-c-brand-1);
-  border-radius: 18px;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 16px;
+  border: 1px solid var(--vp-c-brand-2);
+  border-radius: 20px;
+  background: var(--vp-c-brand-3);
   font-size: 14px;
   font-weight: 500;
+  line-height: 22px;
   color: var(--vp-c-brand-1);
   text-decoration: none;
-  transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
 }
 
 .button:hover {
+  border-color: var(--vp-c-brand-1);
   background: var(--vp-c-brand-1);
-  color: var(--vp-c-bg);
+  color: var(--vp-c-white);
 }
 
 .script-download :deep(pre) {
