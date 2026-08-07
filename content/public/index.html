@@ -13,26 +13,20 @@
       Both locales live under a prefix (/en/, /de/) so they mirror each other
       exactly — that symmetry is what makes the language switcher, the sidebar
       and the translation-staleness check a single path swap. The site root is
-      therefore a chooser rather than a page.
+      therefore a chooser.
 
-      Static rather than a VitePress page on purpose: a markdown page here would
-      belong to no locale, and the theme has nothing sensible to render around
-      it. The meta refresh works with JavaScript disabled, the script makes the
-      choice language-aware, and the visible links catch whatever both miss.
+      It asks both questions up front rather than guessing. Language is a real
+      choice at a German university with international students, and the
+      operating system cannot be detected at all: a browser reveals "Linux" and
+      never which distribution. Guessing silently is how a Debian user ends up
+      reading Arch instructions without noticing.
+
+      Static rather than a VitePress page: a markdown page here would belong to
+      no locale and the theme renders it empty.
     -->
-    <meta http-equiv="refresh" content="0; url=./en/" />
     <link rel="canonical" href="https://hutzelmann.github.io/thi-linux-macos-setup/en/" />
     <link rel="alternate" hreflang="en" href="https://hutzelmann.github.io/thi-linux-macos-setup/en/" />
     <link rel="alternate" hreflang="de" href="https://hutzelmann.github.io/thi-linux-macos-setup/de/" />
-
-    <script>
-      // Runs before the meta refresh fires. German speakers land on the German
-      // side; everyone else on English.
-      ;(function () {
-        var lang = (navigator.language || 'en').toLowerCase()
-        location.replace(lang.indexOf('de') === 0 ? './de/' : './en/')
-      })()
-    </script>
 
     <style>
       :root {
@@ -40,69 +34,169 @@
         --fg: #3c3c43;
         --fg-dim: #67676c;
         --bg: #ffffff;
+        --bg-soft: #f6f6f7;
         --border: #e2e2e3;
+        --accent: #3451b2;
       }
       @media (prefers-color-scheme: dark) {
         :root {
           --fg: #dfdfd6;
           --fg-dim: #98989f;
           --bg: #1b1b1f;
+          --bg-soft: #202127;
           --border: #2e2e32;
+          --accent: #a8b1ff;
         }
       }
+
+      * { box-sizing: border-box; }
+
       body {
         margin: 0;
-        display: grid;
-        place-content: center;
         min-height: 100vh;
-        padding: 24px;
+        display: grid;
+        place-items: center;
+        padding: 32px 24px;
         background: var(--bg);
         color: var(--fg);
         font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        text-align: center;
+        line-height: 1.6;
       }
+
+      main { width: 100%; max-width: 520px; }
+
       h1 {
         margin: 0;
-        font-size: 28px;
+        font-size: 30px;
         font-weight: 600;
         letter-spacing: -0.02em;
       }
-      p {
-        margin: 12px 0 0;
+
+      .lede { margin: 12px 0 0; color: var(--fg-dim); }
+
+      .unofficial {
+        margin: 16px 0 0;
+        padding: 10px 14px;
+        border-left: 3px solid var(--border);
+        border-radius: 0 4px 4px 0;
+        background: var(--bg-soft);
+        font-size: 13px;
         color: var(--fg-dim);
       }
-      .links {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        margin-top: 28px;
+
+      .step { margin-top: 32px; }
+
+      .step h2 {
+        margin: 0 0 10px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--fg-dim);
       }
-      a {
-        padding: 8px 24px;
+
+      .options { display: flex; flex-wrap: wrap; gap: 10px; }
+
+      button,
+      .lang {
+        padding: 10px 22px;
         border: 1px solid var(--border);
-        border-radius: 20px;
+        border-radius: 22px;
+        background: var(--bg);
         color: inherit;
+        font: inherit;
         font-weight: 500;
         text-decoration: none;
+        cursor: pointer;
+        transition: border-color 0.2s, color 0.2s, background-color 0.2s;
       }
-      a:hover {
-        border-color: currentColor;
+
+      button:hover,
+      .lang:hover { border-color: var(--accent); color: var(--accent); }
+
+      button[aria-pressed='true'] {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: var(--bg);
       }
-      .note {
-        margin-top: 28px;
-        font-size: 13px;
-      }
+
+      .lang { flex: 1 1 0; text-align: center; }
+      .lang span { display: block; font-size: 12px; font-weight: 400; color: var(--fg-dim); }
+      .lang:hover span { color: inherit; }
+
+      .footnote { margin-top: 28px; font-size: 13px; color: var(--fg-dim); }
     </style>
   </head>
+
   <body>
     <main>
       <h1>Linux and macOS at THI</h1>
-      <p>Community setup notes for campus printing, Wi-Fi, VPN and network shares.</p>
-      <div class="links">
-        <a href="./en/">English</a>
-        <a href="./de/">Deutsch</a>
-      </div>
-      <p class="note">Unofficial. Not THI IT Support.</p>
+      <p class="lede">
+        Community setup notes for campus printing, Wi-Fi, VPN and network shares.<br />
+        Anleitungen aus der Community für Drucken, WLAN, VPN und Netzlaufwerke.
+      </p>
+
+      <p class="unofficial">
+        Unofficial and community-maintained. Not THI IT Support &mdash;
+        for accounts, quota and hardware use <a href="https://help.thi.de/">help.thi.de</a>.<br />
+        Inoffiziell und von der Community gepflegt. Kein THI-Support.
+      </p>
+
+      <section class="step">
+        <h2>System</h2>
+        <div class="options" id="os-options" role="group" aria-label="Operating system">
+          <button type="button" data-os="arch" aria-pressed="false">Arch Linux</button>
+          <button type="button" data-os="debian" aria-pressed="false">Debian / Ubuntu</button>
+          <button type="button" data-os="macos" aria-pressed="false">macOS</button>
+        </div>
+      </section>
+
+      <section class="step">
+        <h2>Language &middot; Sprache</h2>
+        <div class="options">
+          <a class="lang" id="go-en" href="./en/">English<span>Read in English</span></a>
+          <a class="lang" id="go-de" href="./de/">Deutsch<span>Auf Deutsch lesen</span></a>
+        </div>
+      </section>
+
+      <p class="footnote">
+        Both can be changed at any time in the top bar.<br />
+        Beides lässt sich jederzeit oben in der Leiste ändern.
+      </p>
     </main>
+
+    <script>
+      ;(function () {
+        var buttons = document.querySelectorAll('#os-options button')
+        var links = [document.getElementById('go-en'), document.getElementById('go-de')]
+
+        // Only macOS is detectable. Everything else — Linux, Windows, unknown —
+        // falls through to Arch, which is the documented default. The point of
+        // showing the control here is that the fallthrough is visible rather
+        // than silent.
+        var isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
+        var stored = null
+        try { stored = localStorage.getItem('os') } catch (e) {}
+        var current = stored || (isMac ? 'macos' : 'arch')
+
+        function select(os) {
+          current = os
+          buttons.forEach(function (b) {
+            b.setAttribute('aria-pressed', String(b.dataset.os === os))
+          })
+          // Passed as a query parameter, which the site's own head script reads
+          // and stores. One mechanism, shareable in a link.
+          links.forEach(function (a) {
+            a.href = a.getAttribute('href').split('?')[0] + '?os=' + os
+          })
+        }
+
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () { select(b.dataset.os) })
+        })
+
+        select(current)
+      })()
+    </script>
   </body>
 </html>

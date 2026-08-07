@@ -19,7 +19,7 @@ const REPO = 'https://github.com/hutzelmann/thi-linux-macos-setup'
   <div class="nav-extra">
     <span class="divider" aria-hidden="true" />
     <OSSwitcher />
-    <span class="divider" aria-hidden="true" />
+    <span class="divider github-divider" aria-hidden="true" />
     <a class="github" :href="REPO" target="_blank" rel="noreferrer" aria-label="GitHub repository">
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
         <path
@@ -32,13 +32,27 @@ const REPO = 'https://github.com/hutzelmann/thi-linux-macos-setup'
 </template>
 
 <style scoped>
+/*
+ * Every gap is set here rather than inherited. The default theme gives the
+ * appearance toggle and the social links their own asymmetric margins, which is
+ * fine when they sit at the end of the bar and visibly wrong once something is
+ * placed between them.
+ *
+ * One spacing value on both sides of each divider, and the same value again
+ * between this group and the appearance toggle to its left.
+ */
 .nav-extra {
   display: flex;
   align-items: center;
-  gap: 8px;
+  margin-left: 12px;
+}
+
+.nav-extra > * + * {
+  margin-left: 12px;
 }
 
 .divider {
+  flex: none;
   width: 1px;
   height: 24px;
   background-color: var(--vp-c-divider);
@@ -56,9 +70,9 @@ const REPO = 'https://github.com/hutzelmann/thi-linux-macos-setup'
 }
 
 @media (max-width: 767px) {
-  /* Keep the OS switcher; drop the link and its separator. */
+  /* Keep the OS switcher; drop the link and the separator before it. */
   .github,
-  .divider:last-of-type {
+  .github-divider {
     display: none;
   }
 }

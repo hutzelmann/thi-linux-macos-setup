@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 import { loadFacts, substituteFacts } from './facts.mts'
 import { osContainer } from './os-container.mts'
@@ -6,12 +8,13 @@ import { sidebarEn, sidebarDe } from './sidebar.mts'
 const facts = loadFacts()
 
 const REPO = 'hutzelmann/thi-linux-macos-setup'
+const BASE = '/thi-linux-macos-setup/'
 
 export default defineConfig({
   title: 'THI Linux & macOS Setup',
   description:
     'Community setup notes for Linux and macOS at Technische Hochschule Ingolstadt. Unofficial, not THI IT Support.',
-  base: '/thi-linux-macos-setup/',
+  base: BASE,
   cleanUrls: true,
   lastUpdated: true,
   // A dead link is a broken instruction. Fail the build, don't warn.
@@ -54,6 +57,30 @@ export default defineConfig({
           if (!id.endsWith('.md')) return
           return { code: substituteFacts(code, facts, id), map: null }
         }
+      },
+      {
+        /*
+         * In a production build the site root comes from public/index.html.
+         * The dev server never gets there — Vite answers `/` with its own app
+         * shell, which then renders the 404 page because no route matches.
+         *
+         * Serving the same file in dev keeps the two identical. A root that
+         * works only after a build is the kind of difference that costs the
+         * next person an afternoon.
+         */
+        name: 'root-locale-chooser-in-dev',
+        configureServer(server) {
+          const chooser = fileURLToPath(new URL('../public/index.html', import.meta.url))
+          server.middlewares.use((req, res, next) => {
+            const path = (req.url ?? '').split('?')[0]
+            if (path === BASE || path === '/' || path === `${BASE}index.html`) {
+              res.setHeader('Content-Type', 'text/html; charset=utf-8')
+              res.end(readFileSync(chooser, 'utf8'))
+              return
+            }
+            next()
+          })
+        }
       }
     ]
   },
@@ -62,7 +89,7 @@ export default defineConfig({
   // /en/ and /de/ mirror each other exactly. That symmetry is what lets the
   // language switcher, the sidebar and the translation-staleness check all work
   // by swapping one path segment. The cost is that `/` needs its own redirect,
-  // which content/index.md provides.
+  // which content/public/index.html provides.
   locales: {
     en: {
       label: 'English',
@@ -119,6 +146,16 @@ export default defineConfig({
     search: {
       provider: 'local',
       options: {
+        /*
+         * The search index is built from markdown on disk, which still holds
+         * ${facts.*} tokens rather than the values they render to. Without this,
+         * every hostname, queue name and certificate authority is missing from
+         * the index — and those are exactly the strings someone pastes into
+         * search when something is broken. Substitute before indexing.
+         */
+        _render(src, env, md) {
+          return md.render(substituteFacts(src, facts, env.relativePath ?? '<search>'), env)
+        },
         // Typo tolerance matters more than precision here: people arrive with
         // "eduraom" and a broken laptop. Kept low so package and flag names
         // don't turn into noise.
