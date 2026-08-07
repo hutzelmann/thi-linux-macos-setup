@@ -6,7 +6,7 @@
 #   ./verify.sh --json    machine-readable, identifiers stripped
 #
 # Runs from anywhere: the gateway is public. No credentials are used and no
-# connection is attempted — this observes the TLS handshake only.
+# connection is attempted; this observes the TLS handshake only.
 set -eu
 
 DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
@@ -62,7 +62,7 @@ main() {
   if [ "$_verifies" = no ]; then
     log ""
     log "The intermediate certificate is not installed on this system."
-    log "See the VPN page — it is a one-time step."
+    log "See the VPN page; it is a one-time step."
     exit 1
   fi
 }

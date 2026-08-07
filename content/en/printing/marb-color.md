@@ -22,7 +22,7 @@ machine, authenticate with your campus card, then pick the job. A queue that loo
 
 **You do not need a driver at all if you are in a hurry.** [${facts.printing.webprint_url}](${facts.printing.webprint_url})
 takes a PDF in the browser and prints it. No CUPS, no PPD, no SMB. You lose the
-finishing options — punch, staple, jog — which is the only reason the rest of this page
+finishing options (punch, staple, jog), which is the only reason the rest of this page
 exists.
 
 ## Documented values
@@ -66,7 +66,7 @@ sudo apt update
 sudo apt install cups smbclient printer-driver-all system-config-printer
 ```
 
-Then unpack the vendor tarball and install the EU variant — it carries the European
+Then unpack the vendor tarball and install the EU variant. It carries the European
 finishing options, including 2-hole punching:
 
 ```bash
@@ -111,7 +111,7 @@ sudo lpadmin -p ${facts.printing.queue} -E \
   -m "${facts.printing.ppd_path}"
 ```
 
-If that is rejected, use the CUPS model name instead of the absolute path — which form
+If that is rejected, use the CUPS model name instead of the absolute path. Which form
 works varies between CUPS builds:
 
 ```bash
@@ -154,7 +154,7 @@ The second command must list `Pnch` and `Stpl`. If it does not, the vendor PPD i
 in use and every finishing option below will be rejected.
 
 The device is fitted with an inserter and a punch unit. A folding unit may or may not
-be installed — if an option is missing from `lpoptions`, the corresponding hardware is
+be installed. If an option is missing from `lpoptions`, the corresponding hardware is
 not configured on the device or not present in the PPD.
 
 <ScriptDownload file="printing-verify.sh" does="Checks the queue, the server and the finishing options" />
@@ -168,8 +168,8 @@ lp -d ${facts.printing.queue} -o media=A4 file.pdf
 lp -d ${facts.printing.queue} -o media=A4 -o sides=two-sided-long-edge file.pdf
 ```
 
-Hole-punched, and the exam-printing combination — double sided, punched, stapled at the
-rear, 25 copies:
+Hole-punched, and the exam-printing combination (double sided, punched, stapled at the
+rear, 25 copies):
 
 ```bash
 lp -d ${facts.printing.queue} -o media=A4 -o Pnch=2HoleEUR file.pdf
@@ -209,7 +209,7 @@ Higher-quality halftoning for documents with barcodes or fine line art:
 lp -d ${facts.printing.queue} -o media=A4 -o KSCREENMODE="Resolution" scan.pdf
 ```
 
-Run `lpoptions -p ${facts.printing.queue} -l` for the full option list — the PPD exposes
+Run `lpoptions -p ${facts.printing.queue} -l` for the full option list. The PPD exposes
 trapping, overprint, colour model, gloss mode and resolution beyond what is shown here.
 
 ## Known quirks
@@ -234,5 +234,5 @@ is enough:
 sudo mkdir -p /etc/samba && sudo touch /etc/samba/smb.conf
 ```
 
-**Nothing comes out and the queue is empty.** Expected — go to the device and release the
+**Nothing comes out and the queue is empty.** Expected. Go to the device and release the
 job with your card. Jobs expire after a while unreleased.

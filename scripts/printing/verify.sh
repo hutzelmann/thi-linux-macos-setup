@@ -69,7 +69,7 @@ main() {
   fi
   if [ "$_options_ok" = no ]; then
     log ""
-    log "Finishing options missing — the vendor PPD is probably not installed."
+    log "Finishing options missing. The vendor PPD is probably not installed."
     log "Without it, duplex/punch/staple recipes will be rejected."
     exit 1
   fi

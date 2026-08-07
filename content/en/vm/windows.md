@@ -16,7 +16,7 @@ account.
 During Windows setup you are asked *"Let's set things up for your work or school"*.
 
 **Do not enter your campus credentials there.** Doing so makes the VM a managed device
-from the start and leaves you without a local administrator account — the one thing a VM
+from the start and leaves you without a local administrator account, the one thing a VM
 is for.
 
 Instead choose **Sign-in options → Domain join** and create a local account with any name
@@ -30,7 +30,7 @@ afterwards, from inside Windows, once you already hold administrator rights.
    credentials.
 2. Search for "education" → **Azure Education | Overview** → *Free Software* → **Explore
    All** → search "Windows 11".
-3. Download **Windows 11 Education**. Not the N edition — it ships without media codecs.
+3. Download **Windows 11 Education**. Not the N edition; it ships without media codecs.
 4. Note the licence key from the side panel; setup asks for it.
 
 ## Prepare the VM
@@ -44,7 +44,8 @@ GNOME Boxes, virt-manager or UTM all work. Reasonable starting size:
 Windows 11 requires Secure Boot and a TPM. Two routes:
 
 **Configure TPM and Secure Boot properly.** More work up front, and required if you want
-to connect the campus account later — the security policies will not apply otherwise.
+to connect the campus account later, because the security policies will not apply
+otherwise.
 [How to run Windows 11 in GNOME Boxes with UEFI and TPM2](https://www.ctrl.blog/entry/how-to-win11-in-gnome-boxes.html).
 
 **Or bypass the check.** Faster, and fine for a throwaway VM: registry keys during setup,
@@ -60,7 +61,7 @@ then continue with `setup.exe`.
 
 ## Connect the campus account
 
-Only works if the VM satisfies the security requirements — Secure Boot and TPM
+Only works if the VM satisfies the security requirements: Secure Boot and TPM
 configured.
 
 **Settings → Accounts → Add Work or School Account**, then your campus credentials. The
@@ -68,7 +69,7 @@ policies then apply, and several things happen in sequence:
 
 - Windows Hello setup
 - A password change
-- BitLocker encryption, with a recovery key — save it outside the VM
+- BitLocker encryption, with a recovery key; save it outside the VM
 
 Afterwards Microsoft applications can use the campus identity.
 
@@ -83,7 +84,7 @@ Three things tell you the VM came out right:
 3. **The campus account attached cleanly.** Settings → Accounts shows it under *Access
    work or school*, and you still have your local administrator account alongside it.
 
-If the third succeeded but the first now fails, the OOBE mistake above happened — the
+If the third succeeded but the first now fails, the OOBE mistake above happened. The
 fastest fix is reinstalling rather than unpicking it.
 
 ## Known quirks

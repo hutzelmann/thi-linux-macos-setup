@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Block personal data from entering a public repository.
 #
-# Patterns only — no names, no allowlist of individuals. A blocklist naming
+# Patterns only: no names, no allowlist of individuals. A blocklist naming
 # people would itself be the leak it is meant to prevent.
 #
 # Reports about mail, shares and VPN naturally carry usernames, home paths and
@@ -13,7 +13,7 @@ cd "$(dirname "$0")/../.."
 
 fail=0
 
-# Published role addresses are not personal data — they belong to a function,
+# Published role addresses are not personal data; they belong to a function,
 # not a person, and pointing at the official one is the whole point of R28.
 ROLE_ADDRESSES='(support|info|poststelle)(\.[a-z]+)?@(thi|fh-ingolstadt)\.de'
 
@@ -43,7 +43,7 @@ check "Personal home directory" \
   '/(home|Users)/[a-zA-Z0-9][a-zA-Z0-9_-]{2,}' \
   'use /home/<kennung>'
 
-# The domain is a documented value, so it belongs in facts/ — and only there.
+# The domain is a documented value, so it belongs in facts/, and only there.
 check "Windows domain outside facts/" \
   'ESPL_[0-9]+' \
   'reference ${facts.shares.domain} instead' \

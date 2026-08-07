@@ -25,7 +25,7 @@ the whole picture loses contrast.
 xrandr --output HDMI1 --set "Broadcast RGB" "Full"
 ```
 
-Get the real output name from `xrandr` on its own — it varies (`HDMI1`, `HDMI-1`,
+Get the real output name from `xrandr` on its own; it varies (`HDMI1`, `HDMI-1`,
 `HDMI-A-0`). If nothing changes, unplug and replug the cable: the setting applies at the
 next link training.
 
@@ -43,7 +43,7 @@ answer, unsatisfying as it is.
 xrandr --output HDMI-1 --set "Broadcast RGB" "Full"
 ```
 
-Get the real output name from `xrandr` on its own — it varies (`HDMI1`, `HDMI-1`,
+Get the real output name from `xrandr` on its own; it varies (`HDMI1`, `HDMI-1`,
 `HDMI-A-0`). If nothing changes, unplug and replug the cable.
 
 On Wayland sessions the setting is not reachable this way; an X session is the reliable
@@ -54,7 +54,7 @@ workaround.
 ::: os macos
 
 macOS negotiates the range itself and usually gets it right. When it does not, the control
-is not exposed in System Settings — a display override profile is the usual workaround,
+is not exposed in System Settings. A display override profile is the usual workaround,
 and it is fiddly enough that borrowing a different cable or adapter first is worth trying.
 
 :::
@@ -64,7 +64,7 @@ fix](https://askubuntu.com/a/640153).
 
 ## Verify
 
-Show something with a large black area and a large white area — a terminal on one side, a
+Show something with a large black area and a large white area: a terminal on one side, a
 white document on the other. Correct full-range output gives you an actual black, not
 dark grey.
 

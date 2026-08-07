@@ -2,7 +2,7 @@
 # Read documented values from facts/*.yaml.
 #
 # Scripts must never hardcode a hostname or queue name: the pages and the checks
-# read the same file, so a rename is one edit. Parsing is deliberately dumb —
+# read the same file, so a rename is one edit. Parsing is deliberately dumb:
 # the files are one level deep by contract (AGENTS.md), which keeps this
 # dependency-free. No yq, no python, works on a stock macOS shell.
 
@@ -20,7 +20,7 @@ facts_dir() {
   return 1
 }
 
-# fact <domain> <key> — print the value, fail loudly if absent.
+# fact <domain> <key>: print the value, fail loudly if absent.
 fact() {
   _domain="$1"
   _key="$2"

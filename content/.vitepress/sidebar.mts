@@ -1,15 +1,15 @@
 import type { DefaultTheme } from 'vitepress'
 
 /**
- * Hand-written on purpose: ordering carries meaning here ("Start here" first,
+ * Hand-written on purpose: ordering carries meaning here ("Getting started" first,
  * then the things people arrive broken about), and a generated tree cannot know
  * that. `npm run new-page` adds the entry for you, so contributors never edit
  * this by hand.
  */
 export const sidebarEn: DefaultTheme.SidebarItem[] = [
   {
-    text: 'Start here',
-    items: [{ text: 'New machine, first 30 minutes', link: '/en/start/new-machine' }]
+    text: 'Getting started',
+    items: [{ text: 'A new machine on campus', link: '/en/start/new-machine' }]
   },
   {
     text: 'Network',
@@ -53,7 +53,7 @@ export const sidebarEn: DefaultTheme.SidebarItem[] = [
 /**
  * Shorter than the English tree on purpose: only translated pages appear here.
  * Linking to an untranslated page from the German sidebar would send readers to
- * a 404 — worse than the honest gap, which the footer note explains.
+ * a 404, worse than the honest gap, which the footer note explains.
  */
 export const sidebarDe: DefaultTheme.SidebarItem[] = [
   {

@@ -11,7 +11,7 @@
 
     <!--
       Both locales live under a prefix (/en/, /de/) so they mirror each other
-      exactly — that symmetry is what makes the language switcher, the sidebar
+      exactly, and that symmetry is what makes the language switcher, the sidebar
       and the translation-staleness check a single path swap. The site root is
       therefore a chooser.
 
@@ -176,7 +176,7 @@
         var buttons = document.querySelectorAll('#os-options button')
         var links = [document.getElementById('go-en'), document.getElementById('go-de')]
 
-        // Only macOS is detectable. Everything else — Linux, Windows, unknown —
+        // Only macOS is detectable. Everything else (Linux, Windows, unknown)
         // falls through to Arch, which is the documented default. The point of
         // showing the control here is that the fallthrough is visible rather
         // than silent.

@@ -66,7 +66,7 @@ hardware problems belong there, not here.
 ## Documented values
 
 Values come from \`facts/${section}.yaml\` and are written as
-\`\${facts.${section}.some_key}\`. Never type a hostname or queue name directly — the
+\`\${facts.${section}.some_key}\`. Never type a hostname or queue name directly; the
 build fails if you do, because the next rename would miss it.
 
 ## Steps

@@ -8,7 +8,7 @@
  *   - No flash of the wrong OS, because the attribute exists before first paint.
  *   - Local search indexes all variants, so a macOS reader still finds a page
  *     whose Arch section matched their query.
- *   - Selectors target .os-block, never VitePress internals like .vp-code —
+ *   - Selectors target .os-block, never VitePress internals like .vp-code;
  *     that class is removed in VitePress 2 and would break on upgrade.
  */
 

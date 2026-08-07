@@ -14,7 +14,7 @@ Official documentation: [connecting a network drive](${facts.shares.official_url
 ## Before you start
 
 These servers only exist inside the campus network. From anywhere else, connect the
-[VPN](/en/vpn/openfortivpn) first — everything below fails with a name-resolution error
+[VPN](/en/vpn/openfortivpn) first. Everything below fails with a name-resolution error
 otherwise, which looks like a configuration mistake and is not one.
 
 ## Documented values
@@ -32,7 +32,7 @@ Some clients have no separate domain field. Those want the two combined:
 
 ## The click path
 
-No terminal needed, and this is the better option for occasional access — the connection
+No terminal needed, and this is the better option for occasional access: the connection
 disappears cleanly when you log out.
 
 ::: os arch
@@ -63,7 +63,7 @@ Tick *Remember this password in my keychain* only on a machine that is yours alo
 
 ## The terminal path
 
-Useful when you want the share at a fixed path — for scripts, backups or a build that
+Useful when you want the share at a fixed path, for scripts, backups or a build that
 reads from it.
 
 ::: os arch
@@ -107,7 +107,7 @@ Unmount with `sudo umount ~/mnt/thi-home` (`umount` without `sudo` on macOS).
 
 <ScriptDownload file="shares-verify.sh" does="Says whether the file servers are reachable from where you are" />
 
-It answers the question people actually have — *is it me, the VPN, or the server?* No
+It answers the question people actually have: *is it me, the VPN, or the server?* No
 credentials are used and nothing is mounted.
 
 By hand:
@@ -122,7 +122,7 @@ and the VPN is not up.
 ## Known quirks
 
 **Do not put your password in `/etc/fstab`.** The usual advice is a credentials file with
-mode `600`, and it still writes your SSO password to disk in clear text — the password
+mode `600`, and it still writes your SSO password to disk in clear text, the password
 that also reaches your mail and your grades. Mount on demand instead, or use a keyring.
 
 **A stale mount hangs everything that touches it.** If the VPN drops while a share is

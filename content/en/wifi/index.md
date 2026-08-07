@@ -1,5 +1,5 @@
 ---
-title: Wi-Fi on campus — eduroam and @thi
+title: Wi-Fi on campus, eduroam and @thi
 description: Connect to eduroam and @thi from Linux and macOS, with the certificate checks that stop a fake access point from stealing your campus password.
 status: structured
 os: [arch, debian, macos]
@@ -7,27 +7,27 @@ os: [arch, debian, macos]
 
 # Wi-Fi on campus
 
-Gets you online. Use **${facts.wifi.eduroam_ssid}** — it works here and at every other
+Gets you online. Use **${facts.wifi.eduroam_ssid}**. It works here and at every other
 university in the world with the same profile.
 
 Official documentation: [THI Wi-Fi service](${facts.wifi.official_url}).
 
 ## Read this before configuring anything by hand
 
-Both campus networks authenticate you with **your campus login** — the same password
+Both campus networks authenticate you with **your campus login**, the same password
 that reaches your mail, your grades and every other system. The password is sent to the
 access point's authentication server, so your device must confirm it is talking to the
 real one before sending it.
 
 That confirmation is two settings, and both are required:
 
-1. **A CA certificate** — which authority is allowed to vouch for the server.
-2. **A server name to match** — which server that authority is allowed to vouch *for*.
+1. **A CA certificate**: which authority is allowed to vouch for the server.
+2. **A server name to match**: which server that authority is allowed to vouch *for*.
 
 With only the first, any server holding a certificate from the same public authority is
 accepted, and that is a large set. With neither, anything broadcasting the right network
 name is accepted. In both cases someone with a laptop in a lecture hall can collect your
-password. This is not theoretical — it is the standard attack against 802.1X networks,
+password. This is not theoretical. It is the standard attack against 802.1X networks,
 and hand-written configurations very often omit one or both.
 
 The [configuration assistant](${facts.wifi.cat_url}) gets this right by construction,
@@ -46,7 +46,7 @@ which is why it is the recommended route below.
 | Works off campus | yes, at any eduroam site | no |
 | Device registration needed | no | yes |
 
-The CA ships with the standard certificate bundle on all three systems — there is
+The CA ships with the standard certificate bundle on all three systems, so there is
 nothing to download. On Linux it is at `${facts.wifi.eduroam_ca_path}`.
 
 ::: warning Older notes name the wrong CA
@@ -100,7 +100,7 @@ certificate check itself.
 ## eduroam by hand
 
 Only if you have a reason to avoid the installer. Both certificate settings below are
-mandatory — a profile without them is the failure described at the top of this page.
+mandatory; a profile without them is the failure described at the top of this page.
 
 ::: os arch
 
@@ -132,8 +132,8 @@ nmcli connection add type wifi con-name eduroam ssid ${facts.wifi.eduroam_ssid} 
 
 ::: os macos
 
-macOS does not expose server-name matching in the Wi-Fi dialogue. Use the CAT profile —
-hand configuration on macOS cannot be made safe through the UI alone.
+macOS does not expose server-name matching in the Wi-Fi dialogue. Use the CAT profile.
+Hand configuration on macOS cannot be made safe through the UI alone.
 
 :::
 
@@ -143,7 +143,7 @@ A campus-only network using ${facts.wifi.thi_eap} instead of
 ${facts.wifi.eduroam_eap}. It needs the device to be registered first, and you receive
 separate credentials for it. See
 [wired ports and device registration](/en/network/ethernet-802-1x) for the registration
-process — the same form covers Wi-Fi.
+process; the same form covers Wi-Fi.
 
 There is little reason to prefer it over ${facts.wifi.eduroam_ssid} unless something
 specifically requires it. eduroam needs no registration and works everywhere.
@@ -154,7 +154,7 @@ The same two certificate settings apply, with `802-1x.eap ttls`.
 
 <ScriptDownload file="wifi-verify.sh" does="Reports whether your profiles actually validate the authentication server" />
 
-The important part of the output is not whether you are connected — it is whether the
+The important part of the output is not whether you are connected. It is whether the
 profile validates the server. By hand:
 
 ::: os arch
@@ -182,7 +182,7 @@ security find-certificate -c "${facts.wifi.eduroam_ca}" /Library/Keychains/Syste
 :::
 
 Both fields must be non-empty. An empty `domain-suffix-match` is the single most common
-problem, and it is invisible — the network works perfectly either way.
+problem, and it is invisible: the network works perfectly either way.
 
 ## Known quirks
 

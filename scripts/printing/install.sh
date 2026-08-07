@@ -22,7 +22,7 @@ check_prerequisites() {
   if [ ! -f "$(fact printing ppd_path)" ] && [ "$DRY_RUN" != "1" ]; then
     warn "PPD not found at $(fact printing ppd_path)"
     warn "Install the vendor driver first: $(fact printing driver_url)"
-    warn "Continuing — some CUPS builds resolve the model name instead."
+    warn "Continuing. Some CUPS builds resolve the model name instead."
   fi
 }
 
@@ -53,7 +53,7 @@ ensure_samba_config() {
   [ "$(detect_os)" = "macos" ] && return 0
   [ -f /etc/samba/smb.conf ] && return 0
 
-  log "No /etc/samba/smb.conf — creating an empty one for the CUPS smb backend"
+  log "No /etc/samba/smb.conf, creating an empty one for the CUPS smb backend"
   run sudo mkdir -p /etc/samba
   run sudo touch /etc/samba/smb.conf
 }

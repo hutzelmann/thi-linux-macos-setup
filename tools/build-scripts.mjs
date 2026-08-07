@@ -3,8 +3,8 @@
  * Bundle each script into a standalone file that runs without a clone.
  *
  * In the repository, scripts source scripts/lib/*.sh and read facts/*.yaml by
- * walking up the tree. That is right for maintenance — one copy of the helpers,
- * one copy of every documented value — and useless to a reader who arrived from
+ * walking up the tree. That is right for maintenance (one copy of the helpers,
+ * one copy of every documented value) and useless to a reader who arrived from
  * a search result with a broken printer. They need one file they can download,
  * read, and run.
  *
@@ -44,7 +44,7 @@ function loadFacts() {
 
 /**
  * A generated stand-in for scripts/lib/facts.sh with the values already in it.
- * Same interface — `fact <domain> <key>` — so nothing in the script changes.
+ * Same interface, `fact <domain> <key>`, so nothing in the script changes.
  */
 function generateFactFunction(entries) {
   const cases = entries
@@ -87,7 +87,7 @@ function stripSourcing(source) {
 function header(relative) {
   return `#!/usr/bin/env sh
 #
-# ${relative} — standalone copy
+# ${relative}: standalone copy
 #
 # Generated from ${SITE}
 # Community-maintained and unofficial. Not THI IT Support. No warranty.

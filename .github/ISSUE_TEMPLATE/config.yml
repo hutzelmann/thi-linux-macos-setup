@@ -3,14 +3,14 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: My account, password, quota or hardware — official IT
+  - name: My account, password, quota or hardware (official IT)
     url: https://www.thi.de/service/it-service/
     about: >
       The university's own IT pages. Anything about your account, print quota,
-      licences or university hardware belongs there — they can act on it and
+      licences or university hardware belongs there. They can act on it and
       this project cannot.
 
-  - name: Ask THI IT directly — support@thi.de
+  - name: Ask THI IT directly at support@thi.de
     url: mailto:support@thi.de
     about: >
       The IT service currently answers by mail. Use this for an actual problem

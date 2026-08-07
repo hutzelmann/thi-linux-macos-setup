@@ -58,8 +58,8 @@ explain() {
   case "$1" in
     ok) printf 'reachable\n' ;;
     resolves) printf 'name resolves (cannot test the port without nc)\n' ;;
-    no-dns) printf 'name does not resolve — not on campus and no VPN\n' ;;
-    no-route) printf 'name resolves but the port is closed — firewall, or VPN still coming up\n' ;;
+    no-dns) printf 'name does not resolve: not on campus and no VPN\n' ;;
+    no-route) printf 'name resolves but the port is closed: firewall, or VPN still coming up\n' ;;
   esac
 }
 

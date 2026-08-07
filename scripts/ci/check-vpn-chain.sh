@@ -30,7 +30,7 @@ echo "Fetching certificate from ${HOST}:${PORT}"
 if ! echo | timeout 20 openssl s_client -connect "${HOST}:${PORT}" \
   -servername "$HOST" >"$work/handshake.txt" 2>/dev/null; then
   echo "✗ Could not reach ${HOST}:${PORT}"
-  echo "  Not necessarily a documentation problem — check connectivity first."
+  echo "  Not necessarily a documentation problem. Check connectivity first."
   exit 1
 fi
 

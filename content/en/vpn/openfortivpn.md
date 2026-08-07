@@ -19,7 +19,7 @@ and does not need to be installed with administrator rights beyond the tunnel it
 
 `${facts.vpn.host}` presents its own certificate but **does not send the intermediate
 certificate** that links it to a trusted root. A correctly configured client therefore
-cannot build a complete chain and refuses to connect — which looks like a client bug and
+cannot build a complete chain and refuses to connect, which looks like a client bug and
 is not one.
 
 The fix is to supply the missing intermediate once. After that, everything works with no
@@ -89,7 +89,7 @@ printing a TLS error:
 
 <ScriptDownload file="vpn-verify.sh" does="Checks the gateway and whether the documented chain fix is in place" />
 
-Nothing is connected and no credentials are used — it observes the TLS handshake only.
+Nothing is connected and no credentials are used; it observes the TLS handshake only.
 By hand:
 
 ```bash
@@ -101,7 +101,7 @@ echo | openssl s_client -connect ${facts.vpn.host}:${facts.vpn.port} \
 
 **DNS breaks Avahi, and Avahi breaks printing.** `openfortivpn` reconfigures DNS through
 `resolvconf`. On systems using `systemd-resolved`, this collides with the Avahi daemon
-that CUPS relies on for printer discovery — so connecting to the VPN can stop printing
+that CUPS relies on for printer discovery, so connecting to the VPN can stop printing
 from working until you disconnect. Installing `openresolv` and letting it manage the
 handover is the usual fix. Discussion:
 [Arch BBS thread](https://bbs.archlinux.org/viewtopic.php?id=288227).

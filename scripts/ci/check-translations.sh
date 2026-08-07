@@ -2,7 +2,7 @@
 # Enforce R38: detect German pages whose English source has moved on.
 #
 # Machine translation makes the first pass cheap; it does nothing for month two.
-# A German page whose source changed is wrong, and invisibly so — the same
+# A German page whose source changed is wrong, and invisibly so: the same
 # failure mode as campus drift, in another dimension. Recording the source blob
 # hash makes the mismatch mechanical to detect.
 set -euo pipefail
@@ -18,7 +18,7 @@ while IFS= read -r de_page; do
   if [ ! -f "$en_page" ]; then
     echo "✗ ${de_page}"
     echo "  No English source at ${en_page}."
-    echo "  fix: English is the source of truth — add it, or remove the German page."
+    echo "  fix: English is the source of truth. Add it, or remove the German page."
     echo
     fail=1
     continue

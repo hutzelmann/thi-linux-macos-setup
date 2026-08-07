@@ -21,7 +21,7 @@ an application.
 
 Approval for [abraunegg/onedrive](https://abraunegg.github.io/) was requested in June 2025
 and not granted. Until that changes, the client gets as far as the login screen and then
-fails — no local configuration can work around a decision made on the server.
+fails. No local configuration can work around a decision made on the server.
 
 Worth knowing so you can recognise the symptom: a sign-in that ends with a message about
 needing administrator approval is this, not a broken installation.
@@ -33,7 +33,7 @@ needing administrator approval is this, not a broken installation.
 **The web interface** at [office.com](https://office.com). Open, edit and download
 individual files. Nothing to install.
 
-For files that need to exist on disk — a build, a script, a backup —
+For files that need to exist on disk (a build, a script, a backup),
 [network shares](/en/shares/smb) are the supported route and need no third-party
 software.
 
@@ -44,7 +44,7 @@ software.
 **The web interface** at [office.com](https://office.com). Open, edit and download
 individual files. Nothing to install.
 
-For files that need to exist on disk — a build, a script, a backup —
+For files that need to exist on disk (a build, a script, a backup),
 [network shares](/en/shares/smb) are the supported route and need no third-party
 software.
 
@@ -53,7 +53,7 @@ software.
 ::: os macos
 
 **The official Microsoft OneDrive client** works normally. Install it, sign in with your
-campus account, done — the tenant approves Microsoft's own client.
+campus account, done. The tenant approves Microsoft's own client.
 
 :::
 
@@ -62,7 +62,7 @@ campus account, done — the tenant approves Microsoft's own client.
 There is nothing to check on the machine; the question is whether the tenant policy has
 changed. Try signing in with the client you want and watch for an approval message.
 
-If a client that previously failed now works, that is a real finding — please
+If a client that previously failed now works, that is a real finding. Please
 [report it](https://github.com/hutzelmann/thi-linux-macos-setup/issues/new?template=check-record.yml),
 because this page currently tells people not to bother.
 

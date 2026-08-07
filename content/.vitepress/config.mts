@@ -61,7 +61,7 @@ export default defineConfig({
       {
         /*
          * In a production build the site root comes from public/index.html.
-         * The dev server never gets there — Vite answers `/` with its own app
+         * The dev server never gets there; Vite answers `/` with its own app
          * shell, which then renders the 404 page because no route matches.
          *
          * Serving the same file in dev keeps the two identical. A root that
@@ -85,7 +85,7 @@ export default defineConfig({
     ]
   },
 
-  // Both locales live in a subdirectory — there is no `root` locale — so that
+  // Both locales live in a subdirectory, and there is no `root` locale, so that
   // /en/ and /de/ mirror each other exactly. That symmetry is what lets the
   // language switcher, the sidebar and the translation-staleness check all work
   // by swapping one path segment. The cost is that `/` needs its own redirect,
@@ -97,7 +97,7 @@ export default defineConfig({
       link: '/en/',
       themeConfig: {
         nav: [
-          { text: 'Start here', link: '/en/start/new-machine' },
+          { text: 'Getting started', link: '/en/start/new-machine' },
           { text: 'Page status', link: '/en/about/status' },
           { text: 'How this works', link: '/en/about/how-this-works' }
         ],
@@ -156,7 +156,7 @@ export default defineConfig({
          * The search index is built from markdown on disk, which still holds
          * ${facts.*} tokens rather than the values they render to. Without this,
          * every hostname, queue name and certificate authority is missing from
-         * the index — and those are exactly the strings someone pastes into
+         * the index, and those are exactly the strings someone pastes into
          * search when something is broken. Substitute before indexing.
          */
         _render(src, env, md) {

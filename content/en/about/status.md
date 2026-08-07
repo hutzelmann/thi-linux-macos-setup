@@ -27,14 +27,14 @@ out of date with the content.
 
 ## What the states mean
 
-**Imported** — notes carried over as they were. Probably correct, definitely not
+**Imported.** Notes carried over as they were. Probably correct, definitely not
 polished, and nobody has followed them start to finish. These are the easiest pages to
 improve: read one, try it, and fix whatever was wrong.
 
-**Written up** — follows the page structure, values come from the shared facts file. What
+**Written up.** Follows the page structure, values come from the shared facts file. What
 it lacks is somebody confirming it works on real hardware.
 
-**Checked** — a person ran the steps on the stated date and reported the result.
+**Checked.** A person ran the steps on the stated date and reported the result.
 
 ## Every page
 
@@ -50,7 +50,7 @@ it lacks is somebody confirming it works on real hardware.
           {{ p.status === 'imported' ? 'raw notes' : p.status === 'structured' ? 'written up' : 'checked' }}
         </span>
       </td>
-      <td>{{ p.lastChecked ?? '—' }}</td>
+      <td>{{ p.lastChecked ?? 'not checked' }}</td>
     </tr>
   </tbody>
 </table>
@@ -59,7 +59,7 @@ it lacks is somebody confirming it works on real hardware.
 
 Take a page marked *raw notes* or *written up*, follow it on your own machine, and
 [file a check record](https://github.com/hutzelmann/thi-linux-macos-setup/issues/new?template=check-record.yml)
-saying what happened — including "step 3 is wrong, it is actually X".
+saying what happened, including "step 3 is wrong, it is actually X".
 
 That is worth more than new pages. A page nobody has verified is a guess with good
 formatting.

@@ -1,4 +1,4 @@
-# VPN — documented configuration values.
+# VPN: documented configuration values.
 
 # FortiGate SSL-VPN gateway.
 host: vpn.thi.de
@@ -9,7 +9,7 @@ auth: saml
 
 # The gateway serves its leaf certificate WITHOUT the intermediate, so a stock
 # client cannot build a chain and refuses to connect. Supplying the intermediate
-# once fixes it permanently — see content/en/vpn/openfortivpn.md.
+# once fixes it permanently. See content/en/vpn/openfortivpn.md.
 #
 # Deliberately no fingerprint is recorded here. Pinning would mean re-recording
 # trust material every time the leaf rotates (R27), and the chain fix makes it

@@ -12,7 +12,7 @@ from that.
 npm install
 npm run dev            # local preview on :5173
 npm run build          # production build, fails on dead links
-npm run check          # all CI checks — run before proposing a commit
+npm run check          # all CI checks; run before proposing a commit
 npm run new-page       # scaffold a page with correct frontmatter
 ```
 
@@ -37,6 +37,14 @@ npm run new-page       # scaffold a page with correct frontmatter
    See "Voice" below.
 7. **Never add a second tab axis.** Operating system is the only one. Terminal
    instructions go below the prose, never beside it as a tab.
+8. **Never use an em dash (`—`) or en dash (`–`) as punctuation.** Not in prose, not in
+   headings, not in frontmatter, not in comments, not in table cells. Use a comma, a
+   colon, a semicolon, parentheses, or two sentences, whichever the sentence actually
+   calls for. Do not swap one dash for another and do not substitute a hyphen for a
+   dash. Hyphens stay where they belong: inside compound words such as `hole-punched`
+   and inside identifiers such as `802-1x`. An en dash between two numbers is a range,
+   not punctuation, and stays: `16–235`, `8–12 GB`, `R35–R40`. See "Voice" below for
+   what to write instead.
 
 ## Page contract
 
@@ -56,7 +64,7 @@ Body order, always:
 1. What this page gets you, in one sentence.
 2. The official channel, linked first.
 3. Documented values, rendered from `facts/`.
-4. The click-path in plain language — assume no terminal.
+4. The click-path in plain language, assuming no terminal.
 5. The terminal fast path, per OS.
 6. How to verify it worked.
 7. Known quirks.
@@ -85,6 +93,9 @@ reads as a complaint or a claim of authority creates real problems.
 | tested and working | reported working on *date* |
 | IT broke X, outage | observed value differs from the documented value |
 | ✅ / ❌ status seals | plain dates and words |
+| an aside set off by `—` | an aside in parentheses, or its own sentence |
+| `Step 1 — collect the values` | `Step 1: collect the values` |
+| `—` as an empty table cell | `n/a`, or an empty cell |
 
 Auto-generated issues and alerts are permanent and public. State what was observed, what
 was documented, and when. Never attribute fault or intent to anyone.
@@ -95,9 +106,9 @@ English is the source of truth. German pages under `content/de/` mirror the Engl
 exactly and carry `translatedFrom: <blob-sha>` pointing at the English source they were
 made from. `npm run check` flags translations whose source has since changed.
 
-German strings quoted from university systems — form labels, portal menu paths, policy
-titles — stay verbatim in both languages, with a translation in parentheses on English
-pages. A translated form label is an instruction the reader cannot follow.
+German strings quoted from university systems (form labels, portal menu paths,
+policy titles) stay verbatim in both languages, with a translation in parentheses on
+English pages. A translated form label is an instruction the reader cannot follow.
 
 ## Scripts
 

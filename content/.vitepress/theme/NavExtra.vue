@@ -13,7 +13,7 @@ const REPO = 'https://github.com/hutzelmann/thi-linux-macos-setup'
   The OS switcher stays visible at every width: Debian users are silently given
   the Arch default (a browser cannot reveal a distribution), so the control that
   corrects it must never be behind a menu. The GitHub link may hide on narrow
-  screens — it is a convenience, not a correction.
+  screens; it is a convenience, not a correction.
 -->
 <template>
   <div class="nav-extra">

@@ -1,4 +1,4 @@
-# Wi-Fi — documented configuration values.
+# Wi-Fi: documented configuration values.
 #
 # Two networks exist and they are configured differently. Both carry the SSO
 # credential, so server-certificate validation is mandatory on both: without it
@@ -10,8 +10,8 @@ eduroam_eap: PEAP
 eduroam_phase2: MSCHAPv2
 
 # Certificate authority that issues the RADIUS server certificate. Ships with
-# the standard ca-certificates package on Arch, Debian and macOS — nothing to
-# download.
+# the standard ca-certificates package on Arch, Debian and macOS, so there is
+# nothing to download.
 eduroam_ca: HARICA TLS RSA Root CA 2021
 eduroam_ca_path: /etc/ca-certificates/extracted/cadir/HARICA_TLS_RSA_Root_CA_2021.pem
 
@@ -36,7 +36,7 @@ thi_domain_suffix: rz.fh-ingolstadt.de
 
 # --- thi-onboard: the onboarding network used by the official Windows/macOS ---
 # onboarding client. Linux support is limited; device registration is the
-# documented alternative — see content/en/network/ethernet-802-1x.md.
+# documented alternative. See content/en/network/ethernet-802-1x.md.
 onboard_ssid: thi-onboard
 
 official_url: https://www.thi.de/service/it-service/wifi/

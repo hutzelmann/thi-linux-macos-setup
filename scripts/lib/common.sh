@@ -21,7 +21,7 @@ die() {
   exit 1
 }
 
-# run <command...> — execute, or print it under --dry-run.
+# run <command...>: execute, or print it under --dry-run.
 #
 # Dry-run output is exactly what the page tells the reader to type, which is
 # what makes it testable off-campus: assert the emitted command matches the

@@ -4,7 +4,7 @@
 
 ## Checklist
 
-- [ ] No usernames, mail addresses or personal paths — placeholders used instead
+- [ ] No usernames, mail addresses or personal paths; placeholders used instead
 - [ ] Hostnames, queue names and ports come from `facts/`, not typed into the page
 - [ ] `npm run check` passes
 - [ ] If I set `status: checked`, I ran the steps myself on the date given
@@ -14,6 +14,6 @@
 ## Was any of this machine-translated or AI-written?
 
 <!--
-Fine either way — just say so, so review can focus on the right things. Values,
+Fine either way. Say so, so review can focus on the right things. Values,
 commands and quoted German UI strings are what matter most in that case.
 -->

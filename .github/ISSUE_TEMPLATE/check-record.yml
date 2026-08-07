@@ -1,4 +1,4 @@
-name: I followed a page — here is what happened
+name: I followed a page, here is what happened
 description: Report that the steps worked (or did not) on a real machine, so the page can carry a date.
 title: "[check] "
 labels: [check-record]
@@ -8,8 +8,8 @@ body:
       value: |
         This is what turns written-down into verified.
 
-        Most pages here have never been followed by a second person. A dated report —
-        even "it worked, nothing to add" — is worth more than a new page.
+        Most pages here have never been followed by a second person. A dated report,
+        even "it worked, nothing to add", is worth more than a new page.
 
         **Please remove usernames, addresses and home paths** from anything you paste.
 

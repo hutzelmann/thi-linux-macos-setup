@@ -6,14 +6,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks — this is the most useful kind of report.
+        Thanks. This is the most useful kind of report.
 
         **Please remove usernames, mail addresses and home paths** from anything you
         paste. `<kennung>` and `/home/<kennung>` are fine as placeholders. This
         repository is public.
 
         If your own account or hardware is the problem, THI IT can actually fix it and
-        this project cannot — write to support@thi.de or see the
+        this project cannot. Write to support@thi.de or see the
         [IT service pages](https://www.thi.de/service/it-service/).
 
   - type: input
@@ -60,4 +60,4 @@ body:
     id: fix
     attributes:
       label: Do you know what the correct answer is?
-      description: Optional, and no problem if not — knowing something is wrong is already useful.
+      description: Optional, and no problem if not. Knowing something is wrong is already useful.

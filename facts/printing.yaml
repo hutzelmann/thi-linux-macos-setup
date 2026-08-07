@@ -1,4 +1,4 @@
-# Printing — documented configuration values.
+# Printing: documented configuration values.
 #
 # Every value here is referenced from pages as ${facts.printing.<key>} and never
 # typed into a page directly. See AGENTS.md.
@@ -6,7 +6,7 @@
 # Print server hosting the departmental queues (SMB).
 server: rz-print-marb.rz.fh-ingolstadt.de
 
-# Former print server name. Kept so the rename stays discoverable by search —
+# Former print server name. Kept so the rename stays discoverable by search;
 # people still have the old host in working configs and in old notes.
 server_previous: marb-mfp.rz.fh-ingolstadt.de
 
@@ -36,7 +36,7 @@ driver_url: https://www.kyoceradocumentsolutions.us/en/support/downloads.name-L3
 # finishing options such as 2HoleEUR.
 driver_deb: Ubuntu/EU/kyodialog_amd64/kyodialog_10.0-0_amd64.deb
 
-# Browser-based printing. Needs no driver and no queue — the fallback when CUPS
+# Browser-based printing. Needs no driver and no queue. The fallback when CUPS
 # fights back.
 webprint_url: https://print.thi.de
 

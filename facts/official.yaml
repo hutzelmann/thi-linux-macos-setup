@@ -6,7 +6,7 @@
 #   service_url  Public information pages. No login. Link this when pointing at
 #                "the official documentation for this topic".
 #   kb_url       The public knowledge base at help.thi.de/help. No login.
-#                Note the /help path — help.thi.de on its own is the ticket
+#                Note the /help path: help.thi.de on its own is the ticket
 #                system, a JavaScript application that shows a blank splash to
 #                anyone not signed in. Never link the bare host as "support".
 #   support_mail Where a person actually answers. The IT pages state that

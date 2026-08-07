@@ -9,7 +9,7 @@ hero:
   tagline: Community setup notes for campus printing, Wi-Fi, VPN and shares. Unofficial, and not THI IT Support.
   actions:
     - theme: brand
-      text: New machine, start here
+      text: A new machine on campus
       link: /en/start/new-machine
     - theme: alt
       text: How this works
@@ -20,7 +20,7 @@ features:
     details: eduroam and @thi, with the certificate settings that stop a fake access point from taking your password.
     link: /en/wifi/
   - title: Printing
-    details: The MARB colour queue from CUPS — duplex, hole punching, stapling, and why nothing comes out until you tap your card.
+    details: The MARB colour queue from CUPS, with duplex, hole punching and stapling, and why nothing comes out until you tap your card.
     link: /en/printing/marb-color
   - title: VPN
     details: openfortivpn with SSO, including the certificate-chain fix the gateway needs.
@@ -30,7 +30,7 @@ features:
 ## Why this exists
 
 Campus systems are documented for Windows. Most of it works on Linux and macOS too, but
-the details — a driver path, a certificate authority, a hostname that changed last year —
+the details (a driver path, a certificate authority, a hostname that changed last year)
 are scattered across old mails, forum posts and personal notes.
 
 This is that knowledge, written down in one place, in the open, so the next person does

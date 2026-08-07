@@ -3,7 +3,7 @@ title: VPN unter Linux und macOS
 description: Mit openfortivpn und SSO-Anmeldung ins Campusnetz, inklusive der Zertifikatskette, die das Gateway nicht mitliefert.
 status: structured
 os: [arch, debian, macos]
-translatedFrom: 7845dad5577d68692c1abdfd231e12f7c4caa47d
+translatedFrom: a41a12cf69733d1b2258f537476c9141dceb4355
 ---
 
 # VPN unter Linux und macOS
@@ -13,7 +13,7 @@ Nötig für Netzlaufwerke, manche Bibliotheksressourcen und alles, was prüft, o
 Campus bist.
 
 Offizielle Dokumentation: [VPN-Service der THI](${facts.vpn.official_url}). Der offizielle
-Client ist FortiClient; diese Seite nutzt `openfortivpn` — quelloffen, ohne Oberfläche und
+Client ist FortiClient; diese Seite nutzt `openfortivpn`: quelloffen, ohne Oberfläche und
 ohne dauerhaft erhöhte Rechte außerhalb des Tunnels selbst.
 
 ## Das Zertifikatsproblem, einmalig
@@ -21,7 +21,7 @@ ohne dauerhaft erhöhte Rechte außerhalb des Tunnels selbst.
 `${facts.vpn.host}` liefert das eigene Zertifikat aus, **aber nicht das
 Zwischenzertifikat**, das es mit einer vertrauenswürdigen Wurzel verbindet. Ein korrekt
 konfigurierter Client kann die Kette deshalb nicht vervollständigen und verweigert die
-Verbindung — das sieht wie ein Fehler auf dem eigenen Rechner aus, ist aber keiner.
+Verbindung. Das sieht wie ein Fehler auf dem eigenen Rechner aus, ist aber keiner.
 
 Die Lösung: das fehlende Zwischenzertifikat einmal nachinstallieren. Danach funktioniert
 alles ohne Sonderoptionen, und es gibt nichts zu pflegen.
@@ -91,7 +91,7 @@ TLS-Fehler auszugeben:
 
 <ScriptDownload file="vpn-verify.sh" does="Prüft das Gateway und ob die dokumentierte Kette installiert ist" />
 
-Es wird nichts verbunden und keine Zugangsdaten verwendet — geprüft wird nur der
+Es wird nichts verbunden und keine Zugangsdaten verwendet; geprüft wird nur der
 TLS-Handshake. Von Hand:
 
 ```bash
@@ -103,7 +103,7 @@ echo | openssl s_client -connect ${facts.vpn.host}:${facts.vpn.port} \
 
 **DNS stört Avahi, und Avahi bricht das Drucken.** `openfortivpn` stellt DNS über
 `resolvconf` um. Auf Systemen mit `systemd-resolved` kollidiert das mit dem
-Avahi-Dienst, den CUPS für die Druckererkennung braucht — eine VPN-Verbindung kann das
+Avahi-Dienst, den CUPS für die Druckererkennung braucht. Eine VPN-Verbindung kann das
 Drucken also lahmlegen, bis sie getrennt wird. Üblicher Ausweg: `openresolv`
 installieren und die Umstellung darüber laufen lassen. Diskussion:
 [Arch-BBS-Thread](https://bbs.archlinux.org/viewtopic.php?id=288227).

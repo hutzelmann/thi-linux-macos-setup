@@ -1,38 +1,38 @@
 ---
-title: WLAN am Campus — eduroam und @thi
+title: WLAN am Campus, eduroam und @thi
 description: eduroam und @thi unter Linux und macOS einrichten, mit den Zertifikatsprüfungen, die verhindern, dass ein gefälschter Accesspoint das Hochschulpasswort abgreift.
 status: structured
 os: [arch, debian, macos]
-translatedFrom: 39f9057d3ac411a6fb4465e35225791c050113be
+translatedFrom: 4f442739a2f943c3be1d4c7df20b947e1595359c
 ---
 
 # WLAN am Campus
 
-Bringt dich ins Netz. Nimm **${facts.wifi.eduroam_ssid}** — das funktioniert hier und mit
+Bringt dich ins Netz. Nimm **${facts.wifi.eduroam_ssid}**. Das funktioniert hier und mit
 demselben Profil an jeder anderen Hochschule weltweit.
 
 Offizielle Dokumentation: [WLAN-Service der THI](${facts.wifi.official_url}).
 
 ## Bitte vor jeder Konfiguration von Hand lesen
 
-Beide Campus-Netze authentifizieren dich mit **deiner Hochschulkennung** — demselben
+Beide Campus-Netze authentifizieren dich mit **deiner Hochschulkennung**, demselben
 Passwort, das auch Mail, Noten und alle anderen Systeme öffnet. Das Passwort geht an den
 Authentifizierungsserver des Accesspoints. Dein Gerät muss also prüfen, ob es wirklich mit
 dem echten Server spricht, bevor es das Passwort sendet.
 
 Diese Prüfung besteht aus zwei Einstellungen, und beide sind nötig:
 
-1. **Ein CA-Zertifikat** — welche Zertifizierungsstelle für den Server bürgen darf.
-2. **Ein zu prüfender Servername** — für *welchen* Server diese Stelle bürgen darf.
+1. **Ein CA-Zertifikat**: welche Zertifizierungsstelle für den Server bürgen darf.
+2. **Ein zu prüfender Servername**: für *welchen* Server diese Stelle bürgen darf.
 
 Fehlt der zweite Punkt, wird jeder Server akzeptiert, der ein Zertifikat derselben
-öffentlichen Stelle vorweist — und das sind viele. Fehlen beide, wird alles akzeptiert, was
+öffentlichen Stelle vorweist, und das sind viele. Fehlen beide, wird alles akzeptiert, was
 den passenden Netznamen ausstrahlt. In beiden Fällen kann jemand mit einem Laptop im
 Hörsaal dein Passwort einsammeln. Das ist kein theoretischer Fall, sondern der
 Standardangriff auf 802.1X-Netze, und von Hand geschriebene Konfigurationen lassen sehr
 häufig eine der beiden Einstellungen weg.
 
-Das [Konfigurationswerkzeug](${facts.wifi.cat_url}) macht das prinzipbedingt richtig —
+Das [Konfigurationswerkzeug](${facts.wifi.cat_url}) macht das prinzipbedingt richtig,
 deshalb ist es unten der empfohlene Weg.
 
 ## Dokumentierte Werte
@@ -48,13 +48,13 @@ deshalb ist es unten der empfohlene Weg.
 | Außerhalb des Campus nutzbar | ja, an jedem eduroam-Standort | nein |
 | Geräteregistrierung nötig | nein | ja |
 
-Die CA ist auf allen drei Systemen im Standard-Zertifikatspaket enthalten — es gibt nichts
+Die CA ist auf allen drei Systemen im Standard-Zertifikatspaket enthalten, es gibt nichts
 herunterzuladen. Unter Linux liegt sie unter `${facts.wifi.eduroam_ca_path}`.
 
 ::: warning Ältere Notizen nennen die falsche CA
 Notizen von vor 2026 nennen ein USERTrust-Zertifikat. Die THI hat auf
 ${facts.wifi.eduroam_ca} gewechselt. Ein Profil, das noch auf die alte Stelle zeigt,
-verbindet sich entweder nicht mehr oder — schlimmer — funktioniert weiter und prüft dabei
+verbindet sich entweder nicht mehr oder, schlimmer, funktioniert weiter und prüft dabei
 nichts.
 :::
 
@@ -104,7 +104,7 @@ die Zertifikatsprüfung dann selbst.
 ## eduroam von Hand
 
 Nur, wenn es einen Grund gibt, den Installer zu meiden. Beide Zertifikatseinstellungen
-unten sind zwingend — ein Profil ohne sie ist genau der Fall, der oben beschrieben ist.
+unten sind zwingend; ein Profil ohne sie ist genau der Fall, der oben beschrieben ist.
 
 ::: os arch
 
@@ -136,8 +136,8 @@ nmcli connection add type wifi con-name eduroam ssid ${facts.wifi.eduroam_ssid} 
 
 ::: os macos
 
-macOS bietet die Prüfung des Servernamens im WLAN-Dialog nicht an. Nutze das CAT-Profil —
-eine Konfiguration von Hand lässt sich über die Oberfläche allein nicht sicher machen.
+macOS bietet die Prüfung des Servernamens im WLAN-Dialog nicht an. Nutze das CAT-Profil.
+Eine Konfiguration von Hand lässt sich über die Oberfläche allein nicht sicher machen.
 
 :::
 
@@ -146,7 +146,7 @@ eine Konfiguration von Hand lässt sich über die Oberfläche allein nicht siche
 Ein reines Campus-Netz, das ${facts.wifi.thi_eap} statt ${facts.wifi.eduroam_eap}
 verwendet. Das Gerät muss vorher registriert sein, und du bekommst dafür eigene
 Zugangsdaten. Der Ablauf steht unter
-[Netzwerkdosen und Geräteregistrierung](/en/network/ethernet-802-1x) — dasselbe Formular
+[Netzwerkdosen und Geräteregistrierung](/en/network/ethernet-802-1x); dasselbe Formular
 gilt auch für WLAN.
 
 Gegenüber ${facts.wifi.eduroam_ssid} gibt es kaum einen Grund dafür, außer etwas verlangt
@@ -158,7 +158,7 @@ Es gelten dieselben zwei Zertifikatseinstellungen, mit `802-1x.eap ttls`.
 
 <ScriptDownload file="wifi-verify.sh" does="Meldet, ob deine Profile den Anmeldeserver wirklich prüfen" />
 
-Wichtig an der Ausgabe ist nicht, ob du verbunden bist — sondern ob das Profil den Server
+Wichtig an der Ausgabe ist nicht, ob du verbunden bist, sondern ob das Profil den Server
 prüft. Von Hand:
 
 ::: os arch
@@ -186,7 +186,7 @@ security find-certificate -c "${facts.wifi.eduroam_ca}" /Library/Keychains/Syste
 :::
 
 Beide Felder müssen gefüllt sein. Ein leeres `domain-suffix-match` ist das mit Abstand
-häufigste Problem — und es ist unsichtbar, weil das Netz so oder so funktioniert.
+häufigste Problem, und es ist unsichtbar, weil das Netz so oder so funktioniert.
 
 ## Bekannte Eigenheiten
 

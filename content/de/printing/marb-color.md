@@ -3,13 +3,13 @@ title: Drucken auf ${facts.printing.queue}
 description: Die Warteschlange des ${facts.printing.model} unter Arch, Debian und macOS einrichten, mit lp-Rezepten für Duplex, Lochung, Heftung und Etiketten.
 status: structured
 os: [arch, debian, macos]
-translatedFrom: 52dfbfb6e2573ea9be659a1757448ba947c9fef9
+translatedFrom: 57c4f65ce5b0ef97ab7c9eca34a36cdef4352cf6
 ---
 
 # Drucken auf ${facts.printing.queue}
 
 Bringt Druckaufträge von Linux oder macOS auf den ${facts.printing.model} im Gebäude
-MARB — beidseitig, gelocht und geheftet inklusive.
+MARB, beidseitig, gelocht und geheftet inklusive.
 
 Offizielle Dokumentation: [Druckservice der THI](${facts.printing.official_url}) ·
 [Wissensdatenbank: Drucken](${facts.official.kb_url}/8-drucken). Fragen zu Konto oder
@@ -24,7 +24,7 @@ am Laptop „fertig" aussieht, ist normal und bedeutet nicht, dass der Auftrag w
 **Für Eiliges brauchst du gar keinen Treiber.**
 [${facts.printing.webprint_url}](${facts.printing.webprint_url}) nimmt ein PDF im Browser
 entgegen und druckt es. Kein CUPS, kein PPD, kein SMB. Dafür fehlen die
-Finishing-Optionen — Lochen, Heften, Versatz — und genau dafür gibt es den Rest dieser
+Finishing-Optionen (Lochen, Heften, Versatz), und genau dafür gibt es den Rest dieser
 Seite.
 
 ## Dokumentierte Werte
@@ -38,7 +38,7 @@ Seite.
 | Benutzername | deine Hochschulkennung (`<kennung>`) |
 
 Der Server wurde von `${facts.printing.server_previous}` umbenannt. Alte Notizen und
-laufende Konfigurationen tragen noch den früheren Namen — das ist der häufigste Grund,
+laufende Konfigurationen tragen noch den früheren Namen. Das ist der häufigste Grund,
 warum eine Einrichtung von letztem Jahr plötzlich nicht mehr funktioniert.
 
 ## Treiber installieren
@@ -67,7 +67,7 @@ sudo apt update
 sudo apt install cups smbclient printer-driver-all system-config-printer
 ```
 
-Anschließend das Herstellerarchiv entpacken und die EU-Variante installieren — sie enthält
+Anschließend das Herstellerarchiv entpacken und die EU-Variante installieren. Sie enthält
 die europäischen Finishing-Optionen, unter anderem die Zweifachlochung:
 
 ```bash
@@ -84,8 +84,8 @@ Damit liegt das PPD unter `${facts.printing.ppd_path}`.
 
 Den macOS-Treiber von der [Herstellerseite](${facts.printing.driver_url}) installieren,
 dann den Drucker über **Systemeinstellungen → Drucker & Scanner → Drucker hinzufügen**
-einrichten. Dort den Reiter **Windows** (SMB) wählen, nicht IP — die Warteschlange wird
-über SMB bereitgestellt.
+einrichten. Dort den Reiter **Windows** (SMB) wählen, nicht IP, denn die Warteschlange
+wird über SMB bereitgestellt.
 
 Als Server `smb://${facts.printing.server}/${facts.printing.queue}` eintragen und den
 Treiber für den ${facts.printing.model} auswählen, nicht „Generic PostScript".
@@ -112,7 +112,7 @@ sudo lpadmin -p ${facts.printing.queue} -E \
   -m "${facts.printing.ppd_path}"
 ```
 
-Wird das abgelehnt, statt des absoluten Pfads den CUPS-Modellnamen verwenden — welche Form
+Wird das abgelehnt, statt des absoluten Pfads den CUPS-Modellnamen verwenden. Welche Form
 funktioniert, hängt vom CUPS-Build ab:
 
 ```bash
@@ -155,7 +155,7 @@ Der zweite Befehl muss `Pnch` und `Stpl` auflisten. Fehlen sie, ist das Herstell
 nicht aktiv, und alle Finishing-Optionen unten werden abgelehnt.
 
 Das Gerät ist mit Inserter und Locheinheit ausgestattet. Eine Falteinheit ist
-möglicherweise nicht installiert — fehlt eine Option in `lpoptions`, ist die zugehörige
+möglicherweise nicht installiert. Fehlt eine Option in `lpoptions`, ist die zugehörige
 Hardware am Gerät nicht konfiguriert oder nicht im PPD hinterlegt.
 
 <ScriptDownload file="printing-verify.sh" does="Prüft Warteschlange, Server und Finishing-Optionen" />
@@ -169,7 +169,7 @@ lp -d ${facts.printing.queue} -o media=A4 datei.pdf
 lp -d ${facts.printing.queue} -o media=A4 -o sides=two-sided-long-edge datei.pdf
 ```
 
-Gelocht, und die Klausurkombination — beidseitig, gelocht, hinten geheftet, 25 Kopien:
+Gelocht, und die Klausurkombination (beidseitig, gelocht, hinten geheftet, 25 Kopien):
 
 ```bash
 lp -d ${facts.printing.queue} -o media=A4 -o Pnch=2HoleEUR datei.pdf
@@ -209,7 +209,7 @@ Feinere Rasterung für Dokumente mit Barcodes oder feinen Linien:
 lp -d ${facts.printing.queue} -o media=A4 -o KSCREENMODE="Resolution" scan.pdf
 ```
 
-`lpoptions -p ${facts.printing.queue} -l` zeigt die vollständige Liste — das PPD bietet
+`lpoptions -p ${facts.printing.queue} -l` zeigt die vollständige Liste. Das PPD bietet
 darüber hinaus Trapping, Überdrucken, Farbmodell, Glanzmodus und Auflösung.
 
 ## Bekannte Eigenheiten
@@ -236,6 +236,6 @@ leere Datei genügt:
 sudo mkdir -p /etc/samba && sudo touch /etc/samba/smb.conf
 ```
 
-**Es kommt nichts heraus und die Warteschlange ist leer.** Genau so ist es gedacht — geh
+**Es kommt nichts heraus und die Warteschlange ist leer.** Genau so ist es gedacht. Geh
 zum Gerät und gib den Auftrag mit deiner Karte frei. Nicht freigegebene Aufträge verfallen
 nach einiger Zeit.

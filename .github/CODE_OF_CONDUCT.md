@@ -90,5 +90,5 @@ Contributors here are students and staff of the same university, and they are no
 institutional peers. A first-semester student correcting a professor's page is doing
 exactly what this project is for.
 
-Contributions are judged on their content. Nothing else — not who wrote them, not under
+Contributions are judged on their content. Nothing else: not who wrote them, not under
 what name, not what year they are in.

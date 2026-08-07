@@ -18,7 +18,7 @@ onMounted(() => {
 function choose(os: string) {
   current.value = os
   document.documentElement.dataset.os = os
-  // An explicit choice is permanent. Detection never runs again — a Debian user
+  // An explicit choice is permanent. Detection never runs again, and a Debian user
   // who corrected the Arch default should not be re-corrected on every visit.
   localStorage.setItem('os', os)
 }

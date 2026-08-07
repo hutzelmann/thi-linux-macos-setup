@@ -42,7 +42,7 @@ ${facts.network.registration_validity} and has to be renewed.
 | Wi-Fi network it also covers | `${facts.wifi.thi_ssid}` |
 | Onboarding network (not for Linux) | `${facts.wifi.onboard_ssid}` |
 
-## Step 1 — collect the MAC addresses
+## Step 1: collect the MAC addresses
 
 Every port, adapter and docking station has its own MAC address, and **each one needs a
 separate registration**. A laptop with a built-in port and a dock is two submissions.
@@ -74,7 +74,7 @@ networksetup -listallhardwareports
 Interfaces named `enp…` or `eth…` are wired, `wlp…` or `wlan…` are wireless. If you cannot
 tell which entry is the dock, unplug it, run the command again, and compare.
 
-## Step 2 — submit the form
+## Step 2: submit the form
 
 Open the [IoT device form](${facts.network.registration_form_url}) once per MAC address.
 Each address can be enabled for one area only, so it appears in exactly one submission.
@@ -97,7 +97,7 @@ WLAN?* set to **Ja** and the MAC address of the wireless interface.
 Field labels are quoted in German because that is what the form shows. A translated label
 is one you cannot find on screen.
 
-## Step 3 — wait
+## Step 3: wait
 
 Submitting starts an approval request handled by a person. Progress notifications arrive
 by Teams and email.
@@ -105,7 +105,7 @@ by Teams and email.
 For `${facts.wifi.thi_ssid}` you receive separate credentials. For Ethernet you get a
 general release for campus ports, valid ${facts.network.registration_validity}.
 
-Start this early if you know you will need it — nothing about it is instant.
+Start this early if you know you will need it. Nothing about it is instant.
 
 ## Verify
 
@@ -137,11 +137,11 @@ ifconfig en0 | grep 'inet '
 :::
 
 An address in `169.254.x.x` (or `link/ether` with no `inet` at all) means authentication
-did not succeed — the registration is not active yet, or that MAC was never submitted.
+did not succeed: the registration is not active yet, or that MAC was never submitted.
 
 ## Known quirks
 
-**Still required in some rooms.** Some lecture-hall ports — the D building among them —
+**Still required in some rooms.** Some lecture-hall ports, the D building among them,
 authenticate this way rather than through the newer path.
 
 **One MAC, one area.** An address enabled for one network area cannot be submitted again

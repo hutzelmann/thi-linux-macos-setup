@@ -16,7 +16,7 @@ campus password. Report that the same way you would report a vulnerability.
 ## Never post credentials
 
 Do not put passwords, tokens or private keys in an issue, a pull request or a log
-excerpt. If you already did, change the credential first — deleting the comment is not
+excerpt. If you already did, change the credential first. Deleting the comment is not
 enough, because the content is already distributed.
 
 ## Reporting a problem with THI systems

@@ -10,7 +10,7 @@ permissions:
   pages: write
   id-token: write
 
-# Let a running deploy finish rather than cancelling it — a half-published site
+# Let a running deploy finish rather than cancelling it. A half-published site
 # is worse than a slightly stale one.
 concurrency:
   group: pages

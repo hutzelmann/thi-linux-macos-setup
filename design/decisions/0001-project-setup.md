@@ -1,4 +1,4 @@
-# 0001 — Project setup
+# 0001: Project setup
 
 Date: 2026-08-07 · Status: accepted
 
@@ -10,7 +10,7 @@ The decisions that shape the repository, and why. Requirements are in
 `hutzelmann/thi-linux-macos-setup`, published at
 `hutzelmann.github.io/thi-linux-macos-setup/`, public from the first commit.
 
-The name carries the two words people actually search for — `linux`, `macos` — plus the
+The name carries the two words people actually search for (`linux`, `macos`) plus the
 institution. "Unofficial" is deliberately *not* in the name: a name that leads with a
 negation ages badly, and the tagline, the footer on every page and the issue routing all
 carry that message where it is actually read.
@@ -20,7 +20,7 @@ individual student, and the person maintaining it expects to be here for decades
 
 ## Licence: CC0
 
-Public domain, everything — prose, scripts and the facts data.
+Public domain, everything: prose, scripts and the facts data.
 
 Attribution-required licences would block the best possible outcome, which is university
 IT lifting a page into their own documentation. Two consequences follow and are handled:
@@ -31,14 +31,14 @@ expiry.
 
 ## Content lives in `content/`, not `docs/`
 
-The repository holds two kinds of documentation — the published knowledge base and the
+The repository holds two kinds of documentation: the published knowledge base and the
 repository's own (`README`, `CONTRIBUTING`, `design/`). Naming both "docs" is the
 ambiguity. The folder name never appears in URLs.
 
 ## Facts are data, referenced by substitution
 
 `facts/<domain>.yaml`, one file per service domain, substituted into pages at build time
-as `${facts.domain.key}` — including inside code fences, which is where a stale hostname
+as `${facts.domain.key}`, including inside code fences, which is where a stale hostname
 does the most damage.
 
 `scripts/ci/check-facts.sh` fails the build if a literal value from `facts/` appears in
@@ -68,7 +68,7 @@ work: blank issues are disabled and official support is linked first, so the tra
 about the pages rather than becoming a help desk the project cannot staff.
 
 This makes a GitHub account the minimum barrier to contributing, which is a knowing
-relaxation of R32 — revisit if it turns out to exclude people who would otherwise
+relaxation of R32; revisit if it turns out to exclude people who would otherwise
 contribute.
 
 ## English is the source, German is translated
@@ -83,7 +83,7 @@ page.
 
 ## One tab axis, forever
 
-Operating system, and nothing else. A second dimension — terminal versus GUI — would mean
+Operating system, and nothing else. A second dimension (terminal versus GUI) would mean
 six variants of every snippet. Terminal instructions go below the plain-language ones on
 the same page.
 

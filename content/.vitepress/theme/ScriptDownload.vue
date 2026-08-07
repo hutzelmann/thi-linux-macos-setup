@@ -58,12 +58,12 @@ const commands = computed(() =>
 
     <p class="note">
       <template v-if="de">
-        Läuft eigenständig — die dokumentierten Werte und Hilfsfunktionen sind eingebaut,
+        Läuft eigenständig. Die dokumentierten Werte und Hilfsfunktionen sind eingebaut,
         das Repository wird nicht gebraucht. <code>--dry-run</code> zeigt nur an, was
         passieren würde.
       </template>
       <template v-else>
-        Runs on its own — the documented values and helpers are built in, no clone needed.
+        Runs on its own. The documented values and helpers are built in, no clone needed.
         <code>--dry-run</code> prints what it would do and changes nothing.
       </template>
     </p>
@@ -98,30 +98,40 @@ const commands = computed(() =>
   color: var(--vp-c-text-2);
 }
 
-/* Matches the default theme's brand button, so a download reads as the same
-   kind of action as every other primary control on the site. */
+/*
+ * Uses the default theme's own button tokens rather than picking colours by
+ * hand. Hand-picked brand values collided in the light theme: --vp-c-brand-3 as
+ * a background under --vp-c-brand-1 text is blue on blue. These tokens are the
+ * pair the theme already guarantees to be legible, in both themes and on hover.
+ */
 .button {
   display: inline-flex;
   flex: none;
   gap: 6px;
   align-items: center;
   padding: 6px 16px;
-  border: 1px solid var(--vp-c-brand-2);
+  border: 1px solid var(--vp-button-brand-border);
   border-radius: 20px;
-  background: var(--vp-c-brand-3);
+  background: var(--vp-button-brand-bg);
   font-size: 14px;
   font-weight: 500;
   line-height: 22px;
-  color: var(--vp-c-brand-1);
+  color: var(--vp-button-brand-text);
   text-decoration: none;
   white-space: nowrap;
-  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+  transition: border-color 0.25s, background-color 0.25s, color 0.25s;
 }
 
 .button:hover {
-  border-color: var(--vp-c-brand-1);
-  background: var(--vp-c-brand-1);
-  color: var(--vp-c-white);
+  border-color: var(--vp-button-brand-hover-border);
+  background: var(--vp-button-brand-hover-bg);
+  color: var(--vp-button-brand-hover-text);
+}
+
+.button:active {
+  border-color: var(--vp-button-brand-active-border);
+  background: var(--vp-button-brand-active-bg);
+  color: var(--vp-button-brand-active-text);
 }
 
 .script-download :deep(pre) {

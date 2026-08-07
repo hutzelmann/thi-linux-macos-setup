@@ -2,7 +2,7 @@
 layout: home
 title: Linux und macOS an der THI
 titleTemplate: false
-translatedFrom: 59cc206e13f37a54a396a69fa0c93f8e59c18693
+translatedFrom: e206b28a475fbcd260975cbef809ef2c79bd6553
 description: Von der Community gepflegte Anleitungen für Linux und macOS an der Technischen Hochschule Ingolstadt. Drucken, WLAN, VPN, Netzlaufwerke. Inoffiziell.
 
 hero:
@@ -21,7 +21,7 @@ features:
     details: eduroam und @thi, mit den Zertifikatseinstellungen, die verhindern, dass ein gefälschter Accesspoint dein Passwort abgreift.
     link: /de/wifi/
   - title: Drucken
-    details: Die MARB-Farbwarteschlange aus CUPS — Duplex, Lochen, Heften, und warum ohne Karte nichts herauskommt.
+    details: Die MARB-Farbwarteschlange aus CUPS, mit Duplex, Lochen und Heften, und warum ohne Karte nichts herauskommt.
     link: /de/printing/marb-color
   - title: VPN
     details: openfortivpn mit SSO, inklusive der Zertifikatskette, die das Gateway nicht mitliefert.
@@ -30,7 +30,7 @@ features:
 
 ## Warum es das gibt
 
-Campus-Systeme sind für Windows dokumentiert. Das meiste läuft auch unter Linux und macOS — aber die Details liegen verstreut in alten Mails, Forenbeiträgen und privaten Notizen.
+Campus-Systeme sind für Windows dokumentiert. Das meiste läuft auch unter Linux und macOS, aber die Details liegen verstreut in alten Mails, Forenbeiträgen und privaten Notizen.
 
 Hier stehen sie an einem Ort, öffentlich, damit die nächste Person sie nicht neu herausfinden muss.
 

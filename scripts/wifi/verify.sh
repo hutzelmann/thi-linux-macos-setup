@@ -5,7 +5,7 @@
 #   ./verify.sh           readable
 #   ./verify.sh --json    machine-readable, identifiers stripped
 #
-# Not "are you online" — that is visible already. This checks the two settings
+# Not "are you online"; that is visible already. This checks the two settings
 # that decide whether your campus password can be collected by a fake access
 # point, both of which are silently optional and frequently missing.
 set -eu
