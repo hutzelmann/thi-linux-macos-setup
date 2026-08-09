@@ -1,0 +1,32 @@
+# A machine whose CUPS configuration nobody minds losing, Arch half.
+#
+# Worth having as well as the Debian one because the printing page tells the two
+# systems to do different things: Debian installs a .deb and points lpadmin at
+# an absolute PPD path, Arch builds an AUR package and points lpadmin at a CUPS
+# model name. Testing one says nothing about the other.
+FROM archlinux:base
+
+# cups            cupsd, lpadmin, lpstat, lpoptions, lpinfo
+# smbclient       the CUPS smb backend, without which lpadmin refuses smb://
+# sudo            install.sh calls sudo, and is tested unmodified
+# openbsd-netcat  provides nc, which verify.sh probes with
+# base-devel, git makepkg and the AUR clone. Baked in rather than installed at
+#                 run time so the suite works without a package mirror.
+RUN pacman -Syu --noconfirm --needed \
+  cups \
+  smbclient \
+  sudo \
+  openbsd-netcat \
+  base-devel \
+  git \
+  && pacman -Scc --noconfirm
+
+# makepkg refuses to run as root, so the AUR route needs an unprivileged user
+# that can still install what it built.
+RUN useradd -m builder \
+  && echo 'builder ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/builder
+
+# Deliberately no /etc/samba/smb.conf: whether install.sh creates one when the
+# smb backend has none is under test, and on Arch the samba packages do not
+# ship it either, so the container matches the machine.
+ENTRYPOINT ["/repo/test/printing/suite.sh"]

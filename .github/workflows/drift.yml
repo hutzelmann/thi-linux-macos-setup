@@ -1,0 +1,115 @@
+name: Drift
+
+# Documentation goes wrong while nobody is editing it. A server is renamed, a
+# vendor moves a download, a check quietly turns a year old. None of that
+# produces a commit, so none of it would ever run a check tied to a push.
+#
+# Every job here is a command a maintainer can run by hand. This file only
+# decides when, and turns the output into one issue per check rather than one
+# per run.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  vpn-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - id: run
+        # A network blip is not a documentation problem, and the report says so.
+        continue-on-error: true
+        # Steps run under `bash -e`, so the exit code has to be captured on the
+        # same line or the step dies before anything records it.
+        run: |
+          if npm run check:vpn-chain > result.txt 2>&1; then
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.run.outputs.ok }}" = "0" ]; then
+            : | node tools/upsert-issue.mjs --title='VPN certificate chain differs from the documented one' --label=drift --close-if-ok
+          else
+            {
+              echo "Observed on $(date -u +%Y-%m-%d), by the check the VPN page documents."
+              echo
+              echo '```'
+              cat result.txt
+              echo '```'
+              echo
+              echo 'Nobody has done anything wrong here. An observed value differs from a'
+              echo 'documented one, and the documented one is what this repository controls.'
+            } | node tools/upsert-issue.mjs --title='VPN certificate chain differs from the documented one' --label=drift
+          fi
+
+  fact-urls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - id: run
+        continue-on-error: true
+        # Steps run under `bash -e`, so the exit code has to be captured on the
+        # same line or the step dies before anything records it.
+        run: |
+          if bash scripts/ci/check-fact-urls.sh > result.txt 2>&1; then
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.run.outputs.ok }}" = "0" ]; then
+            : | node tools/upsert-issue.mjs --title='A documented URL stopped answering' --label=drift --close-if-ok
+          else
+            {
+              echo "Observed on $(date -u +%Y-%m-%d)."
+              echo
+              echo '```'
+              cat result.txt
+              echo '```'
+              echo
+              echo 'Find the current address, then update facts/. Values are never changed'
+              echo 'here automatically: an observed value is not a verified one.'
+            } | node tools/upsert-issue.mjs --title='A documented URL stopped answering' --label=drift
+          fi
+
+  staleness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo 'Pages waiting for somebody to follow them on a real machine.'
+            echo 'Refreshed weekly, so this is a work list rather than a report.'
+            echo
+            echo '```'
+            bash scripts/ci/check-staleness.sh
+            echo '```'
+            echo
+            echo 'Following one page and filing a check record is worth more than a new page.'
+          } | node tools/upsert-issue.mjs --title='Pages waiting for a check' --label=drift

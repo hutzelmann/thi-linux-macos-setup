@@ -11,6 +11,9 @@ body:
         Most pages here have never been followed by a second person. A dated report,
         even "it worked, nothing to add", is worth more than a new page.
 
+        Running `./scripts/<area>/verify.sh --report` fills this form in for you and
+        prints the link. It sends nothing; you still see everything before submitting.
+
         **Please remove usernames, addresses and home paths** from anything you paste.
 
   - type: input
@@ -66,3 +69,15 @@ body:
       description: >
         The detail that cost you time is exactly what belongs in the page's "known
         quirks" section.
+
+  # Filled in by `verify.sh --report`. Read in preference to the fields above
+  # where both are present: it came from a machine and cannot be mistyped. The
+  # script strips usernames and home paths before it ever reaches here.
+  - type: textarea
+    id: report
+    attributes:
+      label: Script output
+      description: >
+        Optional. Filled in automatically if you got here from
+        `./scripts/<area>/verify.sh --report`.
+      render: shell

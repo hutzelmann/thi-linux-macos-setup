@@ -1,0 +1,107 @@
+name: Check record
+
+# A dated report on a real machine is the only thing that turns a written-up
+# page into a checked one. Doing that by hand meant it mostly did not happen, so
+# the transcription is mechanical and the judgement stays with a person: the bot
+# opens a pull request, a maintainer merges it.
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  apply:
+    if: contains(github.event.issue.labels.*.name, 'check-record')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # applyCheck recomputes a translation's source blob hash, which needs
+          # real history rather than a shallow clone.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # Through a file, never through the shell. The body is untrusted input
+      # from the public internet, and interpolating it into a `run:` line is how
+      # an issue becomes a command.
+      - name: Take the issue body
+        env:
+          BODY: ${{ github.event.issue.body }}
+        run: printf '%s' "$BODY" > "$RUNNER_TEMP/issue-body.md"
+
+      - name: Read the record
+        id: record
+        run: |
+          set +e
+          result=$(node tools/check-record.mjs --body-file="$RUNNER_TEMP/issue-body.md" --json)
+          code=$?
+          set -e
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "result<<JSON" >> "$GITHUB_OUTPUT"
+          echo "$result" >> "$GITHUB_OUTPUT"
+          echo "JSON" >> "$GITHUB_OUTPUT"
+
+      - name: Open a pull request
+        if: steps.record.outputs.code == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          RESULT: ${{ steps.record.outputs.result }}
+        run: |
+          page=$(printf '%s' "$RESULT" | node -e 'process.stdin.on("data",d=>console.log(JSON.parse(d).page))')
+          date=$(printf '%s' "$RESULT" | node -e 'process.stdin.on("data",d=>console.log(JSON.parse(d).date))')
+          os=$(printf '%s' "$RESULT" | node -e 'process.stdin.on("data",d=>console.log(JSON.parse(d).os))')
+          branch="check-record/${NUMBER}"
+
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$branch"
+          git commit -am "Record ${os} check of ${page} (${date})"
+          git push --force origin "$branch"
+
+          # The body carries a date, an operating system and a link, and no
+          # contributor prose. What was reported stays in the issue, where it is
+          # already public and already attributed to whoever chose to write it.
+          #
+          # The operating system is in the title because it is the scope of the
+          # claim: the other blocks on the page are exactly as unchecked after
+          # this merges as they were before it.
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Record ${os} check of ${page} (#${NUMBER})" \
+            --body "$(printf 'Reported in #%s as followed on %s, on %s.\n\nOnly `lastChecked.%s` changes. Merging says a person ran these steps on that date, on that operating system, and says nothing about the others.\n\nCloses #%s\n' "$NUMBER" "$date" "$os" "$os" "$NUMBER")"
+
+          gh issue comment "$NUMBER" --body "$(printf 'Recorded against the %s steps. A pull request is open; the date lands on the page when it is merged. The other operating systems on that page are unaffected, and still need their own run.\n' "$os")"
+
+      # Exit 3 is the honest refusal: the steps as written did not work, so no
+      # date may be written. The report is still the most useful kind there is,
+      # so it stays open as a work item rather than dying in a red X.
+      - name: Report what needs fixing
+        if: steps.record.outputs.code == '3'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          RESULT: ${{ steps.record.outputs.result }}
+        run: |
+          reason=$(printf '%s' "$RESULT" | node -e 'process.stdin.on("data",d=>console.log(JSON.parse(d).reason))')
+          gh issue edit "$NUMBER" --add-label needs-page-fix
+          gh issue comment "$NUMBER" --body "$(printf 'Not recorded as a check.\n\n%s\n\nThe page needs correcting first. Once it is, a check against the corrected steps records normally.\n' "$reason")"
+
+      - name: Report what could not be read
+        if: steps.record.outputs.code == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+          RESULT: ${{ steps.record.outputs.result }}
+        run: |
+          reason=$(printf '%s' "$RESULT" | node -e 'process.stdin.on("data",d=>console.log(JSON.parse(d).reason))')
+          gh issue edit "$NUMBER" --add-label needs-triage
+          gh issue comment "$NUMBER" --body "$(printf 'This could not be applied automatically.\n\n%s\n\nEdit the issue and it is read again.\n' "$reason")"

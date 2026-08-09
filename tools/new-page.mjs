@@ -14,6 +14,7 @@ import { stdin, stdout } from 'node:process'
 import { mkdir, readFile, writeFile, access } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { execFileSync } from 'node:child_process'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const SECTIONS = [
@@ -52,7 +53,6 @@ function template({ title, section, osList }) {
   return `---
 title: ${title}
 description: One sentence, in the words someone would search for.
-status: imported
 os: [${osList.join(', ')}]
 ---
 
@@ -87,9 +87,43 @@ part of the page.
 ---
 
 ::: info Imported notes
-Replace this with real content, then change \`status\` to \`structured\`. Once someone has
-followed the steps on a real machine, set \`status: checked\` and add
-\`lastChecked: YYYY-MM-DD\`.
+Replace this with real content. Once somebody has followed the steps on a real machine,
+record it with \`npm run record -- /en/\${section}/\`, which writes the date under the
+operating system it was run on. \`lastChecked\` is a map, never one date: this page gives
+each system different steps, so a run on one says nothing about the others. Record
+nobody else's run but your own.
+:::
+`
+}
+
+
+/*
+ * The German stub. A stub beats a missing file: the reader still lands somewhere,
+ * the language switcher still works, and check-translations.sh passes because the
+ * pair exists and records the hash it was made from.
+ */
+function templateDe({ titleDe, section, slug, osList, sourceHash }) {
+  const blocks = osList
+    .map((os) => `::: os ${os}\n\`\`\`bash\n# ${os} steps here\n\`\`\`\n:::`)
+    .join('\n\n')
+
+  return `---
+title: ${titleDe}
+description: Ein Satz, in den Worten, nach denen jemand suchen würde.
+os: [${osList.join(', ')}]
+translatedFrom: ${sourceHash}
+---
+
+# ${titleDe}
+
+${blocks}
+
+::: info Übersetzung
+Diese Seite ist eine Übersetzung von \`/en/${section}/${slug}\`. Der \`translatedFrom\`-Hash
+oben zeigt auf den Stand, aus dem übersetzt wurde. Ist ein Mensch den Schritten auf einem
+echten Rechner gefolgt, hält \`npm run record\` das fest, und zwar unter dem
+Betriebssystem, auf dem der Lauf stattfand. \`lastChecked\` ist eine Zuordnung, kein
+einzelnes Datum.
 :::
 `
 }
@@ -103,6 +137,7 @@ async function main() {
     process.exit(1)
   }
 
+  const titleDe = await ask('German title:', title)
   const section = await ask(`Section (${SECTIONS.join(', ')}):`, 'printing')
   const slug = await ask(
     'File name:',
@@ -112,30 +147,54 @@ async function main() {
   const osList = osAnswer.split(/[\s,]+/).filter(Boolean)
 
   const relative = join('en', section, `${slug}.md`)
+  const relativeDe = join('de', section, `${slug}.md`)
   const target = join(ROOT, 'content', relative)
+  const targetDe = join(ROOT, 'content', relativeDe)
 
-  if (await exists(target)) {
-    console.error(`\n${relative} already exists.`)
-    process.exit(1)
+  for (const [path, file] of [[relative, target], [relativeDe, targetDe]]) {
+    if (await exists(file)) {
+      console.error(`\n${path} already exists.`)
+      process.exit(1)
+    }
   }
 
   await mkdir(dirname(target), { recursive: true })
   await writeFile(target, template({ title, section, osList }))
 
-  // Add the sidebar entry so contributors never have to touch config.
-  const sidebarPath = join(ROOT, 'content/.vitepress/sidebar.mts')
-  const sidebar = await readFile(sidebarPath, 'utf8')
-  const entry = `      { text: '${title.replace(/'/g, "\\'")}', link: '/en/${section}/${slug}' },`
-  const marker = new RegExp(`(link: '/en/${section}/[^']*' \\},?\\n)`)
+  /*
+   * The hash of the English file as just written, which is what
+   * check-translations.sh compares against. Writing the German stub without it
+   * would create the pair and fail the check in the same step.
+   */
+  const sourceHash = execFileSync('git', ['hash-object', target], { encoding: 'utf8' }).trim()
 
-  if (marker.test(sidebar)) {
-    await writeFile(sidebarPath, sidebar.replace(marker, `$1${entry}\n`))
-    console.log('  sidebar entry added')
-  } else {
-    console.log(`  add this to content/.vitepress/sidebar.mts:\n${entry}`)
+  await mkdir(dirname(targetDe), { recursive: true })
+  await writeFile(targetDe, templateDe({ titleDe, section, slug, osList, sourceHash }))
+
+  // Add both sidebar entries so contributors never have to touch config.
+  const sidebarPath = join(ROOT, 'content/.vitepress/sidebar.mts')
+  let sidebar = await readFile(sidebarPath, 'utf8')
+  const manual = []
+
+  for (const [locale, text] of [['en', title], ['de', titleDe]]) {
+    const entry = `      { text: '${text.replace(/'/g, "\\'")}', link: '/${locale}/${section}/${slug}' },`
+    const marker = new RegExp(`(link: '/${locale}/${section}/[^']*' \\},?\\n)`)
+
+    if (marker.test(sidebar)) {
+      sidebar = sidebar.replace(marker, `$1${entry}\n`)
+      console.log(`  ${locale} sidebar entry added`)
+    } else {
+      manual.push(entry)
+    }
+  }
+
+  await writeFile(sidebarPath, sidebar)
+  if (manual.length) {
+    console.log(`  add this to content/.vitepress/sidebar.mts:\n${manual.join('\n')}`)
   }
 
   console.log(`\nCreated content/${relative}`)
+  console.log(`Created content/${relativeDe}`)
   console.log('\nNext:')
   console.log('  npm run dev     preview at http://localhost:5173')
   console.log('  npm run check   before committing\n')

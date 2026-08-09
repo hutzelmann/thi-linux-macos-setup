@@ -1,0 +1,29 @@
+# A machine whose CUPS configuration nobody minds losing.
+#
+# Debian rather than Arch because the documented driver package is a .deb and
+# because Debian is the half of the Linux audience most likely to follow the
+# printing page without a terminal open beside it.
+FROM debian:stable-slim
+
+# cups            cupsd, so a queue is created for real rather than mocked
+# cups-client     lpadmin, lpstat, lpoptions: everything the scripts call
+# smbclient       the CUPS smb backend. lpadmin refuses a device URI whose
+#                 scheme has no backend, and every documented queue is smb://
+# sudo            install.sh calls sudo. The script is tested unmodified, so
+#                 the container provides sudo rather than the script dropping it
+# netcat-openbsd  verify.sh's reachability probe
+#
+# Deliberately not samba-common: it ships /etc/samba/smb.conf, and whether
+# install.sh creates that file when it is missing is one of the things under
+# test here.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  cups \
+  cups-client \
+  smbclient \
+  sudo \
+  netcat-openbsd \
+  && rm -rf /var/lib/apt/lists/*
+
+# The suite is not copied in: the repository is mounted at /repo, so editing a
+# script or an assertion does not mean rebuilding the image.
+ENTRYPOINT ["/repo/test/printing/suite.sh"]
