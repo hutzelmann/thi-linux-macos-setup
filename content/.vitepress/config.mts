@@ -32,6 +32,16 @@ const SITE_DESCRIPTION =
   + 'Unofficial, not THI IT Support.'
 
 /*
+ * The publisher, as opposed to the site. Deliberately not SITE_DESCRIPTION:
+ * that one says what a reader will find here, this one says who is behind it,
+ * which is the question schema.org's Organization node is answering and the
+ * one where "no affiliation" belongs.
+ */
+const PROJECT_DESCRIPTION =
+  'A community-maintained, unofficial collection of notes. '
+  + 'Not affiliated with Technische Hochschule Ingolstadt.'
+
+/*
  * Link preview image, 1200x630. Source and render command: tools/og-image.svg.
  * One image for both locales; its last line is bilingual for that reason.
  */
@@ -274,9 +284,7 @@ export default defineConfig({
             '@id': SITE + '#project',
             name: SITE_NAME,
             url: SITE,
-            description:
-              'A community-maintained, unofficial collection of setup notes. '
-              + 'Not affiliated with Technische Hochschule Ingolstadt.'
+            description: PROJECT_DESCRIPTION
           },
           isLanding ? { ...page, '@type': 'CollectionPage' } : page,
           {
