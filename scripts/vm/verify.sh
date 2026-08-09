@@ -92,9 +92,12 @@ first_present() {
 # Reported rather than compared against a number: the page recommends a size
 # and this cannot know whether the reader means to thin-provision it, put it on
 # an external disk, or accept less. The number is what they need to decide.
+#
+# Home, and not a directory the caller picks. It took an optional argument that
+# nothing ever passed, which shellcheck reads as a function whose interface is
+# wider than its use, and it was right.
 free_gb() {
-  _dir=${1:-$HOME}
-  df -Pk "$_dir" 2>/dev/null | awk 'NR==2 {printf "%d\n", $4 / 1048576}'
+  df -Pk "$HOME" 2>/dev/null | awk 'NR==2 {printf "%d\n", $4 / 1048576}'
 }
 
 total_ram_gb() {

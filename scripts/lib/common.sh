@@ -132,14 +132,6 @@ evidence_stream() {
   redact >>"$EVIDENCE_DIR/$1.txt"
 }
 
-# evidence_note <name> <text...>: one line of evidence, without a pipeline.
-evidence_note() {
-  [ -n "$EVIDENCE_DIR" ] || return 0
-  _name="$1"
-  shift
-  printf '%s\n' "$*" | redact >>"$EVIDENCE_DIR/$_name.txt"
-}
-
 # evidence_close: say where it went, once, at the end of a readable run.
 evidence_close() {
   [ -n "$EVIDENCE_DIR" ] || return 0
