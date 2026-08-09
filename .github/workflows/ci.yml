@@ -12,7 +12,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # check-translations compares against the English source's blob hash,
           # which needs real history rather than a shallow clone.
@@ -57,6 +57,6 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: VPN certificate chain still behaves as documented
         run: npm run check:vpn-chain

@@ -18,7 +18,7 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'check-record')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # applyCheck recomputes a translation's source blob hash, which needs
           # real history rather than a shallow clone.
