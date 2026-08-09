@@ -1,0 +1,51 @@
+/*
+ * Hero width.
+ *
+ * The default theme caps the hero heading and tagline at 576px. That width is
+ * chosen for a hero with an illustration beside it, and it is never lifted at
+ * the wide breakpoint. This site's hero has no image, so the cap does nothing
+ * but wrap a short headline after three words and leave the rest of a 1152px
+ * row empty.
+ *
+ * Scoped to :not(.has-image) so a hero that does get an image later keeps the
+ * two-column proportions the default theme intends.
+ */
+@media (min-width: 640px) {
+  .VPHero:not(.has-image) .name,
+  .VPHero:not(.has-image) .text {
+    max-width: none;
+  }
+
+  /*
+   * The tagline loses the cap as well. It is a sentence rather than a headline,
+   * so a reading measure would be the usual argument for keeping one, but this
+   * tagline is one line at every width the hero has, and a cap on a line that
+   * never wraps only leaves an empty corner.
+   */
+  .VPHero:not(.has-image) .tagline {
+    max-width: none;
+  }
+}
+
+/*
+ * The second line of the headline.
+ *
+ * It carries the university's name, which belongs inside the h1: the heading is
+ * what a search result and a screen reader's outline are built from, and "Linux
+ * & macOS" alone says nothing about where. The default theme sets that second
+ * line at the same size as the first, which is right when the two together are
+ * the headline. Here the first line is the subject and the second one places
+ * it, so it reads as a subtitle instead: smaller, lighter, quieter colour.
+ */
+.VPHero .text {
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+}
+
+@media (min-width: 640px) {
+  .VPHero .text {
+    font-size: 24px;
+  }
+}

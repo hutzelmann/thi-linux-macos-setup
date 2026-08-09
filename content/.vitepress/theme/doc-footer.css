@@ -1,0 +1,16 @@
+/*
+ * The default theme's own footer row, hidden.
+ *
+ * VitePress renders the edit link and the last-edited date above the pager, and
+ * the page's other two actions ("something wrong here", "this worked for me")
+ * had nowhere to go but below it, where they read as leftovers under the
+ * navigation. PageActions.vue renders all of it as one row instead, in the
+ * `doc-footer-before` slot, so this block is the same information twice.
+ *
+ * Hidden rather than switched off in the config: `editLink` stays configured
+ * because PageActions.vue reads the pattern and the wording from it, and there
+ * is no theme flag that keeps the date's data while dropping its markup.
+ */
+.VPDocFooter .edit-info {
+  display: none;
+}

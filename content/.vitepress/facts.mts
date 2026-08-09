@@ -3,7 +3,7 @@ import { join, basename } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse } from 'yaml'
 
-const FACTS_DIR = fileURLToPath(new URL('../../facts', import.meta.url))
+export const FACTS_DIR = fileURLToPath(new URL('../../facts', import.meta.url))
 
 export type Facts = Record<string, Record<string, string>>
 

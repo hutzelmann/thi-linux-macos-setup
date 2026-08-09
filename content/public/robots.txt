@@ -1,0 +1,11 @@
+# Crawlers read robots.txt only from the origin root, and this site is served
+# from a subpath, so this file has no effect where it sits today. It is here for
+# the day the site moves to a domain of its own, and so the sitemap address is
+# written down somewhere alongside the site. Until then, the sitemap is
+# announced by hand in Google Search Console and Bing Webmaster Tools, and by
+# hutzelmann.github.io/robots.txt, which belongs to a different repository.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://hutzelmann.github.io/thi-linux-macos-setup/sitemap.xml

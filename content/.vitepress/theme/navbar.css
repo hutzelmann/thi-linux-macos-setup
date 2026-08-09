@@ -1,0 +1,55 @@
+/*
+ * Search box width.
+ *
+ * The navbar carries no page links, so the room they used to take goes to
+ * search, which is how most people arrive at a page here, usually with
+ * something already broken.
+ *
+ * VitePress lets `.VPNavBarSearch` grow into the free space but leaves
+ * `#local-search`, the div that actually wraps the button, at its content
+ * width. So the box stays small however much room the bar has. Growing that
+ * div is the whole change.
+ *
+ * The cap stops the box from running the full width of the bar on a wide
+ * screen, where a search field as long as a paragraph reads as a mistake.
+ * Below the cap the box shrinks with the window, so it always fits.
+ *
+ * Only from 768px up: narrower than that VitePress collapses the button to a
+ * 48px magnifier, and stretching that would leave a large empty pill.
+ */
+@media (min-width: 768px) {
+  #local-search {
+    flex-grow: 1;
+    max-width: 240px;
+  }
+
+  /*
+   * The button packs its contents to the left, which is right when the box is
+   * only as wide as they are. Once the box is wider, the shortcut hint has to
+   * sit against the far edge or the extra width reads as a rendering fault
+   * rather than as a bigger search box.
+   */
+  #local-search .DocSearch-Button-Keys {
+    margin-left: auto;
+  }
+}
+
+/*
+ * No site title on the landing pages.
+ *
+ * The title in the corner is a link home, and a landing page is home. Sitting
+ * above a headline that names the same site, it is the second time in one
+ * screen that the reader is told where they are, and the first one is not a
+ * link they need.
+ *
+ * Keyed off `pageClass`, not off the default theme's own `.VPNavBar.home`.
+ * That class is assigned after hydration and is absent from the server-rendered
+ * HTML, so the title would be painted and then removed. `pageClass` lands on
+ * the Layout element during rendering, the same reason the OS attribute is set
+ * by a blocking script rather than by the app.
+ *
+ * Everywhere else the title stays: there it is the way back.
+ */
+.Layout.is-landing .VPNavBarTitle {
+  display: none;
+}

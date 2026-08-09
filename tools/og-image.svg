@@ -1,0 +1,32 @@
+<!--
+  Source for content/public/og.png, the link preview image. Rendered by hand,
+  the same way as the favicon, so nothing has to run at build time:
+
+    rsvg-convert -w 1200 -h 630 tools/og-image.svg -o content/public/og.png
+
+  Fixed colours rather than a light and dark pair: a preview card is composited
+  by the chat client, which never tells the image which theme it is on.
+
+  Bilingual on the last line, like the site root, because one image is served to
+  both locales.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#1f2430"/>
+  <rect x="0" y="0" width="1200" height="8" fill="#7aa2f7"/>
+
+  <g transform="translate(96 92)">
+    <rect width="96" height="96" rx="21" fill="#e9ecf2"/>
+    <g transform="scale(3)" fill="none" stroke="#1f2430" stroke-width="3"
+       stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 10l6 6-6 6"/>
+      <path d="M18 23h6"/>
+    </g>
+  </g>
+
+  <g font-family="DejaVu Sans" fill="#e9ecf2">
+    <text x="96" y="316" font-size="78" font-weight="bold">Linux &amp; macOS @ THI</text>
+    <text x="96" y="392" font-size="42" fill="#a9b3c6">Technische Hochschule Ingolstadt</text>
+    <text x="96" y="486" font-size="32" fill="#a9b3c6">Wi-Fi &#183; VPN &#183; printing &#183; network shares &#183; wired 802.1X</text>
+    <text x="96" y="556" font-size="28" fill="#7f8aa0">Community-maintained &#183; Von der Community gepflegt</text>
+  </g>
+</svg>

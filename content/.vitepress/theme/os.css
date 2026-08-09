@@ -27,3 +27,41 @@ html[data-os='macos'] .os-block[data-os-block='macos'] {
 html:not([data-os]) .os-block[data-os-block='arch'] {
   display: block;
 }
+
+/*
+ * The same idea for a word inside running text, used by the site title.
+ *
+ * Arch and Debian collapse into "Linux" here: the title is a phrase, not a
+ * choice, and naming the distribution in the corner of every page says nothing
+ * the reader did not already tell us. The distinction is kept where it decides
+ * what to type, which is the steps.
+ */
+.os-word {
+  display: none;
+}
+
+html[data-os='arch'] .os-word[data-os-word='linux'],
+html[data-os='debian'] .os-word[data-os-word='linux'],
+html[data-os='macos'] .os-word[data-os-word='macos'],
+html:not([data-os]) .os-word[data-os-word='linux'] {
+  display: inline;
+}
+
+/*
+ * Separator between OS variants.
+ *
+ * Every variant stays in the DOM, so a reading that does not apply CSS, a
+ * search engine's text extraction above all, sees all three run together as one
+ * word: "Arch LinuxDebian and UbuntumacOS". A comma between them makes that
+ * reading a list. It is out of sight for everyone who does get the CSS, and out
+ * of the accessibility tree via aria-hidden, since a screen reader is served
+ * the one visible variant and would otherwise hear a stray comma.
+ */
+.os-sep {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

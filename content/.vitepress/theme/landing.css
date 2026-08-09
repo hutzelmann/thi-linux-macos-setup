@@ -1,0 +1,18 @@
+/*
+ * The gap above the first section on a landing page.
+ *
+ * VitePress gives every `h2` in `.vp-doc` a top border and 48px above it. In a
+ * page of prose that reads as a section separator. Under a hero, which already
+ * ends in whitespace of its own, the two stack into a gap wide enough that the
+ * line looks stray rather than structural.
+ *
+ * Only the margin goes. The border and its 24px of padding stay, because
+ * `.header-anchor` is positioned absolutely at `top: 24px` to match that
+ * padding, and dropping it leaves the anchor sitting below its own heading.
+ *
+ * Only the first heading. The later one divides the card deck from the closing
+ * note, and there the full spacing is doing its job.
+ */
+.Layout.is-landing .vp-doc h2:first-of-type {
+  margin-top: 0;
+}
