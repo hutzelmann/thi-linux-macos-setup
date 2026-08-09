@@ -1,0 +1,39 @@
+# Keep the toolchain from going stale on its own.
+#
+# Package and operating system drift on the machines this project documents is
+# out of scope (R19): the pages describe what Arch, Debian and macOS ship, and
+# a bot has no way to check that. This file is about the repository's own
+# dependencies, which is a different thing and a much smaller one.
+#
+# Monthly, not weekly. Nothing here is load bearing between builds, and a pull
+# request nobody reads on a Monday is worse than one somebody reads in a month.
+version: 2
+updates:
+  # VitePress and the two markdown plugins the site is built with.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      dev-dependencies:
+        patterns: ['*']
+
+  # The actions in .github/workflows. These run with an issues:write token, so
+  # a pinned version going unmaintained is worth noticing.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+
+  # The two throwaway images in test/printing. Base images going stale is the
+  # one case where the container stops resembling the machine it stands in for.
+  - package-ecosystem: docker
+    directory: /test/printing
+    schedule:
+      interval: monthly
+
+  - package-ecosystem: devcontainers
+    directory: /
+    schedule:
+      interval: monthly

@@ -1,0 +1,28 @@
+# An Arch nobody minds losing, for reproducing a check away from the host.
+#
+# Two images because the pages give the two systems different instructions, and
+# a check that passes on one says nothing about the other. Same reason
+# test/printing has two.
+FROM archlinux:base
+
+# cups            lpstat, lpoptions and the client tools
+# smbclient       reaching an SMB port the way the shares page does
+# openssl         the VPN certificate chain
+# iproute2        addresses and links
+# curl            fetching a documented URL
+# openbsd-netcat  provides nc, which the checks probe ports with
+# less, vi        for reading the evidence without leaving the container
+RUN pacman -Syu --noconfirm --needed \
+  cups \
+  smbclient \
+  openssl \
+  iproute2 \
+  curl \
+  openbsd-netcat \
+  less \
+  vi \
+  && pacman -Scc --noconfirm
+
+# The repository is mounted read-only, so the working directory has to be
+# somewhere else and every check writes its evidence there.
+WORKDIR /scratch

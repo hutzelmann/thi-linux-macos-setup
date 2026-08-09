@@ -6,6 +6,7 @@
 #   ./verify.sh --students      check the student queue instead
 #   ./verify.sh --queue=NAME    check a named queue
 #   ./verify.sh --json          machine-readable, identifiers stripped
+#   ./verify.sh --evidence      write down everything it saw, for debugging later
 #
 # Deliberately does not print a test page: that costs paper and quota, and needs
 # someone standing at the device with a card. Everything here is observation
@@ -60,6 +61,7 @@ finishing_options_present() {
 main() {
   parse_common_args "$@"
   select_queue "$@"
+  evidence_open printing
 
   _queue_ok=no
   _server_ok=no
@@ -71,6 +73,18 @@ main() {
 
   _status=ok
   [ "$_queue_ok" = yes ] && [ "$_server_ok" = yes ] && [ "$_options_ok" = yes ] || _status=incomplete
+
+  # What CUPS actually holds about this queue, which is the only place the
+  # driver, the device URI and the finishing options can be compared against
+  # what the page documents. "finishing_options: no" says one of those three is
+  # wrong without saying which.
+  {
+    printf 'queue: %s\n\n' "$QUEUE"
+    lpstat -l -p "$QUEUE" 2>&1
+    printf '\n'
+    lpoptions -p "$QUEUE" -l 2>&1
+  } | evidence queue-attributes
+  resolved_addresses "$(fact printing server)" | evidence resolved-addresses
 
   # Built once, whoever asked for it. --json prints it, --report puts it in the
   # form, and both are the same observation so they cannot disagree.
@@ -101,6 +115,7 @@ main() {
   # After the advice, not instead of it: a report of what did not work is worth
   # filing too, and it is the report the page most needs.
   [ "$REPORT" = "1" ] && print_report "$REPORT_PAGE" "$(report_outcome "$_status")" "$_json"
+  evidence_close
 
   [ "$_status" = ok ] || exit 1
 }

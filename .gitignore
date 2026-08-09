@@ -4,3 +4,8 @@ content/.vitepress/dist/
 *.log
 .DS_Store
 content/public/scripts/
+
+# Evidence from scripts/debug.sh. Yours, and never committed.
+# Anchored, or it would also swallow test/debug/, which is the images it builds.
+/debug/
+evidence-*/

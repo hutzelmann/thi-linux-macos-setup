@@ -63,6 +63,11 @@ fix](https://askubuntu.com/a/640153).
 
 ## Verify
 
+<ScriptDownload file="devices-verify.sh" does="Says whether this is a Wayland session, what is connected, and whether the range setting exists at all" />
+
+That answers whether the fix above is available here. Whether the picture is right is the
+part below, and no script can see a wall.
+
 Show something with a large black area and a large white area: a terminal on one side, a
 white document on the other. Correct full-range output gives you an actual black, not
 dark grey.

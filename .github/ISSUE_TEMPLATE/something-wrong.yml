@@ -1,5 +1,7 @@
-name: Something is wrong on a page
-description: A step does not work, a value has changed, or something is missing.
+name: Something is wrong on a page (Auf einer Seite stimmt etwas nicht)
+description: >
+  A step does not work, a value has changed, or something is missing. Ein Schritt
+  funktioniert nicht, ein Wert hat sich geändert, oder etwas fehlt.
 title: "[page] "
 labels: [page-feedback]
 body:
@@ -16,11 +18,23 @@ body:
         this project cannot. Write to support@thi.de or see the
         [IT service pages](https://www.thi.de/service/it-service/).
 
+        ---
+
+        Deutsch: Danke, das ist die nützlichste Art von Meldung. Antworte auf Deutsch,
+        wenn dir das lieber ist.
+
+        **Bitte Benutzernamen, Mailadressen und Home-Pfade entfernen.** `<kennung>` und
+        `/home/<kennung>` sind als Platzhalter in Ordnung. Dieses Repository ist
+        öffentlich.
+
+        Wenn es um dein Konto oder deine Hardware geht, kann der Zentrale IT Service das
+        ändern und dieses Projekt nicht: support@thi.de.
+
   - type: input
     id: page
     attributes:
-      label: Which page
-      description: The address, or just its name.
+      label: Which page (Welche Seite)
+      description: The address, or just its name. Die Adresse oder einfach der Name.
       placeholder: /en/printing/marb-color
     validations:
       required: true
@@ -28,7 +42,7 @@ body:
   - type: dropdown
     id: os
     attributes:
-      label: Operating system
+      label: Operating system (Betriebssystem)
       options:
         - Arch Linux
         - Debian / Ubuntu
@@ -41,8 +55,10 @@ body:
   - type: textarea
     id: what
     attributes:
-      label: What went wrong
-      description: What you expected, and what happened instead. Half a sentence is fine.
+      label: What went wrong (Was ist passiert)
+      description: >
+        What you expected, and what happened instead. Half a sentence is fine.
+        Was Sie erwartet haben und was stattdessen passiert ist. Ein halber Satz genügt.
       placeholder: The PPD path in step 2 does not exist on Ubuntu 26.04.
     validations:
       required: true
@@ -50,14 +66,16 @@ body:
   - type: textarea
     id: output
     attributes:
-      label: Command output, if any
+      label: Command output, if any (Ausgabe, falls vorhanden)
       description: >
         Optional. `./scripts/<area>/verify.sh --json` produces output with identifiers
-        already stripped.
+        already stripped. Erzeugt Ausgabe, aus der Kennungen bereits entfernt sind.
       render: shell
 
   - type: textarea
     id: fix
     attributes:
-      label: Do you know what the correct answer is?
-      description: Optional, and no problem if not. Knowing something is wrong is already useful.
+      label: Do you know what the correct answer is? (Kennen Sie den richtigen Wert?)
+      description: >
+        Optional, and no problem if not. Knowing something is wrong is already useful.
+        Optional. Zu wissen, dass etwas falsch ist, hilft schon.

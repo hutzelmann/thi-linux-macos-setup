@@ -43,6 +43,11 @@ export const ROOT = fileURLToPath(new URL('..', import.meta.url))
  * to track .github/ISSUE_TEMPLATE/check-record.yml by hand. A label that drifts
  * shows up as a missing field rather than a wrong one, which the workflow
  * reports rather than guessing around.
+ *
+ * The form is bilingual and every label carries its German in parentheses.
+ * Only the English is written here, because stripGloss() takes the gloss off
+ * before the lookup. Adding a language is then a change to the form and to
+ * nothing else.
  */
 const LABELS = {
   'which page': 'page',
@@ -52,6 +57,23 @@ const LABELS = {
   'how did it go': 'outcome',
   'what differed, if anything': 'notes',
   'script output': 'report'
+}
+
+/**
+ * Drop the German half of a bilingual form string.
+ *
+ * The issue form says `Which page (Welche Seite)` and `Worked exactly as
+ * written (hat genau so funktioniert)`, so a reader who works in German can
+ * answer it. The maps in this file stay English, and everything arriving from
+ * the form is canonicalised through here first.
+ *
+ * A trailing parenthesis only, which is why the two halves are separated that
+ * way and not with a slash: `Debian / Ubuntu` is one option, not two, and a
+ * slash rule would cut it in half.
+ */
+export function stripGloss(value) {
+  if (value === null || value === undefined) return value
+  return String(value).replace(/\s*\([^()]*\)\s*$/, '').trim()
 }
 
 /** The one outcome that may put a date on a page. */
@@ -90,7 +112,7 @@ const OS_LABELS = {
  */
 export function normaliseOs(value) {
   if (!value) return null
-  const raw = String(value).trim().toLowerCase()
+  const raw = stripGloss(value).toLowerCase()
   if (OS_IDS.includes(raw)) return raw
   if (raw in OS_LABELS) return OS_LABELS[raw]
   return null
@@ -111,7 +133,7 @@ export function parseIssueBody(body) {
   for (const section of sections) {
     const newline = section.indexOf('\n')
     if (newline === -1) continue
-    const label = section.slice(0, newline).trim().toLowerCase()
+    const label = stripGloss(section.slice(0, newline)).toLowerCase()
     const key = LABELS[label]
     if (!key) continue
 
@@ -516,7 +538,7 @@ export function evaluate(fields, { today = new Date() } = {}) {
     }
   }
 
-  if (fields.outcome !== CLEAN_PASS) {
+  if (stripGloss(fields.outcome) !== CLEAN_PASS) {
     return {
       applied: false,
       path,

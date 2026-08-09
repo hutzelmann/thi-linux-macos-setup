@@ -47,6 +47,74 @@ facts_overridden() {
     sed 's/ *$//'
 }
 
+# --- repository-only ----------------------------------------------------------
+#
+# fact <domain> <key>: a documented value, read out of facts/<domain>.yaml.
+#
+# The standalone downloads do not have facts/ next to them, so build-scripts.mjs
+# removes everything between these two markers and puts a generated lookup with
+# the values already baked in there instead. Same name, same interface, same
+# fact_env precedence, so nothing that calls it can tell the difference.
+#
+# Kept here rather than in each script because AGENTS.md rule 2 is that a value
+# is written down once. A second copy of the reader is a second thing to be
+# wrong: the one in scripts/ci/check-vpn-chain.sh was, and dropped everything
+# after a `#` in a URL.
+
+# The facts directory, found by walking up from the running script.
+#
+# Works from a clone, from a checkout mounted at another path, and from inside
+# the container debug.sh builds, none of which agree about where the repository
+# sits. FACTS_DIR overrides it, which is what the containers use.
+facts_dir() {
+  [ -n "${FACTS_DIR:-}" ] && {
+    printf '%s\n' "$FACTS_DIR"
+    return 0
+  }
+
+  _dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd) || return 1
+  while [ "$_dir" != / ]; do
+    if [ -d "$_dir/facts" ]; then
+      printf '%s\n' "$_dir/facts"
+      return 0
+    fi
+    _dir=$(dirname "$_dir")
+  done
+  return 1
+}
+
+fact() {
+  if fact_env "$1" "$2"; then
+    return 0
+  fi
+
+  _dir=$(facts_dir) || {
+    echo "cannot find facts/ from $0" >&2
+    return 1
+  }
+  [ -r "$_dir/$1.yaml" ] || {
+    echo "unknown fact domain: $1" >&2
+    return 1
+  }
+
+  # One level deep by contract, one value per line. A trailing comment is
+  # dropped only where whitespace precedes the #, because a documented URL can
+  # carry a fragment: facts.printing.driver_url ends in #tab=driver and that is
+  # part of the address.
+  _value=$(
+    sed -n "s/^$2:[[:space:]]*//p" "$_dir/$1.yaml" |
+      head -1 |
+      sed -e 's/[[:space:]][[:space:]]*#.*$//' -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/"
+  )
+
+  [ -n "$_value" ] || {
+    echo "unknown fact: $1 $2" >&2
+    return 1
+  }
+  printf '%s\n' "$_value"
+}
+# --- end repository-only ------------------------------------------------------
+
 detect_os() {
   case "$(uname -s)" in
     Darwin) printf 'macos\n' ;;
@@ -69,12 +137,20 @@ detect_os() {
 
 # Strip anything that identifies a person before results are pasted into a
 # public issue. Contributors should not have to remember this.
+#
+# A hardware address is on this list because of the wired page: the campus
+# registers a MAC against a person for a year, so a MAC in a public issue is
+# that person's name with an extra step. The reader still sees their own in the
+# readable output, which is theirs to look at; only what leaves the machine is
+# replaced. Same for the 802.1X identity, which is the campus username itself.
 redact() {
   sed -E \
     -e "s#/home/[^/ ]+#/home/<kennung>#g" \
     -e "s#/Users/[^/ ]+#/Users/<kennung>#g" \
     -e "s#[A-Za-z0-9._%+-]+@(thi|fh-ingolstadt)\.de#<vorname.nachname>@thi.de#g" \
-    -e "s#(user|username|-U)[= ][A-Za-z0-9._-]+#\1=<kennung>#g"
+    -e "s#(user|username|-U)[= ][A-Za-z0-9._-]+#\1=<kennung>#g" \
+    -e "s#([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}#<mac>#g" \
+    -e "s#(identity|anonymous-identity)[:= ]+[A-Za-z0-9._@-]+#\1=<kennung>#g"
 }
 
 # json_result <status> <message> [key=value ...]
@@ -94,8 +170,8 @@ json_result() {
   printf '}\n'
 }
 
-# DRY_RUN, JSON and REPORT are declared and read in common.sh; this only sets
-# them, which shellcheck cannot see from here.
+# DRY_RUN, JSON, REPORT and EVIDENCE_DIR are declared and read in common.sh;
+# this only sets them, which shellcheck cannot see from here.
 # shellcheck disable=SC2034
 parse_common_args() {
   for _arg in "$@"; do
@@ -103,6 +179,8 @@ parse_common_args() {
       --dry-run) DRY_RUN=1 ;;
       --json) JSON=1 ;;
       --report) REPORT=1 ;;
+      --evidence) EVIDENCE_DIR=auto ;;
+      --evidence=*) EVIDENCE_DIR=${_arg#--evidence=} ;;
     esac
   done
 }
@@ -171,7 +249,10 @@ report_url() {
 report_outcome() {
   [ "$1" = ok ] || return 0
   [ -z "$(facts_overridden)" ] || return 0
-  printf 'Worked exactly as written\n'
+  # The dropdown option verbatim, German gloss included, because GitHub selects
+  # an option by exact text and would otherwise leave the field empty. The gloss
+  # is taken off again by stripGloss() in tools/check-record.mjs.
+  printf 'Worked exactly as written (hat genau so funktioniert)\n'
 }
 
 # print_report <page> <outcome> <json>: the closing block of verify.sh --report.

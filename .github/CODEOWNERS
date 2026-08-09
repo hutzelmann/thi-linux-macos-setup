@@ -1,0 +1,34 @@
+# Who has to look before a change lands.
+#
+# design/requirements.md section 4.6 asks for a review gate on the facts file
+# and on anything a reader is told to trust, and AGENTS.md rule 4 is the reason:
+# an observed value is not a verified value. A drift run reports that a
+# certificate or a hostname is not what the page says. Turning that report into
+# a documented value is a judgement somebody makes out of band, so nothing here
+# may reach main without a person on it.
+#
+# Today that person is one person, which makes most of this file a formality.
+# It is written by path anyway, so the rule survives the second maintainer
+# rather than being invented at the moment it is first needed. GitHub also
+# refuses auto-merge on an owned path, which is the part that works today.
+
+*                       @hutzelmann
+
+# Documented values. Every page, every script and every check reads these, so a
+# wrong one is wrong everywhere at once.
+/facts/                 @hutzelmann
+
+# Trust material in prose: certificate authorities, fingerprints, the bundle a
+# reader is told to build.
+/content/en/vpn/        @hutzelmann
+/content/de/vpn/        @hutzelmann
+/content/en/wifi/       @hutzelmann
+/content/de/wifi/       @hutzelmann
+
+# What the checks look at, and what runs them unattended.
+/scripts/ci/            @hutzelmann
+/.github/workflows/     @hutzelmann
+
+# The contract the rest of this is enforced against.
+/AGENTS.md              @hutzelmann
+/.github/CODEOWNERS     @hutzelmann

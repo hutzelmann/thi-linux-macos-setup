@@ -132,6 +132,12 @@ There is no compliance check to run. Nothing here reports to anyone, and this pa
 tell you whether an auditor would agree. What you can do is confirm each setting is in the
 state you think it is:
 
+<ScriptDownload file="policy-verify.sh" does="Prints the state of the settings the requirements describe, on this machine and nowhere else" />
+
+It never prints or records the machine's name: the requirement is that the name matches
+an inventory sticker, and an inventory number identifies one machine issued to one
+person. It reports whether the name has that shape.
+
 ::: os arch
 
 ```bash

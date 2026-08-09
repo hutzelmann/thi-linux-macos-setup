@@ -75,6 +75,29 @@ ${cases}
 `
 }
 
+/**
+ * Remove the block that only makes sense inside a clone.
+ *
+ * scripts/lib/facts.sh reads facts/*.yaml off disk, by walking up from the
+ * running script until it finds the directory. A downloaded file has no
+ * repository above it, so that reader is replaced here by generateFactFunction
+ * below, which has the values in it. Both are called `fact` and take the same
+ * two arguments, so the scripts themselves are identical either way.
+ *
+ * Markers rather than a name match, because the block is a few functions and a
+ * long comment explaining exactly this.
+ */
+function stripRepositoryOnly(source) {
+  const start = /^# --- repository-only -+$/m
+  const end = /^# --- end repository-only -+$\n?/m
+  const from = source.search(start)
+  if (from === -1) return source
+  const rest = source.slice(from)
+  const match = rest.match(end)
+  if (!match) throw new Error('scripts/lib/facts.sh: repository-only block is not closed')
+  return source.slice(0, from) + rest.slice(match.index + match[0].length)
+}
+
 function stripShebang(source) {
   return source.replace(/^#!.*\n/, '')
 }
@@ -133,7 +156,9 @@ function header(relative) {
 function main() {
   const facts = loadFacts()
   const common = stripLintDirectives(stripShebang(readFileSync(join(SCRIPTS, 'lib/common.sh'), 'utf8')))
-  const factsLib = stripLintDirectives(stripShebang(readFileSync(join(SCRIPTS, 'lib/facts.sh'), 'utf8')))
+  const factsLib = stripRepositoryOnly(
+    stripLintDirectives(stripShebang(readFileSync(join(SCRIPTS, 'lib/facts.sh'), 'utf8')))
+  )
 
   rmSync(OUT, { recursive: true, force: true })
   mkdirSync(OUT, { recursive: true })

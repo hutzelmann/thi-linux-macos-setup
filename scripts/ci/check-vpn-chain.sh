@@ -15,9 +15,13 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 
-fact() {
-  sed -n "s/^$2:[[:space:]]*//p" "facts/$1.yaml" | head -1 | tr -d '"'
-}
+# The same reader the scripts use. It had a second copy here, which dropped
+# everything after a `#` and would have read a documented URL with a fragment
+# as a shorter URL. One value, one reader (AGENTS.md rule 2).
+# shellcheck source=../lib/common.sh
+. scripts/lib/common.sh
+# shellcheck source=../lib/facts.sh
+. scripts/lib/facts.sh
 
 HOST=$(fact vpn host)
 PORT=$(fact vpn port)

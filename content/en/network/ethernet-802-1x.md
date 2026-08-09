@@ -164,6 +164,12 @@ The profile name is yours to choose. It is a local label and campus systems neve
 
 ### Verify
 
+<ScriptDownload file="network-verify.sh" does="Reports the profile, the address the port handed out, and the hardware addresses that would each need their own registration" />
+
+It covers both paths on this page, and `--evidence` writes down everything it saw. A
+wired port is the one thing here you have to be standing next to, so recording the run is
+worth more than reading it.
+
 ::: os arch
 
 ```bash

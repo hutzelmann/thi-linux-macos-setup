@@ -4,6 +4,7 @@
 # Usage:
 #   ./verify.sh           readable
 #   ./verify.sh --json    machine-readable, identifiers stripped
+#   ./verify.sh --evidence  write down everything it saw, for debugging later
 #
 # Runs from anywhere: the gateway is public. No credentials are used and no
 # connection is attempted; this observes the TLS handshake only.
@@ -26,6 +27,7 @@ fetch_leaf() {
 
 main() {
   parse_common_args "$@"
+  evidence_open vpn
 
   _bundle=$(fact vpn ca_bundle)
   _reachable=no
@@ -35,17 +37,30 @@ main() {
 
   [ -r "$_bundle" ] && _bundle_present=yes
 
+  resolved_addresses "$(fact vpn host)" | evidence resolved-addresses
+
   if _handshake=$(fetch_leaf) && [ -n "$_handshake" ]; then
     _reachable=yes
+    # The whole chain the gateway offered, not the one field the check reduces
+    # it to. This is what tells a certificate that expired apart from one that
+    # was reissued under a different authority, weeks later and off campus.
+    echo | timeout 15 openssl s_client -showcerts \
+      -connect "$(fact vpn host):$(fact vpn port)" \
+      -servername "$(fact vpn host)" 2>&1 | evidence certificate-chain
     _leaf=$(mktemp)
     trap 'rm -f "$_leaf"' EXIT
     printf '%s\n' "$_handshake" | openssl x509 -out "$_leaf" 2>/dev/null || true
 
     if [ -s "$_leaf" ]; then
       _expires=$(openssl x509 -in "$_leaf" -noout -enddate 2>/dev/null | cut -d= -f2)
-      if [ "$_bundle_present" = yes ] &&
-        openssl verify -CAfile "$_bundle" "$_leaf" >/dev/null 2>&1; then
-        _verifies=yes
+      openssl x509 -in "$_leaf" -noout -text 2>&1 | evidence leaf-certificate
+      if [ "$_bundle_present" = yes ]; then
+        openssl verify -verbose -CAfile "$_bundle" "$_leaf" 2>&1 | evidence chain-verification
+        openssl crl2pkcs7 -nocrl -certfile "$_bundle" 2>/dev/null |
+          openssl pkcs7 -print_certs -noout 2>&1 | evidence bundle-contents
+        if openssl verify -CAfile "$_bundle" "$_leaf" >/dev/null 2>&1; then
+          _verifies=yes
+        fi
       fi
     fi
   fi
@@ -87,6 +102,7 @@ main() {
   # After the advice, not instead of it: a report of what did not work is worth
   # filing too, and it is the report the page most needs.
   [ "$REPORT" = "1" ] && print_report "$REPORT_PAGE" "$(report_outcome "$_status")" "$_json"
+  evidence_close
 
   [ "$_status" = ok ] || exit 1
 }

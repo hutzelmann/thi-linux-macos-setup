@@ -2,7 +2,7 @@
 title: Windows 11 Education in einer virtuellen Maschine
 description: Windows 11 Education unter Linux und macOS in einer VM installieren, mit GNOME Boxes, virt-manager oder UTM, mit lokalen Administratorrechten trotz Hochschulkonto.
 os: [arch, debian, macos]
-translatedFrom: c7281b8abc31c8da7f95b34cbe2d0ecdf2467306
+translatedFrom: 0eabd91c51c713ec857139c43c8c058854e19769
 ---
 
 # Windows in einer virtuellen Maschine
@@ -60,6 +60,8 @@ Vernünftige Ausgangsgröße, unabhängig vom Werkzeug:
 - 8–12 GB RAM
 - 4 CPUs
 - 128 GB Speicher
+
+<ScriptDownload file="vm-verify.sh" does="Prüft am Wirtsystem Hardwarebeschleunigung, UEFI-Firmware und den Software-TPM, den der Gast braucht" />
 
 Windows 11 verlangt Secure Boot und ein TPM. Beides sauber einzurichten ist am Anfang mehr
 Arbeit, und es ist die Voraussetzung dafür, das Hochschulkonto später zu verbinden: die

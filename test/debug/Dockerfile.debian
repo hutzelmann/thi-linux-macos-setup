@@ -1,0 +1,32 @@
+# A Debian nobody minds losing, for reproducing a check away from the host.
+#
+# Deliberately close to what test/printing/Dockerfile.debian installs, and
+# deliberately not the same image: that one exists to assert what the printing
+# page claims and is built around a driver package. This one is a place to
+# stand while running a check and reading its evidence, so it carries the tools
+# every check here uses and nothing about any one of them.
+FROM debian:stable-slim
+
+# cups-client     lpstat, lpoptions, the client half only
+# smbclient       reaching an SMB port the way the shares page does
+# openssl         the VPN certificate chain
+# iproute2        addresses and links, for reading evidence from another machine
+# curl, ca-certs  fetching a documented URL
+# netcat-openbsd  provides nc, which the checks probe ports with
+# less, vim-tiny   for reading the evidence without leaving the container
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    cups-client \
+    smbclient \
+    openssl \
+    iproute2 \
+    curl \
+    ca-certificates \
+    netcat-openbsd \
+    less \
+    vim-tiny \
+  && rm -rf /var/lib/apt/lists/*
+
+# The repository is mounted read-only, so the working directory has to be
+# somewhere else and every check writes its evidence there.
+WORKDIR /scratch

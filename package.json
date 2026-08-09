@@ -25,7 +25,8 @@
     "check:vpn-chain": "bash scripts/ci/check-vpn-chain.sh",
     "check:staleness": "bash scripts/ci/check-staleness.sh",
     "check:fact-urls": "bash scripts/ci/check-fact-urls.sh",
-    "check:drift": "npm run check:vpn-chain; npm run check:fact-urls; npm run check:staleness"
+    "check:content-urls": "bash scripts/ci/check-content-urls.sh",
+    "check:drift": "npm run check:vpn-chain; npm run check:fact-urls; npm run check:content-urls; npm run check:staleness"
   },
   "devDependencies": {
     "@types/markdown-it-container": "^4.0.0",

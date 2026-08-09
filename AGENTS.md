@@ -16,8 +16,9 @@ npm run build          # production build, fails on dead links
 npm run check          # all CI checks; run before proposing a commit
 npm run new-page       # scaffold a page with correct frontmatter
 npm run record -- /en/printing/   # record a check you just performed
-npm run check:drift    # the three checks the weekly workflow runs
+npm run check:drift    # the checks the weekly workflow runs
 npm run test:printing  # the print queue scripts, in throwaway containers
+scripts/debug.sh vpn   # one check, in a throwaway container, keeping its evidence
 ```
 
 ## Never
@@ -177,6 +178,39 @@ reads as a complaint or a claim of authority creates real problems.
 Auto-generated issues and alerts are permanent and public. State what was observed, what
 was documented, and when. Never attribute fault or intent to anyone.
 
+### The same table in German
+
+The German pages are held to the same constraint, and the table above does not carry
+across on its own: `community-maintained` has no single German word, and the obvious
+translations of `verified` are exactly the claims this project must not make. The
+German pages were written before this table existed, so treat a page that disagrees
+with it as a page to fix.
+
+| Do not write | Write |
+|---|---|
+| scannen, testen, überwachen | dokumentierte Endpunkte prüfen |
+| verifiziert, garantiert, geprüft und bestätigt | zuletzt geprüft am *Datum* |
+| offiziell, unterstützt, freigegeben | von der Community gepflegt |
+| funktioniert | am *Datum* als funktionierend gemeldet |
+| Die IT hat X kaputt gemacht, Störung | beobachteter Wert weicht vom dokumentierten ab |
+| ✅ / ❌ als Statussiegel | Datum und Worte |
+| ein Einschub mit `—` | ein Einschub in Klammern, oder ein eigener Satz |
+| `Schritt 1 — Werte sammeln` | `Schritt 1: Werte sammeln` |
+| `—` als leere Tabellenzelle | `n/a`, oder eine leere Zelle |
+
+Two German words need a decision rather than a translation:
+
+* **geprüft** is the word for `checked`, and it is used only next to a date. On its own
+  it reads as a certification, which is rule 6.
+* **inoffiziell** is the word for `unofficial`, and it appears wherever the English says
+  it. `nicht offiziell` reads as a denial of something somebody claimed; `inoffiziell`
+  is a plain description of what this is.
+
+Informal address (`du`) throughout, which is what the German pages already do and what
+the English `you` reads as. The exception is text quoted from a campus system: the IoT
+registration form asks *Benötigen Sie für das Gerät WLAN?* and it is quoted exactly,
+because a reader is looking for those words on a screen.
+
 ## Languages
 
 Every page exists in both languages. English is the source of truth; German pages under
@@ -220,7 +254,12 @@ call it, so they cannot drift apart:
 | `npm run record -- /en/printing/` | a maintainer with the hardware | two prompts on the terminal |
 | `node tools/check-record.mjs --issue=N` | a maintainer, from a filed issue | the diff, before it is written |
 
-Only the outcome `Worked exactly as written` may write a date.
+Only the outcome `Worked exactly as written` may write a date. The form is bilingual and
+its dropdown reads `Worked exactly as written (hat genau so funktioniert)`; the gloss in
+parentheses is taken off by `stripGloss()` before anything is compared, so the maps in
+`tools/check-record.mjs` stay English and adding a language is a change to the form
+alone. Nothing else in that file may be translated: the operating system options are
+distribution names, and `report_url` prefills them by exact text.
 
 A record names one operating system and writes one entry. The form's `What did you run it
 on` dropdown is what decides which, `npm run record` defaults to the machine it is running
@@ -242,9 +281,25 @@ sourceable without executing: define functions, guard the entry point, keep side
 inside `main`. Every script supports `--dry-run` (print what would happen, change
 nothing) and `--json` (machine-readable result, identifiers stripped). Every `verify.sh`
 also supports `--report`, which prints a prefilled check-record link and declares the
-page it belongs to as `REPORT_PAGE`.
+page it belongs to as `REPORT_PAGE`, and `--evidence`, which writes down what it actually
+saw.
+
+`--evidence[=DIR]` exists because a check that prints pass or fail can only be debugged
+by somebody standing on the network it failed on, and campus is a place you have to
+travel to. So a run can record the whole certificate chain rather than `verifies: no`,
+the resolved addresses rather than `reachable: no`, and the queue's attributes rather
+than `finishing_options: no`. It writes files rather than enlarging the JSON, which stays
+small enough to paste. Everything goes through `redact` on the way out, nothing is
+uploaded, and the closing note says to read it before it goes anywhere.
 
 Scripts never hardcode a value: they call `fact <domain> <key>`, which reads `facts/`.
+There is one reader, in `scripts/lib/facts.sh`, between the markers
+`# --- repository-only`. The standalone downloads have no `facts/` above them, so
+`tools/build-scripts.mjs` cuts that block out and generates a `fact()` with the values
+baked in. Same name, same two arguments, same `fact_env` precedence, so a script cannot
+tell which one it got. A second copy of the reader is a second thing to be wrong: the one
+that used to sit in `check-vpn-chain.sh` dropped everything after a `#`, which is most of
+a documented URL with a fragment in it.
 Any single value can be replaced for one run by setting `FACT_<DOMAIN>_<KEY>` in the
 environment, uppercased, so a check can point at a scratch path or a local stand-in
 without editing `facts/` and without changing the machine it runs on:
@@ -284,3 +339,24 @@ failure-path assertions and skips the rest, saying so.
 What no container answers: whether the print server accepts the job, whether SMB
 authentication works, whether the sheet comes out punched. A green suite is not a check
 record and must never be recorded as one.
+
+### Reproducing one check, away from the host
+
+`scripts/debug.sh <domain>` is the same idea widened: it builds a throwaway Arch or
+Debian from `test/debug/`, mounts the repository read-only at `/repo` and a writable
+`debug/<domain>-<os>/` at `/scratch`, and runs that domain's `verify.sh --evidence`
+unmodified. The container is deleted, the evidence is not. It runs as the invoking user
+rather than root, so what it writes can be read and deleted afterwards without a
+privilege, and every `FACT_*` override on the calling shell is passed through.
+
+```bash
+scripts/debug.sh vpn                    # the VPN check, on Debian
+scripts/debug.sh printing --os=arch     # on Arch instead
+scripts/debug.sh shares --shell         # a shell in the container, after it
+```
+
+Three domains only, and the other five refuse rather than answer: a container has no
+radio (`wifi`), no physical port (`network`), no display (`devices`), and its own disk
+encryption, firewall and virtualisation support are not the reader's (`policy`, `vm`).
+A confident answer about the container would be a wrong answer about the machine, which
+is rule 3.

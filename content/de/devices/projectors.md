@@ -2,7 +2,7 @@
 title: Beamer und externe Bildschirme über HDMI
 description: Blasse Farben über HDMI im Hörsaal beheben, und was du vor einer Vorlesung prüfst.
 os: [arch, debian, macos]
-translatedFrom: 38f32e582f7a7a38d52d86dc19af16ac3f9b7d73
+translatedFrom: 76a9026f8f68cf9b0cdaad6d923c3715e4f6394b
 ---
 
 # Beamer und externe Bildschirme
@@ -65,6 +65,11 @@ Hintergrund: [die askubuntu-Antwort, die denselben Fix
 beschreibt](https://askubuntu.com/a/640153).
 
 ## Prüfen
+
+<ScriptDownload file="devices-verify.sh" does="Sagt, ob dies eine Wayland-Sitzung ist, was angeschlossen ist und ob die Einstellung überhaupt existiert" />
+
+Damit ist beantwortet, ob die Lösung oben hier verfügbar ist. Ob das Bild stimmt, ist der
+Teil darunter, und kein Skript sieht eine Wand.
 
 Zeig etwas mit einer großen schwarzen und einer großen weißen Fläche: ein Terminal auf der
 einen Seite, ein weißes Dokument auf der anderen. Korrekte Ausgabe im vollen Bereich

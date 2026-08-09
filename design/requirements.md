@@ -113,11 +113,17 @@ framework, and that feature is now unused.
 | R33 | Pseudonymous contribution is permitted | Hard | held |
 | R34 | Reports and check output **redact identifiers by default** (usernames, home paths, hostnames, addresses) | Hard | built |
 
-**R13 partly.** Six scripts cover Wi-Fi, VPN, printing and shares. The policy and device
-pages have none, and `npm run record` skips the script step for them by design.
+**R13 partly.** Ten scripts cover Wi-Fi, VPN, printing, shares, wired Ethernet, the
+device rules, the Windows VM host and HDMI output. OneDrive has none: what the page
+documents is that third-party clients cannot sign in, and observing that would mean
+signing in.
 
-**R14 partly.** `drift.yml` runs three checks weekly with no local change: the VPN chain,
-the fact URLs and page staleness. Everything else about campus still needs a person on the
+Every `verify.sh` also takes `--evidence`, which writes the full observation to files
+rather than the one word the result reduces it to. `scripts/debug.sh` runs one of them in
+a throwaway container and keeps the evidence on the host.
+
+**R14 partly.** `drift.yml` runs four checks weekly with no local change: the VPN chain,
+the fact URLs, the addresses linked from the pages, and page staleness. Everything else about campus still needs a person on the
 network, which is R18.
 
 **R18 not built.** It needs a host that sits on the campus network permanently. Who owns
@@ -567,10 +573,6 @@ question was answered or abandoned.
 - [ ] Who runs the macOS verification, and how often? macOS cannot be containerised, so this
       is a person or a `macos-latest` runner, and neither is arranged.
 - [ ] Is a PDF-queue rendering comparison worth setting up, or is layer 5 enough?
-- [ ] Glossary of positioning vocabulary (§5.2) in German. The voice table in `AGENTS.md` is
-      English only, and the German pages were written without it.
-- [ ] Does the German locale get its own issue templates, or is reporting English-only?
-      (R32 says contributing must be low-barrier; an English-only form contradicts that.)
 - [ ] Does the facts file need a role axis? Printing already carries a staff queue and a
       student queue as separate keys, which works but does not generalise.
 - [ ] Search index size budget as the knowledge base grows.
@@ -579,6 +581,14 @@ question was answered or abandoned.
 
 ### Resolved
 
+- [x] Glossary of positioning vocabulary (§5.2) in German? Written, as a second table
+      under "Voice" in `AGENTS.md`, with `du` as the address form because that is what the
+      German pages already use and text quoted from a campus form as the exception.
+- [x] Does the German locale get its own issue templates? **No, one bilingual form.** Both
+      templates carry the German in parentheses next to the English, and
+      `stripGloss()` in `tools/check-record.mjs` takes the gloss off before anything is
+      matched, so the maps stay English and a third language is a change to the form
+      alone. Two forms would have been two things to keep in step.
 - [x] Persist OS site-wide or per-page? Site-wide (R10).
 - [x] Default distro on generic Linux? Arch (R12).
 - [x] Behaviour for Windows or unknown user agent? Arch (R12).

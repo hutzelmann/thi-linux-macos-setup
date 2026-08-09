@@ -57,6 +57,8 @@ Reasonable starting size, whichever tool you use:
 - 4 CPUs
 - 128 GB storage
 
+<ScriptDownload file="vm-verify.sh" does="Checks the host for hardware acceleration, the UEFI firmware and the software TPM the guest will need" />
+
 Windows 11 requires Secure Boot and a TPM. Setting both up properly is more work up
 front, and it is what lets you connect the campus account later: the security policies do
 not apply to a VM that bypassed the check.

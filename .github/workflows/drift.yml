@@ -92,6 +92,44 @@ jobs:
             } | node tools/upsert-issue.mjs --title='A documented URL stopped answering' --label=drift
           fi
 
+  content-urls:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - id: run
+        continue-on-error: true
+        # Steps run under `bash -e`, so the exit code has to be captured on the
+        # same line or the step dies before anything records it.
+        run: |
+          if bash scripts/ci/check-content-urls.sh > result.txt 2>&1; then
+            echo "ok=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.run.outputs.ok }}" = "0" ]; then
+            : | node tools/upsert-issue.mjs --title='A link in the pages stopped answering' --label=drift --close-if-ok
+          else
+            {
+              echo "Observed on $(date -u +%Y-%m-%d)."
+              echo
+              echo '```'
+              cat result.txt
+              echo '```'
+              echo
+              echo 'The pages naming the address are listed under it. Find where the'
+              echo 'material moved to, then edit the English page and its German'
+              echo 'counterpart in the same commit.'
+            } | node tools/upsert-issue.mjs --title='A link in the pages stopped answering' --label=drift
+          fi
+
   staleness:
     runs-on: ubuntu-latest
     steps:

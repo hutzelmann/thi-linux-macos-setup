@@ -1,5 +1,7 @@
-name: I followed a page, here is what happened
-description: Report that the steps worked (or did not) on a real machine, so the page can carry a date.
+name: I followed a page, here is what happened (Ich bin einer Seite gefolgt)
+description: >
+  Report that the steps worked (or did not) on a real machine, so the page can carry a
+  date. Bericht, ob die Schritte auf einem echten Rechner funktioniert haben.
 title: "[check] "
 labels: [check-record]
 body:
@@ -16,18 +18,33 @@ body:
 
         **Please remove usernames, addresses and home paths** from anything you paste.
 
+        ---
+
+        Deutsch: Damit wird aus aufgeschrieben geprüft. Den meisten Seiten hier ist
+        noch niemand zum zweiten Mal gefolgt, und ein datierter Bericht ist mehr wert
+        als eine neue Seite, auch wenn er nur "hat funktioniert" sagt.
+
+        `./scripts/<area>/verify.sh --report` füllt dieses Formular aus und druckt den
+        Link. Es wird nichts gesendet, du siehst alles vor dem Absenden.
+
+        **Bitte Benutzernamen, Adressen und Home-Pfade entfernen.** Dieses Repository
+        ist öffentlich. Antworte auf Deutsch, wenn dir das lieber ist.
+
   - type: input
     id: page
     attributes:
-      label: Which page
+      label: Which page (Welche Seite)
       placeholder: /en/wifi/
     validations:
       required: true
 
+  # The option text is what `report_url` in scripts/lib/facts.sh prefills, and
+  # what check-record.mjs maps onto an os id. Distribution names, so there is
+  # nothing here to translate.
   - type: dropdown
     id: os
     attributes:
-      label: What did you run it on
+      label: What did you run it on (Worauf ausgeführt)
       options:
         - Arch Linux
         - Debian / Ubuntu
@@ -40,13 +57,15 @@ body:
     id: version
     attributes:
       label: Version
-      description: Optional, but it helps the next person judge whether this still applies.
+      description: >
+        Optional, but it helps the next person judge whether this still applies.
+        Optional, hilft aber bei der Einschätzung, ob das noch gilt.
       placeholder: Ubuntu 26.04, macOS 16.2, rolling
 
   - type: input
     id: date
     attributes:
-      label: Date you did this
+      label: Date you did this (Datum)
       placeholder: 2026-08-07
     validations:
       required: true
@@ -54,21 +73,21 @@ body:
   - type: dropdown
     id: outcome
     attributes:
-      label: How did it go
+      label: How did it go (Wie ist es gelaufen)
       options:
-        - Worked exactly as written
-        - Worked, but a step needed adjusting
-        - Did not work
+        - Worked exactly as written (hat genau so funktioniert)
+        - Worked, but a step needed adjusting (ein Schritt musste angepasst werden)
+        - Did not work (hat nicht funktioniert)
     validations:
       required: true
 
   - type: textarea
     id: notes
     attributes:
-      label: What differed, if anything
+      label: What differed, if anything (Was war anders)
       description: >
         The detail that cost you time is exactly what belongs in the page's "known
-        quirks" section.
+        quirks" section. Das Detail, das Sie Zeit gekostet hat, gehört genau dorthin.
 
   # Filled in by `verify.sh --report`. Read in preference to the fields above
   # where both are present: it came from a machine and cannot be mistyped. The
@@ -76,7 +95,7 @@ body:
   - type: textarea
     id: report
     attributes:
-      label: Script output
+      label: Script output (Ausgabe des Skripts)
       description: >
         Optional. Filled in automatically if you got here from
         `./scripts/<area>/verify.sh --report`.

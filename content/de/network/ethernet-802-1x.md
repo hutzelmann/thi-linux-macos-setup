@@ -2,7 +2,7 @@
 title: 'Ethernet am Campus: 802.1X und MAC-Registrierung'
 description: 'Ein Linux- oder Mac-Gerät an eine Netzwerkdose am Campus bringen: Anmeldung per 802.1X, oder den Adapter per MAC-Adresse registrieren, und wie du erkennst, was eine Dose will.'
 os: [arch, debian, macos]
-translatedFrom: 878fed472aba65003c8200d5c2899699e9683a87
+translatedFrom: da5cfb6b2b0e60c26692087bf78a9e29af3e2acf
 ---
 
 # Ethernet am Campus
@@ -168,6 +168,12 @@ ihn nie.
 :::
 
 ### Prüfen
+
+<ScriptDownload file="network-verify.sh" does="Meldet das Profil, die Adresse vom Port und die Hardware-Adressen, die jeweils einzeln registriert werden müssen" />
+
+Es deckt beide Wege auf dieser Seite ab, und `--evidence` schreibt alles Beobachtete mit.
+Ein Netzwerkport ist das Einzige hier, bei dem du danebenstehen musst, deshalb ist ein
+mitgeschriebener Lauf mehr wert als ein gelesener.
 
 ::: os arch
 

@@ -4,6 +4,7 @@
 # Usage:
 #   ./verify.sh           readable
 #   ./verify.sh --json    machine-readable, identifiers stripped
+#   ./verify.sh --evidence  write down everything it saw, for debugging later
 #
 # No credentials are used and nothing is mounted: this answers the question
 # people actually have, which is "is it me, the VPN, or the server?". Name
@@ -79,9 +80,23 @@ explain() {
 
 main() {
   parse_common_args "$@"
+  evidence_open shares
 
   _home=$(check_host "$(fact shares home_server)")
   _files=$(check_host "$(fact shares file_server)")
+
+  # Which addresses these names answered with, on the network this ran on.
+  # "no-dns" from a laptop off campus and "no-dns" from a machine whose VPN is
+  # up are the same word and different problems, and only the resolver output
+  # separates them.
+  for _host in "$(fact shares home_server)" "$(fact shares file_server)" \
+    "$(fact shares research_server)"; do
+    {
+      printf '%s\n' "$_host"
+      resolved_addresses "$_host"
+      printf '\n'
+    } | evidence_stream resolved-addresses
+  done
 
   _status=ok
   [ "$_home" = ok ] || [ "$_home" = resolves ] || _status=unreachable
@@ -108,6 +123,7 @@ main() {
   # After the advice, not instead of it: a report of what did not work is worth
   # filing too, and it is the report the page most needs.
   [ "$REPORT" = "1" ] && print_report "$REPORT_PAGE" "$(report_outcome "$_status")" "$_json"
+  evidence_close
 
   [ "$_status" = ok ] || exit 1
 }

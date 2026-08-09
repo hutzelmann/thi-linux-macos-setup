@@ -2,7 +2,7 @@
 title: Sichere Gerätekonfiguration unter Linux und macOS
 description: Was die Hochschule von einem Dienstrechner verlangt, und was jede Regel unter Linux und macOS bedeutet.
 os: [arch, debian, macos]
-translatedFrom: a484cbdbb227a83d65b6c80beb2f9c9b6c21012f
+translatedFrom: 63052c62252ee79232017f13cb5e5896b5f16c76
 ---
 
 # Sichere Gerätekonfiguration
@@ -133,6 +133,12 @@ so nichts für dich zu tun gibt.
 Es gibt keine Konformitätsprüfung zum Ausführen. Nichts hier meldet irgendwem etwas, und
 diese Seite kann dir nicht sagen, ob eine Prüfstelle zustimmen würde. Was du tun kannst,
 ist bestätigen, dass jede Einstellung in dem Zustand ist, den du erwartest:
+
+<ScriptDownload file="policy-verify.sh" does="Zeigt den Zustand der Einstellungen aus den Anforderungen, nur auf diesem Rechner" />
+
+Es druckt und speichert den Rechnernamen nie: gefordert ist, dass der Name zum
+Inventaraufkleber passt, und eine Inventarnummer bezeichnet einen Rechner, der einer
+Person gehört. Gemeldet wird nur, ob der Name diese Form hat.
 
 ::: os arch
 

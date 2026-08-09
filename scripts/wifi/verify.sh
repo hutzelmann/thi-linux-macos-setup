@@ -4,6 +4,7 @@
 # Usage:
 #   ./verify.sh           readable
 #   ./verify.sh --json    machine-readable, identifiers stripped
+#   ./verify.sh --evidence  write down everything it saw, for debugging later
 #
 # Not "are you online"; that is visible already. This checks the two settings
 # that decide whether your campus password can be collected by a fake access
@@ -46,6 +47,7 @@ inspect_profile() {
 
 main() {
   parse_common_args "$@"
+  evidence_open wifi
 
   if [ "$(detect_os)" = "macos" ]; then
     log "macOS stores Wi-Fi profiles in the system keychain, not NetworkManager."
@@ -63,6 +65,14 @@ main() {
   for _ssid in "$(fact wifi eduroam_ssid)" "$(fact wifi thi_ssid)"; do
     profile_exists "$_ssid" || continue
     _any=1
+
+    # The profile as NetworkManager holds it, not the two fields this check
+    # reduces it to. A profile that fails here usually fails for a third reason
+    # visible nowhere else, and asking somebody to re-run nmcli by hand and
+    # paste the right part of it is how a report stops arriving. The identity
+    # and any hardware address are replaced on the way out.
+    nmcli connection show "$_ssid" 2>&1 |
+      evidence "profile-$(printf '%s' "$_ssid" | tr -c 'a-zA-Z0-9' '-')"
 
     # shellcheck disable=SC2046  # deliberate word splitting of two fields
     set -- $(inspect_profile "$_ssid")
@@ -86,6 +96,7 @@ main() {
 
   if [ "$_any" = 0 ]; then
     log "No campus Wi-Fi profile found on this machine."
+    evidence_close
     exit 0
   fi
 
@@ -110,6 +121,7 @@ main() {
       "profiles=$_profiles" "os=$(detect_os)" | redact)
     print_report "$REPORT_PAGE" "$(report_outcome "$_status")" "$_json"
   fi
+  evidence_close
 
   [ "$_status" = ok ] || exit 1
 }
