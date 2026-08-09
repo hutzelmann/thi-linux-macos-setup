@@ -68,8 +68,10 @@ that hardcoded it silently became wrong.
 log excerpts with identifiers. Use `<kennung>`, `<vorname.nachname>`, `<hostname>`. This
 repository is public and history cannot be unpublished.
 
-**Never claim a check you did not do.** `status: checked` with a date means a person ran
-the steps on real hardware on that date.
+**Never claim a check you did not do.** A `lastChecked` entry means a person ran that
+operating system's steps on real hardware on that date. It is a map, one date per system,
+never one date for the page: a run on Arch is evidence about the Arch block only. Record
+your own run with `npm run record`, or file a check record and let a maintainer merge it.
 
 **Never add a second tab dimension.** Operating system is the only one. Adding
 terminal-vs-GUI as a second axis means six variants of every snippet and the project dies
@@ -92,8 +94,16 @@ professor of literature and a computer science student need eduroam.
 
 ## Language
 
-Pages are written in English and translated into German. Both matter: most people search
-in German, and not everyone here reads it.
+Pages are written in English and translated into German, and **every page exists in both
+languages**. Both matter: most people search in German, and not everyone here reads it.
+
+That makes an edit to an English page two edits. Change `content/en/<path>.md`, mirror the
+change into `content/de/<path>.md`, and set that page's `translatedFrom` to the output of
+`git hash-object content/en/<path>.md`. `npm run check` tells you when a pair is missing
+or out of date, and prints the hash to write. `npm run new-page` creates both files.
+
+The reason is the language switcher: it swaps one path segment, so a page that exists in
+only one language is a 404 for everyone who switches on it.
 
 German words quoted from university systems (form labels, menu paths, policy titles)
 stay in German in both versions, with a translation in brackets on English pages. A

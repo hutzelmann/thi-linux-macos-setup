@@ -13,12 +13,10 @@ Wi-Fi, VPN, network shares.
 ## Why
 
 Campus systems are documented for Windows. Most of it works on Linux and macOS too, but
-the details (a driver path, a certificate authority, a hostname that changed last year)
-live in old mails, forum posts and personal notes. This is that knowledge, written down
-where the next person can find it.
+the details (a driver path, a certificate authority, a hostname) are not written down
+anywhere the next person can find them. This site writes them down.
 
-Pages state when a human last checked them, and admit when nobody has. Campus
-infrastructure changes quietly; a date you can judge beats a checkmark that means nothing.
+Pages state when a human last checked them, and admit when nobody has.
 
 ## Contributing
 
@@ -27,7 +25,7 @@ Corrections are the most valuable contribution, and you do not need to clone any
 | I want to… | Do this |
 |---|---|
 | Report something wrong | The *Something wrong here?* link at the bottom of any page |
-| Say the steps worked | [File a check record](../../issues/new?template=check-record.yml). Dated reports are what turn notes into verified pages |
+| Say the steps worked | [File a check record](../../issues/new?template=check-record.yml) |
 | Fix a typo or a sentence | *Edit this page on GitHub* at the bottom of the page |
 | Write a new page | Read [CONTRIBUTING](.github/CONTRIBUTING.md), then `npm run new-page` |
 
@@ -42,24 +40,22 @@ npm run build     # production build; fails on dead links
 npm run check     # everything CI checks
 ```
 
-Node 22 or newer. No local setup needed for small edits: press `.` on any file in GitHub
-for a browser editor, or use the devcontainer for a full preview environment.
+Node 22 or newer. For small edits press `.` on any file in GitHub for a browser editor.
 
 ## How it is organised
 
 ```
 content/          the pages; content/en is the source, content/de is translated
 facts/            hostnames, queue names, certificates: one file per service
-scripts/          real, runnable setup and verification scripts, embedded into pages
+scripts/          runnable setup and verification scripts, embedded into pages
 design/           requirements and architecture decisions
 ```
 
 Two rules explain most of the structure:
 
-**A configuration value is written once.** Hostnames, queue names and paths live in
-`facts/` and pages reference them as `${facts.printing.queue}`. CI fails if a page
-hardcodes one, because the next rename would miss it. That has already happened here:
-the print server was renamed and every note still pointed at the old name.
+**A configuration value is written once.** It lives in `facts/` and pages reference it as
+`${facts.printing.queue}`. CI fails if a page hardcodes one, because the next rename would
+miss it.
 
 **Scripts are real files, not code blocks.** Pages embed them from `scripts/`, so a
 documented command and the runnable one cannot drift apart.
