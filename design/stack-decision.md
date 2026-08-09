@@ -3,6 +3,21 @@
 Status: **decided. VitePress 1.x, bilingual DE/EN**
 Last updated: 2026-08-07
 
+> **Historical, as of 2026-08-09.** The framework decision it reached still holds and this
+> file is kept as the record of how it was reached. Three things it assumes have since
+> changed, and it is not edited to match, because a comparison matrix rewritten after the
+> fact stops being evidence of what was compared:
+>
+> - **`verifications/`, a directory of dated check results, was never built.** A check is
+>   recorded as a `lastChecked` date in the page's own frontmatter instead, one entry per
+>   operating system. See `decisions/0002-validation-workflow.md`.
+> - **R7's file embedding, one of the two requirements that chose VitePress, is unused.**
+>   Scripts are bundled into standalone downloads rather than embedded into pages. See the
+>   R7 note in `requirements.md` §2.
+> - **The comparison tables below use status seals.** The voice table in `AGENTS.md` bans
+>   those in the project's own writing. They stand here as a private evaluation that
+>   predates the rule; new records in this directory follow it.
+
 ---
 
 ## 0. Decision

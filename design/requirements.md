@@ -1,7 +1,13 @@
 # Knowledge Base: Requirements & Feature Ideas
 
-Last updated: 2026-08-07
-Companion file: `stack-decision.md` (architecture and library choices)
+Last updated: 2026-08-09
+Companion files: `stack-decision.md` (architecture and library choices), `decisions/` (what
+was decided, when, and why)
+
+The living register of what this project is trying to be. Requirement states in §2 are
+checked against the tree, not remembered, and `R<n>` refers to this file and nothing else.
+`AGENTS.md` rules are cited in full, as `AGENTS.md rule 5`. See `README.md` in this
+directory.
 
 ---
 
@@ -37,61 +43,117 @@ artifact. One Dockerfile, two purposes. Never maintain separate "test" and "user
 
 ## 2. Requirements
 
+Every requirement carries a state, so that one which was superseded or never built says so
+rather than reading as a promise. States are as of the date at the top of this file, and
+were checked against the tree rather than remembered:
+
+| State | Meaning |
+|---|---|
+| built | A mechanism in the repository does it |
+| enforced | A rule in `AGENTS.md` that `npm run check` fails on |
+| held | A policy the project follows, with nothing to build |
+| partly | Done in part; the note says which part is missing |
+| superseded | Overtaken by a later decision, which the note names |
+| not built | Not implemented, and still wanted unless the note says otherwise |
+
 ### Site
 
-| # | Requirement | Hard/Soft |
-|---|---|---|
-| R1 | Public hosting on GitHub Pages, static output only | Hard |
-| R2 | Fast navigation: SPA-style client routing, no full page reloads | Hard |
-| R3 | Cacheable in the browser (service worker precache; offline-capable) | Hard |
-| R4 | Tabbed code snippets per system: Arch, Debian, macOS (more later) | Hard |
-| R5 | Fuzzy search, client-side, no external service (no Algolia account) | Hard |
-| R6 | Content authored in Markdown | Hard |
-| R7 | Scripts and containers live in the repo as real, testable files and are embedded into docs, with no copy-paste duplication | Hard |
-| R8 | Open source, permissive license, actively maintained | Hard |
-| R9 | "Full framework": batteries included, not a pile of glue | Soft |
-| R10 | OS selection is documentation-wide and persists across visits | Hard |
-| R11 | First visit auto-detects OS from user agent (or similar) | Hard |
-| R12 | **Arch Linux is the default** for all non-macOS visitors | Hard |
+| # | Requirement | Hard/Soft | State |
+|---|---|---|---|
+| R1 | Public hosting on GitHub Pages, static output only | Hard | built |
+| R2 | Fast navigation: SPA-style client routing, no full page reloads | Hard | built |
+| R3 | Cacheable in the browser (service worker precache; offline-capable) | Hard | not built |
+| R4 | Tabbed code snippets per system: Arch, Debian, macOS (more later) | Hard | superseded |
+| R5 | Fuzzy search, client-side, no external service (no Algolia account) | Hard | built |
+| R6 | Content authored in Markdown | Hard | built |
+| R7 | Scripts and containers live in the repo as real, testable files and are embedded into docs, with no copy-paste duplication | Hard | partly |
+| R8 | Open source, permissive license, actively maintained | Hard | built |
+| R9 | "Full framework": batteries included, not a pile of glue | Soft | built |
+| R10 | OS selection is documentation-wide and persists across visits | Hard | built |
+| R11 | First visit auto-detects OS from user agent (or similar) | Hard | built |
+| R12 | **Arch Linux is the default** for all non-macOS visitors | Hard | built |
+
+**R4 superseded.** OS variants are containers whose visibility is CSS keyed off
+`html[data-os]`, not tabs, and `AGENTS.md` rule 7 now forbids a second tab axis outright.
+See `decisions/0001-project-setup.md`.
+
+**R7 partly.** The scripts are real files and are not duplicated, but they are no longer
+embedded into pages. `tools/build-scripts.mjs` bundles each into a standalone file and
+`ScriptDownload.vue` offers it for download, so a reader runs the script rather than reading
+it inline. Worth flagging because `stack-decision.md` names VitePress's native
+`<<< @/scripts/...#region` embedding as one of the two requirements that chose the
+framework, and that feature is now unused.
+
+**R3 not built.** No service worker exists. Nothing depends on it.
 
 ### Verification & delivery
 
-| # | Requirement | Hard/Soft |
-|---|---|---|
-| R13 | Every manual is backed by a script that can be executed to check it; documentation is executable, not prose | Hard |
-| R14 | **Campus infrastructure** drift is detected without any local change | Hard |
-| R15 | Prebuilt containers published as ready-to-run artifacts for tedious setups, where the domain permits it | Hard |
-| R16 | A failing verification must produce a tracked, actionable signal, not just a red mark | Soft |
-| R17 | Readers can see how recently a page was last checked, per OS, stated as an observation and never as a guarantee (R29) | Soft |
-| R18 | Verification requiring campus-network presence must run from inside that network | Hard |
-| R19 | OS/package drift is **out of scope**; do not build for it | n/a |
-| R20 | **No university credentials anywhere**: not in CI secrets, the repo, or the prober. The SSO password is a universal credential (it can alter student grades); it is never stored or automated | Hard |
-| R21 | Manual verification is permanent and first-class; it must be tracked, dated, and its staleness surfaced | Hard |
-| R22 | Checks follow one uniform schema across all domains (printing, VPN, shares, email, WiFi, …) so adding a domain is cheap | Hard |
-| R23 | Documented configuration values live in data, referenced by both the docs and the checks, never typed twice | Hard |
-| R24 | **Agent-operable**: checks are machine-readable, emit structured output, and declare their own prerequisites | Hard |
-| R25 | Agents operate **only inside disposable containers**, never against host state; repo mounted read-only | Hard |
-| R26 | Agent changes land as pull requests, never directly on main | Hard |
-| R27 | Trust material (certs, CAs, fingerprints) is **never** updated automatically from observed values; out-of-band human confirmation required | Hard |
-| R28 | Unofficial and community-maintained. No affiliation or endorsement implied; official support channels are linked first, on every page | Hard |
-| R29 | **No commitments of any kind**: no accuracy guarantee, no coverage promise, no response time. The only contract is the community feedback loop | Hard |
-| R30 | Checks touch only documented endpoints, using ordinary client protocols, at low volume. No ranges, no enumeration, nothing resembling a network scan | Hard |
-| R31 | Students and staff are served **equally**, with no assumed technical background and neither group second-class | Hard |
-| R32 | Contributing and reporting must not require git proficiency, the command line, or opening a pull request. A GitHub account is the accepted floor | Hard |
-| R33 | Pseudonymous contribution is permitted | Hard |
-| R34 | Reports and check output **redact identifiers by default** (usernames, home paths, hostnames, addresses) | Hard |
+| # | Requirement | Hard/Soft | State |
+|---|---|---|---|
+| R13 | Every manual is backed by a script that can be executed to check it; documentation is executable, not prose | Hard | partly |
+| R14 | **Campus infrastructure** drift is detected without any local change | Hard | partly |
+| R15 | Prebuilt containers published as ready-to-run artifacts for tedious setups, where the domain permits it | Hard | not built |
+| R16 | A failing verification must produce a tracked, actionable signal, not just a red mark | Soft | built |
+| R17 | Readers can see how recently a page was last checked, per OS, stated as an observation and never as a guarantee (R29) | Soft | built |
+| R18 | Verification requiring campus-network presence must run from inside that network | Hard | not built |
+| R19 | OS/package drift is **out of scope**; do not build for it | n/a | n/a |
+| R20 | **No university credentials anywhere**: not in CI secrets, the repo, or the prober. The SSO password is a universal credential (it can alter student grades); it is never stored or automated | Hard | held |
+| R21 | Manual verification is permanent and first-class; it must be tracked, dated, and its staleness surfaced | Hard | built |
+| R22 | Checks follow one uniform schema across all domains (printing, VPN, shares, email, WiFi, …) so adding a domain is cheap | Hard | built |
+| R23 | Documented configuration values live in data, referenced by both the docs and the checks, never typed twice | Hard | enforced |
+| R24 | **Agent-operable**: checks are machine-readable, emit structured output, and declare their own prerequisites | Hard | partly |
+| R25 | Agents operate **only inside disposable containers**, never against host state; repo mounted read-only | Hard | not built |
+| R26 | Agent changes land as pull requests, never directly on main | Hard | not built |
+| R27 | Trust material (certs, CAs, fingerprints) is **never** updated automatically from observed values; out-of-band human confirmation required | Hard | enforced |
+| R28 | Unofficial and community-maintained. No affiliation or endorsement implied; official support channels are linked first, on every page | Hard | held |
+| R29 | **No commitments of any kind**: no accuracy guarantee, no coverage promise, no response time. The only contract is the community feedback loop | Hard | enforced |
+| R30 | Checks touch only documented endpoints, using ordinary client protocols, at low volume. No ranges, no enumeration, nothing resembling a network scan | Hard | held |
+| R31 | Students and staff are served **equally**, with no assumed technical background and neither group second-class | Hard | held |
+| R32 | Contributing and reporting must not require git proficiency, the command line, or opening a pull request. A GitHub account is the accepted floor | Hard | held |
+| R33 | Pseudonymous contribution is permitted | Hard | held |
+| R34 | Reports and check output **redact identifiers by default** (usernames, home paths, hostnames, addresses) | Hard | built |
+
+**R13 partly.** Six scripts cover Wi-Fi, VPN, printing and shares. The policy and device
+pages have none, and `npm run record` skips the script step for them by design.
+
+**R14 partly.** `drift.yml` runs three checks weekly with no local change: the VPN chain,
+the fact URLs and page staleness. Everything else about campus still needs a person on the
+network, which is R18.
+
+**R18 not built.** It needs a host that sits on the campus network permanently. Who owns
+that machine is still open, in §6.
+
+**R15, R25, R26 not built.** No container is published as an artifact: `test/printing/`
+builds throwaway images to exercise the install script and nothing more. There is no agent
+harness, so the two rules governing one have nothing to govern yet. Both stay as written for
+when there is.
+
+**R24 partly.** Every script emits `--json` on one schema. Prerequisites are documented in
+prose and are not machine-readable, so a caller cannot ask a script what it needs.
 
 ### Languages
 
-| # | Requirement | Hard/Soft |
-|---|---|---|
-| R35 | Two locales, **German and English**, both first-class. **English is the single source of truth**; German is a translation | Hard |
-| R36 | German strings quoted from university systems (form labels, portal menu paths, policy titles) appear **verbatim in both locales**, with a translation in parentheses on English pages | Hard |
-| R37 | Configuration facts (R23) are **locale-neutral and stored once**: hostnames, ports, queue names, paths, fingerprints, commands. A translated hostname is a bug | Hard |
-| R38 | Every translated page records the source revision it was translated from; CI detects translations whose source has since changed | Hard |
-| R39 | A stale translation is **marked in the UI**, never served silently as if current | Hard |
-| R40 | Machine translation is permitted and expected. The PR must declare it, and review must confirm that no value, command or quoted UI string was altered | Hard |
-| R41 | Every page declares `status` and `lastChecked` in frontmatter; the status board is generated from them, never hand-written | Hard |
+| # | Requirement | Hard/Soft | State |
+|---|---|---|---|
+| R35 | Two locales, **German and English**, both first-class. **English is the single source of truth**; German is a translation | Hard | built |
+| R36 | German strings quoted from university systems (form labels, portal menu paths, policy titles) appear **verbatim in both locales**, with a translation in parentheses on English pages | Hard | held |
+| R37 | Configuration facts (R23) are **locale-neutral and stored once**: hostnames, ports, queue names, paths, fingerprints, commands. A translated hostname is a bug | Hard | enforced |
+| R38 | Every translated page records the source revision it was translated from; CI detects translations whose source has since changed | Hard | enforced |
+| R39 | A stale translation is **marked in the UI**, never served silently as if current | Hard | superseded |
+| R40 | Machine translation is permitted and expected. The PR must declare it, and review must confirm that no value, command or quoted UI string was altered | Hard | not built |
+| R41 | Every page declares `status` and `lastChecked` in frontmatter; the status board is generated from them, never hand-written | Hard | superseded |
+
+**R39 superseded.** `check-translations.sh` fails the build on a stale translation, so one
+cannot reach a reader and there is nothing to mark. The banner this asked for would only
+ever render on a site that could not have been published.
+
+**R40 not built.** Nothing in the pull request template or `CONTRIBUTING.md` asks a
+contributor to declare machine translation, and no review step checks it.
+
+**R41 superseded.** There is no `status` field. A page is checked, for one operating system,
+exactly when it carries a `lastChecked` date for it, so the state and its date cannot
+contradict each other. See `decisions/0001-project-setup.md` and the page contract in
+`AGENTS.md`.
 
 ---
 
@@ -493,32 +555,53 @@ every batch will invent its own.
 
 ## 6. Open items
 
-- [x] ~~Persist OS site-wide or per-page?~~ → site-wide (R10)
-- [x] ~~Default distro on generic Linux?~~ → Arch (R12)
-- [x] ~~Behaviour for Windows/unknown UA?~~ → Arch (R12)
-- [x] ~~Keep auto-detect?~~ → yes; scoped to a single Mac check
-- [x] ~~Is campus VPN access sufficient?~~ → **No.** Interactive SSO, universal
-      high-privilege credential. Prober is permanent and on-campus (R20)
-- [ ] What machine hosts the prober, and who owns it? (laptop → must handle skip≠fail)
-- [ ] **Ask IT for a low-privilege test account**, which unlocks layer 4 automation
-- [ ] **Sanity-check with IT what infrastructure detail is publishable**
-- [ ] Domain rollout order: eduroam cert first? (highest blast radius)
-- [ ] Schema for the check definitions and the facts file (R22, R23)
-- [ ] Who runs the macOS verification, and how often?
-- [ ] Max age per manual check before the staleness bot complains
-- [ ] Cron cadence for the fingerprint check
+Resolved items name what resolved them, so a reader does not have to guess whether a
+question was answered or abandoned.
+
+### Still open
+
+- [ ] What machine hosts the campus-side prober, and who owns it? A laptop means skip must
+      not read as fail. Blocks R18.
+- [ ] **Ask IT for a low-privilege test account**, which unlocks layer 4 automation.
+- [ ] **Sanity-check with IT what infrastructure detail is publishable.**
+- [ ] Who runs the macOS verification, and how often? macOS cannot be containerised, so this
+      is a person or a `macos-latest` runner, and neither is arranged.
 - [ ] Is a PDF-queue rendering comparison worth setting up, or is layer 5 enough?
-- [ ] Which domains warrant containers at all (VPN and WiFi likely do not)
-- [ ] JSON schema for check output; define before writing the first check
-- [ ] Does `AGENTS.md` cover it, or is a per-directory contract needed?
-- [x] ~~Second contribution channel for non-git contributors?~~ → **deliberately none.**
-      Issues only. A GitHub account is the floor (R32, reworded). Revisit if a
-      non-technical department is genuinely blocked by it.
-- [x] ~~Is i18n needed?~~ → **yes, DE + EN**, English is source (R35–R40, §5.6)
-- [ ] Glossary of positioning vocabulary (§5.2) in German, needed *before* the first
-      translation batch
+- [ ] Glossary of positioning vocabulary (§5.2) in German. The voice table in `AGENTS.md` is
+      English only, and the German pages were written without it.
 - [ ] Does the German locale get its own issue templates, or is reporting English-only?
-      (R32 says contributing must be low-barrier; an English-only form contradicts that)
-- [ ] Which services genuinely differ by role, and does the facts file need a role axis?
-- [ ] Naming convention for snippet regions in scripts
-- [ ] Search index size budget as the KB grows
+      (R32 says contributing must be low-barrier; an English-only form contradicts that.)
+- [ ] Does the facts file need a role axis? Printing already carries a staff queue and a
+      student queue as separate keys, which works but does not generalise.
+- [ ] Search index size budget as the knowledge base grows.
+- [ ] Should R15, R25 and R26 stay as Hard requirements? All three describe an agent and
+      container delivery story that nothing has needed yet.
+
+### Resolved
+
+- [x] Persist OS site-wide or per-page? Site-wide (R10).
+- [x] Default distro on generic Linux? Arch (R12).
+- [x] Behaviour for Windows or unknown user agent? Arch (R12).
+- [x] Keep auto-detect? Yes, scoped to a single Mac check (§3).
+- [x] Is campus VPN access sufficient? **No.** Interactive SSO, and the password is a
+      universal high-privilege credential, so the prober is permanent and on campus (R20).
+- [x] Second contribution channel for non-git contributors? **Deliberately none.** Issues
+      only, and a GitHub account is the floor (R32, knowingly relaxed in
+      `decisions/0001-project-setup.md`). Revisit if a non-technical department is genuinely
+      blocked by it.
+- [x] Is i18n needed? **Yes, German and English**, English is source (R35 to R40, §5.6).
+- [x] Schema for the check definitions and the facts file? `facts/<domain>.yaml`, one level
+      deep by contract, one file per domain (`0001`).
+- [x] JSON schema for check output? `json_result()` in `scripts/lib/facts.sh`, one shape for
+      every domain (R22).
+- [x] Max age per manual check before staleness is surfaced? `stale_after_days: 180` in
+      `facts/project.yaml`, read by `check-staleness.sh` and by the page marker
+      (`decisions/0002-validation-workflow.md`).
+- [x] Cron cadence for the scheduled checks? Weekly, Monday 06:00 UTC, in `drift.yml`.
+- [x] Domain rollout order? Moot. Wi-Fi, wired, VPN, printing and shares shipped together.
+- [x] Which domains warrant containers at all? Printing only, in `test/printing/`. VPN and
+      Wi-Fi were expected not to and do not.
+- [x] Does `AGENTS.md` cover it, or is a per-directory contract needed? `AGENTS.md` covers
+      it, and `npm run check` enforces the parts that can be enforced.
+- [x] Naming convention for snippet regions in scripts? Moot. Scripts are bundled and
+      downloaded rather than embedded, so there are no regions (R7).
