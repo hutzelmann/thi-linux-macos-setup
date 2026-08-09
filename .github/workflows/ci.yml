@@ -51,12 +51,10 @@ jobs:
           path: content/.vitepress/dist
           retention-days: 7
 
-  # Separate job: this one reaches the public internet, so a network blip must
-  # not fail a documentation pull request.
-  vpn-chain:
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v7
-      - name: VPN certificate chain still behaves as documented
-        run: npm run check:vpn-chain
+# The VPN chain check used to run here too, tolerated with continue-on-error.
+# It reaches vpn.thi.de from a GitHub runner, which usually cannot get there
+# inside the timeout, so the job was red on ten of twelve runs while the run
+# itself stayed green. A job that is nearly always red teaches people to ignore
+# red. It runs weekly in drift.yml, which is where a check of the campus
+# belongs, and `npm run check:vpn-chain` runs it by hand from a machine that
+# can actually reach the gateway.

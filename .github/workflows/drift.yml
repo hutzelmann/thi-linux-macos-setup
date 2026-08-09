@@ -26,34 +26,46 @@ jobs:
           node-version-file: .nvmrc
 
       - id: run
-        # A network blip is not a documentation problem, and the report says so.
         continue-on-error: true
-        # Steps run under `bash -e`, so the exit code has to be captured on the
-        # same line or the step dies before anything records it.
+        # Three outcomes, not two: 0 behaves as documented, 1 something was
+        # observed and differs, 2 nothing could be observed. The script's own
+        # header spells them out. Steps run under `bash -e`, so the code has to
+        # be captured on the same line or the step dies before anything records
+        # it.
         run: |
-          if npm run check:vpn-chain > result.txt 2>&1; then
-            echo "ok=0" >> "$GITHUB_OUTPUT"
-          else
-            echo "ok=1" >> "$GITHUB_OUTPUT"
-          fi
+          code=0
+          npm run check:vpn-chain > result.txt 2>&1 || code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
 
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ steps.run.outputs.ok }}" = "0" ]; then
-            : | node tools/upsert-issue.mjs --title='VPN certificate chain differs from the documented one' --label=drift --close-if-ok
-          else
-            {
-              echo "Observed on $(date -u +%Y-%m-%d), by the check the VPN page documents."
-              echo
-              echo '```'
+          case "${{ steps.run.outputs.code }}" in
+            0)
+              : | node tools/upsert-issue.mjs --title='VPN certificate chain differs from the documented one' --label=drift --close-if-ok
+              ;;
+            2)
+              # Nothing is filed and nothing is closed. The runner could not
+              # reach the gateway, so no certificate was seen, and an issue
+              # saying the chain changed would be a claim about something
+              # nobody looked at. An open issue from a week when the check did
+              # run is still true and stays open.
+              echo 'Nothing was observed this week:'
               cat result.txt
-              echo '```'
-              echo
-              echo 'Nobody has done anything wrong here. An observed value differs from a'
-              echo 'documented one, and the documented one is what this repository controls.'
-            } | node tools/upsert-issue.mjs --title='VPN certificate chain differs from the documented one' --label=drift
-          fi
+              ;;
+            *)
+              {
+                echo "Observed on $(date -u +%Y-%m-%d), by the check the VPN page documents."
+                echo
+                echo '```'
+                cat result.txt
+                echo '```'
+                echo
+                echo 'Nobody has done anything wrong here. An observed value differs from a'
+                echo 'documented one, and the documented one is what this repository controls.'
+              } | node tools/upsert-issue.mjs --title='VPN certificate chain differs from the documented one' --label=drift
+              ;;
+          esac
 
   fact-urls:
     runs-on: ubuntu-latest

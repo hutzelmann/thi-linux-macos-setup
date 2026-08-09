@@ -11,6 +11,17 @@
 # Also catches the good news: if THI starts serving the full chain, check 1
 # flips and the page can be simplified. The gateway is publicly reachable, so
 # this needs no campus access and runs in ordinary CI.
+#
+# Exit codes, because two callers act on them and one of them files a public
+# issue:
+#
+#   0  the chain behaves exactly as the page documents
+#   1  something was observed and it differs from the documentation
+#   2  nothing could be observed, so there is nothing to say
+#
+# The difference between 1 and 2 is the whole point. A run that could not reach
+# the gateway has not seen a certificate, and reporting that as a changed chain
+# is a claim about something nobody looked at.
 set -euo pipefail
 
 cd "$(dirname "$0")/../.."
@@ -33,9 +44,9 @@ trap 'rm -rf "$work"' EXIT
 echo "Fetching certificate from ${HOST}:${PORT}"
 if ! echo | timeout 20 openssl s_client -connect "${HOST}:${PORT}" \
   -servername "$HOST" >"$work/handshake.txt" 2>/dev/null; then
-  echo "✗ Could not reach ${HOST}:${PORT}"
-  echo "  Not necessarily a documentation problem. Check connectivity first."
-  exit 1
+  echo "  Could not reach ${HOST}:${PORT}"
+  echo "  Nothing was observed, so this says nothing about the documentation."
+  exit 2
 fi
 
 openssl x509 -in "$work/handshake.txt" -out "$work/leaf.pem" 2>/dev/null
@@ -54,11 +65,20 @@ echo "  chain incomplete without the intermediate, as documented"
 
 # 2. With the documented intermediate it must verify against the system store.
 echo "Fetching intermediate from ${INTERMEDIATE_URL}"
-if ! curl -fsS "$INTERMEDIATE_URL" -o "$work/inter.der"; then
-  echo "✗ Documented intermediate URL is unreachable: ${INTERMEDIATE_URL}"
+# curl's own exit code separates the two cases: 22 is an HTTP status of 400 or
+# worse, which is the host answering that the file is not there any more, and
+# anything else at this point is not having got that far.
+curl_code=0
+curl -fsS "$INTERMEDIATE_URL" -o "$work/inter.der" || curl_code=$?
+if [ "$curl_code" -eq 22 ]; then
+  echo "✗ Documented intermediate is no longer served: ${INTERMEDIATE_URL}"
   echo "  fix: find the current URL in the leaf's Authority Information Access"
   echo "       extension and update facts/vpn.yaml"
   exit 1
+elif [ "$curl_code" -ne 0 ]; then
+  echo "  Could not fetch ${INTERMEDIATE_URL} (curl ${curl_code})"
+  echo "  Nothing was observed, so this says nothing about the documentation."
+  exit 2
 fi
 
 openssl x509 -inform DER -in "$work/inter.der" -out "$work/inter.pem" 2>/dev/null ||
