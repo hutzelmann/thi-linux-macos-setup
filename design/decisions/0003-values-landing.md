@@ -43,16 +43,24 @@ Every value comes from `facts/` by substitution, including inside the Vue tags:
 substitution runs on the markdown source before markdown-it, so a facts token inside a
 component's slot is replaced like any other. No value is typed into the page.
 
-## The headline names the system back
+## The headline is one fixed string
 
-The reader picked an operating system at the root, so the headline says which one. All
-three variants sit in the DOM and `os.css` shows the matching one, keyed off
-`html[data-os]`, which the blocking head script sets before first paint. Same mechanism as
-the OS blocks in the body, so there is no second way to do this and no flash of the wrong
-system.
+An earlier revision named the reader's operating system back at them, one variant per
+system, shown by `os.css` keyed off `html[data-os]`. It was built and then reverted.
 
-The navbar rule collapses Arch and Debian into "Linux" because it sits inside running text.
-A headline answering a choice the reader just made keeps the three apart.
+The OS mechanism switches with CSS, so every variant stays in the DOM. To anything that
+does not apply CSS, which includes a search engine result, a screen reader and a feed, the
+h1 read as all three run together, "Arch LinuxDebian and UbuntumacOS @ THI", and the
+university's name appeared nowhere in it. A headline that only works with a stylesheet is
+not a headline.
+
+It is now `Linux & macOS at Technische Hochschule Ingolstadt`, fixed, in both locales. The
+frontmatter in `content/en/index.md` carries the reason, so the next person does not
+rebuild it.
+
+The `os-word` mechanism survives where it is safe: the navbar site title, with two keys
+rather than three, collapsing Arch and Debian into "Linux" because it sits inside running
+text and reads as a list either way.
 
 ## The navbar title is hidden on both landing pages
 
@@ -100,15 +108,16 @@ before. If copy returns it needs to sit outside the code element rather than ins
 with the values for attention. `content/en/about/status.md` carries that table, every page
 carries its own marker, and each card links to the page where that marker is.
 
-## German points at English pages where it must, and says so
+## German mirrors the structure exactly
 
-`content/de/index.md` mirrors the structure exactly: same hero shape, same lede, same five
-cards, same rows.
+`content/de/index.md` has the same hero shape, the same tagline, the same five cards and
+the same rows, and all five cards link to German pages.
 
-Two of the five link to pages that do not exist in German yet. `ignoreDeadLinks` is false,
-so linking a missing German page would fail the build. Those cards link to the English page
-and say so in the link text, following the precedent set by the German sidebar's
-"Alle Seiten (englisch)" entry. Translating those pages is separate work.
+That last part was not true when this was designed. Two of the German pages did not exist,
+and the plan was for those two cards to link to the English page and say so in the link
+text, because `ignoreDeadLinks` is false and linking a missing page fails the build. Both
+mirrors were written before this landed, so the workaround was never needed and no card
+carries an "(englisch)" marker.
 
 ## Left out
 
