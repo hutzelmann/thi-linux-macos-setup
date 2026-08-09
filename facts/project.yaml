@@ -1,0 +1,12 @@
+# The repository itself, not the campus.
+#
+# The other files here document THI's infrastructure. These two values describe
+# this project, and share the same mechanism so that a POSIX shell script, a
+# Node tool and the site all read one source instead of three copies.
+
+# GitHub repository, as owner/name.
+repo: hutzelmann/thi-linux-macos-setup
+
+# A check older than this is shown with its age attached. Not a claim that the
+# page became wrong on that day, only that nobody has looked since.
+stale_after_days: 180

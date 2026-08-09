@@ -11,5 +11,11 @@ registration_validity: 1 year
 # Official description of the onboarding process (login required).
 official_url: https://mythi.de/index.php?kc=13&pid=moid&objectid=61
 
-# Public knowledge-base article on network sign-on.
-kb_url: https://help.thi.de/help/de-de/18-netzwerk/56-netzwerkanmeldung
+# Authentication method for wired 802.1X, as the university configures it.
+wired_eap: PEAP
+
+# Inner authentication for that method.
+wired_phase2: MSCHAPv2
+
+# The university's own configuration guide for wired 802.1X, in German.
+wired_official_pdf: https://mythi.de/kcdownload/kc_13/fileid_285/802.1X-Konfiguration-LAN.pdf

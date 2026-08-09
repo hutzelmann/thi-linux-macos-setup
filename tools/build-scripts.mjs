@@ -58,7 +58,15 @@ function generateFactFunction(entries) {
   return `# --- documented values, baked in at build time ----------------------------
 # Generated from facts/*.yaml. Do not edit here: change the value in that
 # repository and the next build regenerates this file.
+#
+# fact_env is consulted first, exactly as scripts/lib/facts.sh does it, so a
+# downloaded script honours FACT_<DOMAIN>_<KEY> like the repository one and a
+# substituted value shows up in the result either way.
 fact() {
+  if fact_env "$1" "$2"; then
+    return 0
+  fi
+
   case "$1 $2" in
 ${cases}
     *) echo "unknown fact: $1 $2" >&2; return 1 ;;
@@ -84,6 +92,29 @@ function stripSourcing(source) {
     .join('\n')
 }
 
+/**
+ * Drop shellcheck directives and the comments that explain them.
+ *
+ * They address the repository layout, where the helpers are separate files that
+ * shellcheck reads one at a time. In the bundle everything is one file, so the
+ * directive is both unnecessary and a distraction to a reader who came here to
+ * see what the script does before running it.
+ */
+function stripLintDirectives(source) {
+  const lines = source.split('\n')
+  const out = []
+  for (let i = 0; i < lines.length; i++) {
+    if (!/^# shellcheck /.test(lines[i])) {
+      out.push(lines[i])
+      continue
+    }
+    // Also drop the comment block immediately above it, which exists only to
+    // explain the directive.
+    while (out.length && /^#( |$)/.test(out[out.length - 1])) out.pop()
+  }
+  return out.join('\n')
+}
+
 function header(relative) {
   return `#!/usr/bin/env sh
 #
@@ -101,7 +132,8 @@ function header(relative) {
 
 function main() {
   const facts = loadFacts()
-  const common = stripShebang(readFileSync(join(SCRIPTS, 'lib/common.sh'), 'utf8'))
+  const common = stripLintDirectives(stripShebang(readFileSync(join(SCRIPTS, 'lib/common.sh'), 'utf8')))
+  const factsLib = stripLintDirectives(stripShebang(readFileSync(join(SCRIPTS, 'lib/facts.sh'), 'utf8')))
 
   rmSync(OUT, { recursive: true, force: true })
   mkdirSync(OUT, { recursive: true })
@@ -124,6 +156,9 @@ function main() {
         generateFactFunction(facts),
         '# --- shared helpers -------------------------------------------------------',
         common.trim(),
+        '',
+        '# --- documented values, and running against something else --------------------',
+        factsLib.trim(),
         '',
         '# --- script ---------------------------------------------------------------',
         body.trim(),

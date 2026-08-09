@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Check that the VPN gateway is reachable and that the documented chain fix works.
+# Check that the VPN gateway is reachable and that the documented bundle works.
 #
 # Usage:
 #   ./verify.sh           readable
@@ -15,6 +15,10 @@ DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 # shellcheck source=../lib/facts.sh
 . "$DIR/../lib/facts.sh"
 
+# The page these checks belong to, for --report. Not derivable from the
+# directory name: scripts/network/ would document /en/network/ethernet-802-1x.
+REPORT_PAGE=/en/vpn/openfortivpn
+
 fetch_leaf() {
   echo | timeout 15 openssl s_client -connect "$(fact vpn host):$(fact vpn port)" \
     -servername "$(fact vpn host)" 2>/dev/null
@@ -23,9 +27,13 @@ fetch_leaf() {
 main() {
   parse_common_args "$@"
 
+  _bundle=$(fact vpn ca_bundle)
   _reachable=no
+  _bundle_present=no
   _verifies=no
   _expires=unknown
+
+  [ -r "$_bundle" ] && _bundle_present=yes
 
   if _handshake=$(fetch_leaf) && [ -n "$_handshake" ]; then
     _reachable=yes
@@ -35,37 +43,54 @@ main() {
 
     if [ -s "$_leaf" ]; then
       _expires=$(openssl x509 -in "$_leaf" -noout -enddate 2>/dev/null | cut -d= -f2)
-      openssl verify "$_leaf" >/dev/null 2>&1 && _verifies=yes
+      if [ "$_bundle_present" = yes ] &&
+        openssl verify -CAfile "$_bundle" "$_leaf" >/dev/null 2>&1; then
+        _verifies=yes
+      fi
     fi
   fi
 
+  _status=ok
+  [ "$_reachable" = yes ] && [ "$_verifies" = yes ] || _status=incomplete
+
+  # Built once, whoever asked for it. --json prints it, --report puts it in the
+  # form, and both are the same observation so they cannot disagree.
+  _json=$(json_result "$_status" "vpn check" \
+    "reachable=$_reachable" "bundle_present=$_bundle_present" \
+    "chain_verifies=$_verifies" \
+    "leaf_expires=$_expires" "os=$(detect_os)" | redact)
+
   if [ "$JSON" = "1" ]; then
-    _status=ok
-    [ "$_reachable" = yes ] && [ "$_verifies" = yes ] || _status=incomplete
-    json_result "$_status" "vpn check" \
-      "reachable=$_reachable" "chain_verifies=$_verifies" \
-      "leaf_expires=$_expires" "os=$(detect_os)" | redact
+    printf '%s\n' "$_json"
     [ "$_status" = ok ] || exit 1
     return 0
   fi
 
   log "Gateway reachable:   ${_reachable}"
-  log "Chain verifies:      ${_verifies}"
+  log "Bundle present:      ${_bundle_present}  (${_bundle})"
+  log "Verifies with it:    ${_verifies}"
   log "Certificate expires: ${_expires}"
 
   if [ "$_reachable" = no ]; then
     log ""
     log "Could not reach $(fact vpn host). Check your internet connection first."
-    exit 1
+  elif [ "$_bundle_present" = no ]; then
+    log ""
+    log "The certificate bundle has not been built yet."
+    log "See the VPN page; it is a one-time step and touches nothing else."
+  elif [ "$_verifies" = no ]; then
+    log ""
+    log "The bundle exists but does not verify the gateway certificate."
+    log "Rebuild it: the intermediate first, then the system root certificates."
   fi
 
-  if [ "$_verifies" = no ]; then
-    log ""
-    log "The intermediate certificate is not installed on this system."
-    log "See the VPN page; it is a one-time step."
-    exit 1
-  fi
+  # After the advice, not instead of it: a report of what did not work is worth
+  # filing too, and it is the report the page most needs.
+  [ "$REPORT" = "1" ] && print_report "$REPORT_PAGE" "$(report_outcome "$_status")" "$_json"
+
+  [ "$_status" = ok ] || exit 1
 }
+
 
 # Entry point. Guarded so tests can source this file and call individual
 # functions; the glob also matches the standalone build, which is named

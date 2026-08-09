@@ -6,7 +6,7 @@
 # once. This asserts both halves are still true:
 #
 #   1. the chain still fails without the intermediate  (the page is still needed)
-#   2. the chain still succeeds with it                (the fix still works)
+#   2. the chain still succeeds with it                (the documented bundle works)
 #
 # Also catches the good news: if THI starts serving the full chain, check 1
 # flips and the page can be simplified. The gateway is publicly reachable, so
@@ -66,4 +66,4 @@ if ! openssl verify -untrusted "$work/inter.pem" "$work/leaf.pem" >/dev/null 2>&
   exit 1
 fi
 
-echo "✓ Documented chain still verifies against the system trust store"
+echo "✓ Documented intermediate still chains to a trusted root"

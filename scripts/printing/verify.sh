@@ -2,8 +2,10 @@
 # Check that the print queue is set up and the server answers.
 #
 # Usage:
-#   ./verify.sh           human-readable
-#   ./verify.sh --json    machine-readable, identifiers stripped
+#   ./verify.sh                 check the staff queue
+#   ./verify.sh --students      check the student queue instead
+#   ./verify.sh --queue=NAME    check a named queue
+#   ./verify.sh --json          machine-readable, identifiers stripped
 #
 # Deliberately does not print a test page: that costs paper and quota, and needs
 # someone standing at the device with a card. Everything here is observation
@@ -16,8 +18,26 @@ DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 # shellcheck source=../lib/facts.sh
 . "$DIR/../lib/facts.sh"
 
+# Both queues live on the same print server and differ only in name, so the
+# queue is a parameter rather than a second script.
+QUEUE=${QUEUE:-}
+
+# The page these checks belong to, for --report. Not derivable from the
+# directory name: scripts/network/ would document /en/network/ethernet-802-1x.
+REPORT_PAGE=/en/printing/
+
+select_queue() {
+  for _arg in "$@"; do
+    case "$_arg" in
+      --students) QUEUE=$(fact printing queue_students) ;;
+      --queue=*) QUEUE=${_arg#--queue=} ;;
+    esac
+  done
+  [ -n "$QUEUE" ] || QUEUE=$(fact printing queue)
+}
+
 queue_exists() {
-  lpstat -p "$(fact printing queue)" >/dev/null 2>&1
+  lpstat -p "$QUEUE" >/dev/null 2>&1
 }
 
 server_reachable() {
@@ -34,11 +54,12 @@ server_reachable() {
 finishing_options_present() {
   # Punch and staple come from the PPD. If they are missing, the wrong driver is
   # installed and every recipe on the page will fail with "unsupported option".
-  lpoptions -p "$(fact printing queue)" -l 2>/dev/null | grep -q '^Pnch'
+  lpoptions -p "$QUEUE" -l 2>/dev/null | grep -q '^Pnch'
 }
 
 main() {
   parse_common_args "$@"
+  select_queue "$@"
 
   _queue_ok=no
   _server_ok=no
@@ -48,32 +69,42 @@ main() {
   server_reachable && _server_ok=yes
   [ "$_queue_ok" = yes ] && finishing_options_present && _options_ok=yes
 
+  _status=ok
+  [ "$_queue_ok" = yes ] && [ "$_server_ok" = yes ] && [ "$_options_ok" = yes ] || _status=incomplete
+
+  # Built once, whoever asked for it. --json prints it, --report puts it in the
+  # form, and both are the same observation so they cannot disagree.
+  _json=$(json_result "$_status" "printing check" \
+    "queue=$_queue_ok" "queue_name=$QUEUE" "server=$_server_ok" "finishing_options=$_options_ok" \
+    "os=$(detect_os)" | redact)
+
   if [ "$JSON" = "1" ]; then
-    _status=ok
-    [ "$_queue_ok" = yes ] && [ "$_server_ok" = yes ] && [ "$_options_ok" = yes ] || _status=incomplete
-    json_result "$_status" "printing check" \
-      "queue=$_queue_ok" "server=$_server_ok" "finishing_options=$_options_ok" \
-      "os=$(detect_os)" | redact
+    printf '%s\n' "$_json"
     [ "$_status" = ok ] || exit 1
     return 0
   fi
 
+  log "Queue:                 ${QUEUE}"
   log "Queue configured:      ${_queue_ok}"
   log "Print server answers:  ${_server_ok}  (needs campus network or VPN)"
   log "Punch/staple options:  ${_options_ok}"
 
   if [ "$_queue_ok" = no ]; then
     log ""
-    log "Queue missing. Run ./install.sh"
-    exit 1
-  fi
-  if [ "$_options_ok" = no ]; then
+    log "Queue missing. Run ./install.sh (add --students for the student queue)"
+  elif [ "$_options_ok" = no ]; then
     log ""
     log "Finishing options missing. The vendor PPD is probably not installed."
     log "Without it, duplex/punch/staple recipes will be rejected."
-    exit 1
   fi
+
+  # After the advice, not instead of it: a report of what did not work is worth
+  # filing too, and it is the report the page most needs.
+  [ "$REPORT" = "1" ] && print_report "$REPORT_PAGE" "$(report_outcome "$_status")" "$_json"
+
+  [ "$_status" = ok ] || exit 1
 }
+
 
 # Entry point. Guarded so tests can source this file and call individual
 # functions; the glob also matches the standalone build, which is named

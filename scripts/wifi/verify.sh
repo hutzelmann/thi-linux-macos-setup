@@ -16,6 +16,10 @@ DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 # shellcheck source=../lib/facts.sh
 . "$DIR/../lib/facts.sh"
 
+# The page these checks belong to, for --report. Not derivable from the
+# directory name: scripts/network/ would document /en/network/ethernet-802-1x.
+REPORT_PAGE=/en/wifi/
+
 nm_field() {
   nmcli -t -f "$2" connection show "$1" 2>/dev/null | cut -d: -f2- | head -1
 }
@@ -54,6 +58,7 @@ main() {
 
   _any=0
   _insecure=0
+  _profiles=""
 
   for _ssid in "$(fact wifi eduroam_ssid)" "$(fact wifi thi_ssid)"; do
     profile_exists "$_ssid" || continue
@@ -65,9 +70,9 @@ main() {
     _suffix_ok=$2
 
     if [ "$JSON" = "1" ]; then
-      _status=ok
-      [ "$_ca_ok" = yes ] && [ "$_suffix_ok" = yes ] || _status=insecure
-      json_result "$_status" "wifi profile check" \
+      _profile_status=ok
+      [ "$_ca_ok" = yes ] && [ "$_suffix_ok" = yes ] || _profile_status=insecure
+      json_result "$_profile_status" "wifi profile check" \
         "profile=$_ssid" "ca_certificate=$_ca_ok" "server_name_match=$_suffix_ok" | redact
     else
       log "Profile ${_ssid}"
@@ -76,6 +81,7 @@ main() {
     fi
 
     [ "$_ca_ok" = yes ] && [ "$_suffix_ok" = yes ] || _insecure=1
+    _profiles="${_profiles}${_profiles:+ }${_ssid}"
   done
 
   if [ "$_any" = 0 ]; then
@@ -83,17 +89,31 @@ main() {
     exit 0
   fi
 
-  if [ "$_insecure" = 1 ]; then
-    [ "$JSON" = "1" ] || {
-      log ""
-      log "At least one profile does not fully validate the authentication server."
-      log "Your campus password can be collected by an access point impersonating"
-      log "this network. Fix: reconfigure with $(fact wifi cat_url), or set both"
-      log "802-1x.ca-cert and 802-1x.domain-suffix-match."
-    }
-    exit 1
+  _status=ok
+  [ "$_insecure" = 1 ] && _status=insecure
+
+  if [ "$_insecure" = 1 ] && [ "$JSON" != "1" ]; then
+    log ""
+    log "At least one profile does not fully validate the authentication server."
+    log "Your campus password can be collected by an access point impersonating"
+    log "this network. Fix: reconfigure with $(fact wifi cat_url), or set both"
+    log "802-1x.ca-cert and 802-1x.domain-suffix-match."
   fi
+
+  # One line for the whole machine. The per-profile objects above are what --json
+  # is for; a report is about whether the page worked, which is one answer.
+  #
+  # After the advice, not instead of it: a report of what did not work is worth
+  # filing too, and it is the report the page most needs.
+  if [ "$REPORT" = "1" ]; then
+    _json=$(json_result "$_status" "wifi check" \
+      "profiles=$_profiles" "os=$(detect_os)" | redact)
+    print_report "$REPORT_PAGE" "$(report_outcome "$_status")" "$_json"
+  fi
+
+  [ "$_status" = ok ] || exit 1
 }
+
 
 # Entry point. Guarded so tests can source this file and call individual
 # functions; the glob also matches the standalone build, which is named

@@ -13,7 +13,8 @@ server_previous: marb-mfp.rz.fh-ingolstadt.de
 # Colour queue in building MARB.
 queue: MARB-color
 
-# Student queue, reachable under the RZ-PRT server name.
+# Student queue. Same print server as the departmental queue above; only the
+# queue name differs.
 queue_students: STUD-color
 
 # Device behind the MARB-color queue.
@@ -35,6 +36,16 @@ driver_url: https://www.kyoceradocumentsolutions.us/en/support/downloads.name-L3
 # Debian/Ubuntu package inside the tarball. The EU variant carries the European
 # finishing options such as 2HoleEUR.
 driver_deb: Ubuntu/EU/kyodialog_amd64/kyodialog_10.0-0_amd64.deb
+
+# AUR package name on Arch, which builds the same driver from source rather
+# than unpacking the vendor .deb.
+driver_aur: kyocera-cups
+
+# The package page, so a reader can read the PKGBUILD before building it.
+driver_aur_url: https://aur.archlinux.org/packages/kyocera-cups
+
+# How long an unreleased job waits at the device before it is discarded.
+job_retention: approximately 24 hours
 
 # Browser-based printing. Needs no driver and no queue. The fallback when CUPS
 # fights back.

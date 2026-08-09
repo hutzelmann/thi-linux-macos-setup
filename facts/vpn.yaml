@@ -8,12 +8,14 @@ port: "443"
 auth: saml
 
 # The gateway serves its leaf certificate WITHOUT the intermediate, so a stock
-# client cannot build a chain and refuses to connect. Supplying the intermediate
-# once fixes it permanently. See content/en/vpn/openfortivpn.md.
+# client cannot build a chain and refuses to connect. openfortivpn is pointed at
+# a bundle of its own instead (--ca-file), so the system trust store is left
+# untouched. See content/en/vpn/openfortivpn.md.
 #
-# Deliberately no fingerprint is recorded here. Pinning would mean re-recording
-# trust material every time the leaf rotates (R27), and the chain fix makes it
-# unnecessary.
+# Deliberately no fingerprint is recorded here. Pinning (--trusted-cert) is the
+# documented fallback, but the leaf rotates about once a year, so the digest is
+# something a reader reads off their own handshake, never a value this project
+# records (R27).
 issuer: GEANT TLS ECC 1
 root_ca: HARICA TLS ECC Root CA 2021
 
@@ -23,6 +25,16 @@ intermediate_url: http://crt.harica.gr/HARICA-GEANT-TLS-E1.cer
 
 # Local filename used by the pages and the script.
 intermediate_file: HARICA-GEANT-TLS-E1.pem
+
+# openfortivpn reads this bundle instead of the system trust store (--ca-file),
+# so the intermediate is supplied to one client and nothing else on the machine
+# changes what it trusts. Root-owned: openfortivpn runs under sudo.
+ca_bundle: /etc/openfortivpn/ca-bundle.pem
+
+# The bundle needs roots as well as the intermediate: the intermediate is not
+# self-signed, so OpenSSL refuses to treat it as an anchor on its own.
+system_roots: /etc/ssl/certs/ca-certificates.crt
+macos_root_keychain: /System/Library/Keychains/SystemRootCertificates.keychain
 
 # Official VPN documentation.
 official_url: https://www.thi.de/service/it-service/vpn/

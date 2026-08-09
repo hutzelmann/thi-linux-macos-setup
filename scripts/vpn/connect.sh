@@ -1,13 +1,14 @@
 #!/usr/bin/env sh
-# Connect to the campus VPN, with a readable diagnosis when the chain is broken.
+# Connect to the campus VPN, with a readable diagnosis when the bundle is missing.
 #
 # Usage:
 #   ./connect.sh              connect (stays in foreground; Ctrl+C disconnects)
 #   ./connect.sh --dry-run    print what would run
 #
 # The gateway omits its intermediate certificate, so a stock client fails with a
-# TLS error that reads like a local misconfiguration. Checking first turns that
-# into an actionable message.
+# TLS error that reads like a local misconfiguration. openfortivpn is pointed at
+# a bundle of its own instead (--ca-file), which leaves the system trust store
+# alone. Checking that bundle first turns the TLS error into an actionable one.
 set -eu
 
 DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
@@ -16,27 +17,39 @@ DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 # shellcheck source=../lib/facts.sh
 . "$DIR/../lib/facts.sh"
 
-# Can the system build a chain to the gateway on its own?
-chain_is_complete() {
+# Does the documented bundle exist and does the gateway verify against it?
+bundle_verifies() {
+  _bundle=$(fact vpn ca_bundle)
+  [ -r "$_bundle" ] || return 1
+
   _host=$(fact vpn host)
   _port=$(fact vpn port)
+  _leaf=$(mktemp)
   echo | timeout 15 openssl s_client -connect "${_host}:${_port}" \
     -servername "$_host" 2>/dev/null |
-    grep -q 'Verify return code: 0'
+    openssl x509 -out "$_leaf" 2>/dev/null || true
+
+  if [ -s "$_leaf" ] && openssl verify -CAfile "$_bundle" "$_leaf" >/dev/null 2>&1; then
+    rm -f "$_leaf"
+    return 0
+  fi
+  rm -f "$_leaf"
+  return 1
 }
 
-explain_missing_intermediate() {
-  cat <<EOF
-The system cannot verify $(fact vpn host).
+explain_missing_bundle() {
+  cat <<TXT
+$(fact vpn ca_bundle) is missing or does not verify $(fact vpn host).
 
-This is expected until the missing intermediate certificate is installed once:
-the gateway does not send it. Install $(fact vpn issuer) from
+This is expected until the bundle is built once: the gateway does not send its
+intermediate certificate. The bundle is $(fact vpn issuer), from
 
   $(fact vpn intermediate_url)
 
-See the VPN page for the command for your system. After that this check passes
-and no special flags are needed.
-EOF
+followed by the system root certificates. See the VPN page for the commands for
+your system. Nothing outside openfortivpn is changed by this, and the bundle
+outlives the gateway certificate.
+TXT
 }
 
 main() {
@@ -44,14 +57,17 @@ main() {
 
   have openfortivpn || die "openfortivpn not installed."
 
-  if [ "$DRY_RUN" != "1" ] && ! chain_is_complete; then
-    explain_missing_intermediate
+  if [ "$DRY_RUN" != "1" ] && ! bundle_verifies; then
+    explain_missing_bundle
     exit 1
   fi
 
-  log "Connecting to $(fact vpn host). A browser window will open for SSO login."
+  log "Connecting to $(fact vpn host). openfortivpn prints an SSO URL below."
+  log "Open it in a browser yourself: nothing opens it for you. The connection"
+  log "continues here once the login is done."
   log "Keep this running; Ctrl+C disconnects."
-  run sudo openfortivpn "$(fact vpn host)" --saml-login
+  run sudo openfortivpn "$(fact vpn host)" --saml-login \
+    --ca-file="$(fact vpn ca_bundle)"
 }
 
 # Entry point. Guarded so tests can source this file and call individual

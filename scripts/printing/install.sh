@@ -2,8 +2,10 @@
 # Add the departmental colour queue to CUPS.
 #
 # Usage:
-#   ./install.sh              add the queue
-#   ./install.sh --dry-run    print the commands, change nothing
+#   ./install.sh                 add the staff queue
+#   ./install.sh --students      add the student queue instead
+#   ./install.sh --queue=NAME    add a named queue
+#   ./install.sh --dry-run       print the commands, change nothing
 #
 # The driver tarball cannot be downloaded unattended (vendor site, ~250 MB, no
 # stable direct link), so this script sets up the queue and tells you what to
@@ -15,6 +17,20 @@ DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 . "$DIR/../lib/common.sh"
 # shellcheck source=../lib/facts.sh
 . "$DIR/../lib/facts.sh"
+
+# Both queues live on the same print server and differ only in name, so the
+# queue is a parameter rather than a second script.
+QUEUE=${QUEUE:-}
+
+select_queue() {
+  for _arg in "$@"; do
+    case "$_arg" in
+      --students) QUEUE=$(fact printing queue_students) ;;
+      --queue=*) QUEUE=${_arg#--queue=} ;;
+    esac
+  done
+  [ -n "$QUEUE" ] || QUEUE=$(fact printing queue)
+}
 
 check_prerequisites() {
   have lpadmin || die "cupsd not installed. See the page for the package name for your OS."
@@ -31,8 +47,8 @@ check_prerequisites() {
 # documented fallback, and it is the one that worked on a KDE/Debian machine
 # where the path was rejected.
 add_queue() {
-  _queue=$(fact printing queue)
-  _uri="smb://$(fact printing server)/$(fact printing queue)"
+  _queue=$QUEUE
+  _uri="smb://$(fact printing server)/${QUEUE}"
 
   if lpstat -p "$_queue" >/dev/null 2>&1 && [ "$DRY_RUN" != "1" ]; then
     log "Queue ${_queue} already exists. Remove it first: sudo lpadmin -x ${_queue}"
@@ -60,6 +76,7 @@ ensure_samba_config() {
 
 main() {
   parse_common_args "$@"
+  select_queue "$@"
   check_prerequisites
   ensure_samba_config
   add_queue

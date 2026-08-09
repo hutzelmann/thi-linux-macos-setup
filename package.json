@@ -15,12 +15,17 @@
     "preview": "vitepress preview content",
     "build:scripts": "node tools/build-scripts.mjs",
     "new-page": "node tools/new-page.mjs",
+    "record": "node tools/record.mjs",
     "check": "npm run check:shell && npm run check:facts && npm run check:private && npm run check:translations",
-    "check:shell": "shellcheck -x --severity=warning $(find scripts -name '*.sh')",
+    "check:shell": "shellcheck -x --severity=warning $(find scripts test -name '*.sh')",
+    "test:printing": "bash test/printing/run.sh",
     "check:facts": "bash scripts/ci/check-facts.sh",
     "check:private": "bash scripts/ci/check-no-personal-data.sh",
     "check:translations": "bash scripts/ci/check-translations.sh",
-    "check:vpn-chain": "bash scripts/ci/check-vpn-chain.sh"
+    "check:vpn-chain": "bash scripts/ci/check-vpn-chain.sh",
+    "check:staleness": "bash scripts/ci/check-staleness.sh",
+    "check:fact-urls": "bash scripts/ci/check-fact-urls.sh",
+    "check:drift": "npm run check:vpn-chain; npm run check:fact-urls; npm run check:staleness"
   },
   "devDependencies": {
     "@types/markdown-it-container": "^4.0.0",

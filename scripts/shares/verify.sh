@@ -17,9 +17,23 @@ DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 # shellcheck source=../lib/facts.sh
 . "$DIR/../lib/facts.sh"
 
+# The page these checks belong to, for --report. Not derivable from the
+# directory name: scripts/network/ would document /en/network/ethernet-802-1x.
+REPORT_PAGE=/en/shares/smb
+
 SMB_PORT=445
 
 resolves() {
+  # An address needs no lookup, and asking for one answers the wrong question:
+  # most of these hosts have no reverse record, so getent would report a host
+  # that is perfectly reachable as unresolvable. Reached through FACT_SHARES_*,
+  # which is how the check runs when the campus resolver is not in use.
+  case "$1" in
+    *:*) return 0 ;;
+    *[!0-9.]*) ;;
+    *) return 0 ;;
+  esac
+
   if have getent; then
     getent hosts "$1" >/dev/null 2>&1
   elif have host; then
@@ -69,11 +83,16 @@ main() {
   _home=$(check_host "$(fact shares home_server)")
   _files=$(check_host "$(fact shares file_server)")
 
+  _status=ok
+  [ "$_home" = ok ] || [ "$_home" = resolves ] || _status=unreachable
+
+  # Built once, whoever asked for it. --json prints it, --report puts it in the
+  # form, and both are the same observation so they cannot disagree.
+  _json=$(json_result "$_status" "shares check" \
+    "home_server=$_home" "file_server=$_files" "os=$(detect_os)" | redact)
+
   if [ "$JSON" = "1" ]; then
-    _status=ok
-    [ "$_home" = ok ] || [ "$_home" = resolves ] || _status=unreachable
-    json_result "$_status" "shares check" \
-      "home_server=$_home" "file_server=$_files" "os=$(detect_os)" | redact
+    printf '%s\n' "$_json"
     [ "$_status" = ok ] || exit 1
     return 0
   fi
@@ -84,9 +103,15 @@ main() {
   if [ "$_home" = no-dns ]; then
     log ""
     log "These names only exist inside the campus network. Connect the VPN first."
-    exit 1
   fi
+
+  # After the advice, not instead of it: a report of what did not work is worth
+  # filing too, and it is the report the page most needs.
+  [ "$REPORT" = "1" ] && print_report "$REPORT_PAGE" "$(report_outcome "$_status")" "$_json"
+
+  [ "$_status" = ok ] || exit 1
 }
+
 
 # Entry point. Guarded so tests can source this file and call individual
 # functions; the glob also matches the standalone build, which is named
