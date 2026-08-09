@@ -2,7 +2,7 @@
   "name": "thi-linux-macos-setup",
   "version": "0.1.0",
   "private": true,
-  "description": "Community setup notes for Linux and macOS at Technische Hochschule Ingolstadt. Unofficial.",
+  "description": "Community notes for Linux and macOS at Technische Hochschule Ingolstadt. Unofficial.",
   "type": "module",
   "engines": {
     "node": ">=20"

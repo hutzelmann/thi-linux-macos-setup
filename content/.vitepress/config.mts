@@ -28,7 +28,7 @@ const SITE = 'https://hutzelmann.github.io' + BASE
 const SITE_NAME = 'THI Linux & macOS Setup'
 
 const SITE_DESCRIPTION =
-  'Community setup notes for Linux and macOS at Technische Hochschule Ingolstadt. '
+  'Community notes for Linux and macOS at Technische Hochschule Ingolstadt. '
   + 'Unofficial, not THI IT Support.'
 
 /*
@@ -43,8 +43,8 @@ const CC0 = 'https://creativecommons.org/publicdomain/zero/1.0/'
 const HOME_LABEL: Record<string, string> = { en: 'Home', de: 'Start' }
 
 const OG_IMAGE_ALT = {
-  en: 'Linux & macOS @ THI. Community setup notes for Technische Hochschule Ingolstadt.',
-  de: 'Linux & macOS @ THI. Einrichtungsnotizen für die Technische Hochschule Ingolstadt.'
+  en: 'Linux & macOS @ THI. Community notes for Technische Hochschule Ingolstadt.',
+  de: 'Linux & macOS @ THI. Community-Notizen für die Technische Hochschule Ingolstadt.'
 }
 
 
@@ -75,8 +75,7 @@ function counterpart(relativePath: string): string | null {
 
 export default defineConfig({
   title: 'THI Linux & macOS Setup',
-  description:
-    'Community setup notes for Linux and macOS at Technische Hochschule Ingolstadt. Unofficial, not THI IT Support.',
+  description: SITE_DESCRIPTION,
   base: BASE,
   cleanUrls: true,
   lastUpdated: true,

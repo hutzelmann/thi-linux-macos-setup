@@ -1,6 +1,6 @@
 # Linux and macOS at THI
 
-Community setup notes for Linux and macOS at Technische Hochschule Ingolstadt: printing,
+Community notes for Linux and macOS at Technische Hochschule Ingolstadt: printing,
 Wi-Fi, VPN, network shares.
 
 **[Read the site →](https://hutzelmann.github.io/thi-linux-macos-setup/)**
