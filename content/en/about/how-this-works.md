@@ -7,8 +7,8 @@ description: What this project is, what it never does to the campus network, and
 
 ## What this project is
 
-Community-written setup notes for Linux and macOS at THI. Anyone can read them, anyone
-can correct them, and they are in the public domain.
+Community notes for Linux and macOS at THI. Anyone can read them, anyone can correct
+them, and they are in the public domain.
 
 ## What this project is not
 

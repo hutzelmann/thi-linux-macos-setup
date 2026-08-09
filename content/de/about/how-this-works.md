@@ -1,15 +1,15 @@
 ---
 title: Wie diese Seiten gepflegt werden
 description: Was dieses Projekt ist, was es mit dem Campusnetz niemals tut, und wie du beiträgst.
-translatedFrom: a4f42489e898fa7db0d235101f2095850a660cd3
+translatedFrom: 5ae16bb440d220cb4f5a98747413be431ae3aed8
 ---
 
 # Wie diese Seiten gepflegt werden
 
 ## Was dieses Projekt ist
 
-Von der Community geschriebene Einrichtungsnotizen für Linux und macOS an der THI. Alle
-können sie lesen, alle können sie korrigieren, und sie sind gemeinfrei.
+Community-Notizen für Linux und macOS an der THI. Alle können sie lesen, alle können
+sie korrigieren, und sie sind gemeinfrei.
 
 ## Was dieses Projekt nicht ist
 

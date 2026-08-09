@@ -27,9 +27,21 @@ const SITE = 'https://hutzelmann.github.io' + BASE
 
 const SITE_NAME = 'THI Linux & macOS Setup'
 
-const SITE_DESCRIPTION =
-  'Community notes for Linux and macOS at Technische Hochschule Ingolstadt. '
-  + 'Unofficial, not THI IT Support.'
+/*
+ * Keyed by locale, like OG_IMAGE_ALT and HOME_LABEL, because these strings are
+ * read by people and by machines in the language of the page they sit on. A
+ * German page describing itself in English is the one asymmetry this site would
+ * otherwise still have: its page-level node already carries German text and
+ * `inLanguage: de`, so an English sentence beside it is the odd one out.
+ */
+const SITE_DESCRIPTION: Record<string, string> = {
+  en:
+    'Community notes for Linux and macOS at Technische Hochschule Ingolstadt. '
+    + 'Unofficial, not THI IT Support.',
+  de:
+    'Community-Notizen für Linux und macOS an der Technischen Hochschule Ingolstadt. '
+    + 'Inoffiziell, nicht der IT-Support der THI.'
+}
 
 /*
  * The publisher, as opposed to the site. Deliberately not SITE_DESCRIPTION:
@@ -37,9 +49,14 @@ const SITE_DESCRIPTION =
  * which is the question schema.org's Organization node is answering and the
  * one where "no affiliation" belongs.
  */
-const PROJECT_DESCRIPTION =
-  'A community-maintained, unofficial collection of notes. '
-  + 'Not affiliated with Technische Hochschule Ingolstadt.'
+const PROJECT_DESCRIPTION: Record<string, string> = {
+  en:
+    'A community-maintained, unofficial collection of notes. '
+    + 'Not affiliated with Technische Hochschule Ingolstadt.',
+  de:
+    'Eine von der Community gepflegte, inoffizielle Sammlung von Notizen. '
+    + 'Keine Verbindung zur Technischen Hochschule Ingolstadt.'
+}
 
 /*
  * Link preview image, 1200x630. Source and render command: tools/og-image.svg.
@@ -85,7 +102,7 @@ function counterpart(relativePath: string): string | null {
 
 export default defineConfig({
   title: 'THI Linux & macOS Setup',
-  description: SITE_DESCRIPTION,
+  description: SITE_DESCRIPTION.en,
   base: BASE,
   cleanUrls: true,
   lastUpdated: true,
@@ -274,7 +291,7 @@ export default defineConfig({
             '@id': SITE + '#website',
             url: SITE,
             name: SITE_NAME,
-            description: SITE_DESCRIPTION,
+            description: SITE_DESCRIPTION[locale],
             inLanguage: ['en', 'de'],
             license: CC0,
             publisher: { '@id': SITE + '#project' }
@@ -284,7 +301,7 @@ export default defineConfig({
             '@id': SITE + '#project',
             name: SITE_NAME,
             url: SITE,
-            description: PROJECT_DESCRIPTION
+            description: PROJECT_DESCRIPTION[locale]
           },
           isLanding ? { ...page, '@type': 'CollectionPage' } : page,
           {
@@ -351,6 +368,7 @@ export default defineConfig({
       label: 'English',
       lang: 'en',
       link: '/en/',
+      description: SITE_DESCRIPTION.en,
       themeConfig: {
         /*
          * No `nav`. Every page is one click away in the sidebar, so a navbar
@@ -381,6 +399,7 @@ export default defineConfig({
       label: 'Deutsch',
       lang: 'de',
       link: '/de/',
+      description: SITE_DESCRIPTION.de,
       themeConfig: {
         /*
          * No `nav`. Every page is one click away in the sidebar, so a navbar
