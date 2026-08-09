@@ -1,13 +1,13 @@
 ---
-title: Network shares (SMB)
-description: Mount your campus home directory and group shares on Arch, Debian and macOS, on campus or over VPN.
-status: structured
+title: Network shares (SMB) on Linux and macOS
+description: Mount your campus home directory and group shares over SMB on Arch, Debian and macOS, in the file manager or with mount, on campus or over VPN.
 os: [arch, debian, macos]
 ---
 
 # Network shares (SMB)
 
-Gets you your campus home directory and any group shares as folders on your machine.
+Gets you your campus home directory and any group shares as folders on your machine, over SMB: an `smb://` address in Files or Finder, or `mount -t cifs` and
+`mount_smbfs` for a fixed path.
 
 Official documentation: [connecting a network drive](${facts.shares.official_url}).
 
@@ -19,7 +19,7 @@ otherwise, which looks like a configuration mistake and is not one.
 
 ## Documented values
 
-| | |
+| Setting | Value |
 |---|---|
 | Home directory | `smb://${facts.shares.home_server}/<kennung>` |
 | Group and departmental shares | `smb://${facts.shares.file_server}/` |

@@ -1,7 +1,6 @@
 ---
-title: Projectors and external screens
+title: Projectors and external screens over HDMI
 description: Fixing washed-out colours over HDMI in lecture halls, and what to check before a lecture.
-status: structured
 os: [arch, debian, macos]
 ---
 

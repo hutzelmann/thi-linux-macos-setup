@@ -1,15 +1,15 @@
 ---
-title: Windows in a virtual machine
-description: Installing Windows 11 Education in a VM on Linux and keeping local administrator rights while joining the campus account.
-status: structured
+title: Windows 11 Education in a virtual machine
+description: Installing Windows 11 Education in a VM on Linux and macOS, in GNOME Boxes, virt-manager or UTM, keeping local administrator rights while joining the campus account.
 os: [arch, debian, macos]
 ---
 
 # Windows in a virtual machine
 
-For the handful of programs with no Linux equivalent. The goal is a VM where **you** are
-the local administrator, that can still reach campus resources through your university
-account.
+For the handful of programs with no version for your system. The goal is a VM where
+**you** are the local administrator, that can still reach campus resources, the
+[network shares](/en/shares/smb) and [printing](/en/printing/) among them, through your
+university account.
 
 ## The mistake that costs you the machine
 
@@ -33,31 +33,108 @@ afterwards, from inside Windows, once you already hold administrator rights.
 3. Download **Windows 11 Education**. Not the N edition; it ships without media codecs.
 4. Note the licence key from the side panel; setup asks for it.
 
+::: os macos
+
+The catalogue image is x86-64, and an Apple Silicon Mac runs ARM64 Windows. Emulating the
+x86-64 image is slow enough not to be worth doing, so on an M-series machine take the
+ARM64 build instead: [CrystalFetch](https://github.com/TuringSoftware/CrystalFetch),
+from UTM's authors, builds an ISO from Microsoft's own
+[Windows 11 Arm64 download](https://www.microsoft.com/en-us/software-download/windows11arm64).
+
+Whether the licence key from the education catalogue activates an ARM64 install is not
+documented here. If you find out either way, please
+[say so](https://github.com/${facts.project.repo}/issues/new?template=check-record.yml).
+
+An Intel Mac takes the catalogue image as it is.
+
+:::
+
 ## Prepare the VM
 
-GNOME Boxes, virt-manager or UTM all work. Reasonable starting size:
+Reasonable starting size, whichever tool you use:
 
 - 8–12 GB RAM
 - 4 CPUs
 - 128 GB storage
 
-Windows 11 requires Secure Boot and a TPM. Two routes:
+Windows 11 requires Secure Boot and a TPM. Setting both up properly is more work up
+front, and it is what lets you connect the campus account later: the security policies do
+not apply to a VM that bypassed the check.
 
-**Configure TPM and Secure Boot properly.** More work up front, and required if you want
-to connect the campus account later, because the security policies will not apply
-otherwise.
-[How to run Windows 11 in GNOME Boxes with UEFI and TPM2](https://www.ctrl.blog/entry/how-to-win11-in-gnome-boxes.html).
+::: os arch
 
-**Or bypass the check.** Faster, and fine for a throwaway VM: registry keys during setup,
-then continue with `setup.exe`.
-[Discussion and the exact keys](https://www.reddit.com/r/gnome/comments/q1wy49/install_windows_11_in_gnome_boxes/).
+GNOME Boxes for the short path, virt-manager when you want the firmware and the TPM under
+your own hand:
+
+```bash
+sudo pacman -S gnome-boxes
+# or
+sudo pacman -S virt-manager qemu-full edk2-ovmf swtpm
+```
+
+[How to run Windows 11 in GNOME Boxes with UEFI and TPM2](https://www.ctrl.blog/entry/how-to-win11-in-gnome-boxes.html)
+covers the firmware side. For a throwaway VM that never joins the campus account, the
+faster route is registry keys during setup, then `setup.exe`:
+[discussion and the exact keys](https://www.reddit.com/r/gnome/comments/q1wy49/install_windows_11_in_gnome_boxes/).
+
+:::
+
+::: os debian
+
+GNOME Boxes for the short path, virt-manager when you want the firmware and the TPM under
+your own hand:
+
+```bash
+sudo apt install gnome-boxes
+# or
+sudo apt install virt-manager qemu-system-x86 ovmf swtpm-tools
+```
+
+[How to run Windows 11 in GNOME Boxes with UEFI and TPM2](https://www.ctrl.blog/entry/how-to-win11-in-gnome-boxes.html)
+covers the firmware side. For a throwaway VM that never joins the campus account, the
+faster route is registry keys during setup, then `setup.exe`:
+[discussion and the exact keys](https://www.reddit.com/r/gnome/comments/q1wy49/install_windows_11_in_gnome_boxes/).
+
+:::
+
+::: os macos
+
+[UTM](https://docs.getutm.app/guides/windows/), which is free and open source. From
+version 4.3 it switches on UEFI Secure Boot and a TPM 2.0 device for Windows guests
+itself, so the firmware question above does not come up.
+
+On Apple Silicon the guest is ARM64 Windows and runs virtualised rather than emulated,
+which is the only combination fast enough to work with.
+
+:::
 
 ## After installation
 
-- Install the [virtio drivers](https://github.com/virtio-win/virtio-win-pkg-scripts) for
-  usable performance.
 - Rename the machine to something meaningful, e.g. `<inventarnummer>-VM`.
 - Run Windows Update before anything else.
+
+Guest drivers, without which the VM is slow and the screen does not resize:
+
+::: os arch
+
+The [virtio drivers](https://github.com/virtio-win/virtio-win-pkg-scripts), installed
+from inside Windows.
+
+:::
+
+::: os debian
+
+The [virtio drivers](https://github.com/virtio-win/virtio-win-pkg-scripts), installed
+from inside Windows.
+
+:::
+
+::: os macos
+
+UTM's own [guest tools](https://docs.getutm.app/guest-support/windows/), which it can
+mount into the running VM.
+
+:::
 
 ## Connect the campus account
 
@@ -99,4 +176,4 @@ unlocks is not a backup. Print it, or copy it to the host before you need it.
 
 **Microsoft changes the setup flow often.** This page describes what worked at the time
 of writing; if a step has moved, please
-[report it](https://github.com/hutzelmann/thi-linux-macos-setup/issues/new?template=check-record.yml).
+[report it](https://github.com/${facts.project.repo}/issues/new?template=check-record.yml).

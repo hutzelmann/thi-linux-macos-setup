@@ -1,7 +1,6 @@
 ---
-title: Secure device configuration
+title: Secure device configuration on Linux and macOS
 description: What the university requires of a work computer, and what each rule means on Linux and macOS.
-status: structured
 os: [arch, debian, macos]
 ---
 
@@ -35,6 +34,10 @@ As stated:
   this is Microsoft Defender.
 - The system is **connected to the campus network regularly**, once a month for four
   hours without interruption, so operating-system and software updates install.
+
+Getting a machine onto that network is
+[eduroam and @thi Wi-Fi](/en/wifi/) or
+[wired Ethernet with 802.1X](/en/network/ethernet-802-1x).
 
 ## What each one means on your system
 

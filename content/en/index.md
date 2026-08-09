@@ -1,46 +1,98 @@
 ---
 layout: home
-title: Linux and macOS at THI
+# navbar.css hides the site title here: a landing page is home, so the link
+# back home in the corner is the second time in one screen it says where you are.
+pageClass: is-landing
+title: 'Linux and macOS at THI: Wi-Fi, VPN, printing, shares'
 titleTemplate: false
-description: Community-maintained setup notes for Linux and macOS at Technische Hochschule Ingolstadt. Printing, Wi-Fi, VPN, network shares. Unofficial.
+description: The documented values for campus Wi-Fi, VPN, printing and network shares on Linux and macOS at Technische Hochschule Ingolstadt, in one place. Unofficial.
 
 hero:
-  name: Linux and macOS at THI
-  tagline: Community setup notes for campus printing, Wi-Fi, VPN and shares. Unofficial, and not THI IT Support.
+  # The headline is one fixed string. The three OS variants used to stand here,
+  # and since all of them stay in the DOM the h1 read "Arch LinuxDebian and
+  # UbuntumacOS @ THI" to anything that does not apply CSS, with the
+  # university's name nowhere in it.
+  name: 'Linux & macOS'
+  text: at Technische Hochschule Ingolstadt
+  tagline: How to get campus systems working on your machine. Community-maintained.
   actions:
     - theme: brand
-      text: A new machine on campus
+      text: New here? Set up a new machine
       link: /en/start/new-machine
     - theme: alt
-      text: How this works
+      text: How these pages are kept
       link: /en/about/how-this-works
-
-features:
-  - title: Wi-Fi
-    details: eduroam and @thi, with the certificate settings that stop a fake access point from taking your password.
-    link: /en/wifi/
-  - title: Printing
-    details: The MARB colour queue from CUPS, with duplex, hole punching and stapling, and why nothing comes out until you tap your card.
-    link: /en/printing/marb-color
-  - title: VPN
-    details: openfortivpn with SSO, including the certificate-chain fix the gateway needs.
-    link: /en/vpn/openfortivpn
 ---
 
-## Why this exists
+## Every setting at a glance
 
-Campus systems are documented for Windows. Most of it works on Linux and macOS too, but
-the details (a driver path, a certificate authority, a hostname that changed last year)
-are scattered across old mails, forum posts and personal notes.
+<FactDeck>
+<FactCard title="Wi-Fi" link="/en/wifi/">
 
-This is that knowledge, written down in one place, in the open, so the next person does
-not have to rediscover it.
+| | |
+|---|---|
+| SSID | `${facts.wifi.eduroam_ssid}` |
+| Method | ${facts.wifi.eduroam_eap} / ${facts.wifi.eduroam_phase2} |
+| CA certificate | `${facts.wifi.eduroam_ca}` |
+| Server domain | `${facts.wifi.eduroam_domain_suffix}` |
+| Identity | `<kennung>@${facts.wifi.eduroam_realm}` |
 
-**It is not official.** Nobody here speaks for university IT, nothing is guaranteed, and
-there is no support desk behind it. For accounts, quotas and hardware, go to
-[THI IT service](${facts.official.service_url}). What this project offers instead is a feedback loop:
-if something here is wrong, [say so](https://github.com/hutzelmann/thi-linux-macos-setup/issues)
-and it gets fixed.
+${facts.wifi.thi_ssid} is configured differently.
 
-Pages say when a human last checked them. Some say "nobody has checked this yet", because
-that is the truth and pretending otherwise is worse.
+</FactCard>
+
+<FactCard title="VPN" link="/en/vpn/openfortivpn">
+
+| | |
+|---|---|
+| Gateway | `${facts.vpn.host}` |
+| Port | `${facts.vpn.port}` |
+| Sign-in | SSO in the browser |
+| CA bundle | `${facts.vpn.ca_bundle}` |
+
+The gateway does not send its intermediate certificate, so the bundle is built once by
+hand. The page has that step.
+
+</FactCard>
+
+<FactCard title="Printing" link="/en/printing/">
+
+| | |
+|---|---|
+| Print server | `${facts.printing.server}` |
+| Queue, staff | `${facts.printing.queue}` |
+| Queue, students | `${facts.printing.queue_students}` |
+| Windows domain | `${facts.printing.smb_domain}` |
+
+No driver installed: [${facts.printing.webprint_url}](${facts.printing.webprint_url})
+prints from the browser, without the finishing options.
+
+</FactCard>
+
+<FactCard title="Network shares" link="/en/shares/smb">
+
+| | |
+|---|---|
+| Home directory | `${facts.shares.home_server}` |
+| Group shares | `${facts.shares.file_server}` |
+| Research shares | `${facts.shares.research_server}` |
+| Windows domain | `${facts.shares.domain}` |
+
+Campus network or VPN only.
+
+</FactCard>
+
+<FactCard title="Wired Ethernet" link="/en/network/ethernet-802-1x">
+
+| | |
+|---|---|
+| Method | ${facts.network.wired_eap} / ${facts.network.wired_phase2} |
+| Identity | the campus login, no realm |
+| CA certificate | **not documented** |
+| Registration valid | ${facts.network.registration_validity} |
+
+The official document turns certificate checking on and names no authority, so this
+project records no value either. The page says what that leaves open.
+
+</FactCard>
+</FactDeck>

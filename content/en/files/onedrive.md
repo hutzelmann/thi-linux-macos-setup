@@ -1,7 +1,8 @@
 ---
-title: OneDrive and Microsoft 365 files
+title: OneDrive and Microsoft 365 on Linux
+lastChecked:
+  arch: 2026-08-09
 description: What works for OneDrive on Linux, why third-party clients cannot sign in, and what to use instead.
-status: structured
 os: [arch, debian, macos]
 ---
 
@@ -63,7 +64,7 @@ There is nothing to check on the machine; the question is whether the tenant pol
 changed. Try signing in with the client you want and watch for an approval message.
 
 If a client that previously failed now works, that is a real finding. Please
-[report it](https://github.com/hutzelmann/thi-linux-macos-setup/issues/new?template=check-record.yml),
+[report it](https://github.com/${facts.project.repo}/issues/new?template=check-record.yml),
 because this page currently tells people not to bother.
 
 ## Known quirks

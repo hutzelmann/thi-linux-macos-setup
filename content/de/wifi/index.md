@@ -1,15 +1,16 @@
 ---
-title: WLAN am Campus, eduroam und @thi
+title: eduroam und @thi WLAN unter Linux und macOS
 description: eduroam und @thi unter Linux und macOS einrichten, mit den Zertifikatsprüfungen, die verhindern, dass ein gefälschter Accesspoint das Hochschulpasswort abgreift.
-status: structured
 os: [arch, debian, macos]
-translatedFrom: 4f442739a2f943c3be1d4c7df20b947e1595359c
+translatedFrom: f7717e2278ddf2e4f304c98a8c2ad689defc0497
 ---
 
 # WLAN am Campus
 
 Bringt dich ins Netz. Nimm **${facts.wifi.eduroam_ssid}**. Das funktioniert hier und mit
-demselben Profil an jeder anderen Hochschule weltweit.
+demselben Profil an jeder anderen Hochschule weltweit. Die Schritte unten decken den
+eduroam-CAT-Installer, NetworkManager (`nmcli`) und wpa_supplicant unter Linux sowie ein
+Konfigurationsprofil unter macOS ab.
 
 Offizielle Dokumentation: [WLAN-Service der THI](${facts.wifi.official_url}).
 
@@ -146,7 +147,7 @@ Eine Konfiguration von Hand lässt sich über die Oberfläche allein nicht siche
 Ein reines Campus-Netz, das ${facts.wifi.thi_eap} statt ${facts.wifi.eduroam_eap}
 verwendet. Das Gerät muss vorher registriert sein, und du bekommst dafür eigene
 Zugangsdaten. Der Ablauf steht unter
-[Netzwerkdosen und Geräteregistrierung](/en/network/ethernet-802-1x); dasselbe Formular
+[Ethernet: 802.1X und Geräteregistrierung](/de/network/ethernet-802-1x); dasselbe Formular
 gilt auch für WLAN.
 
 Gegenüber ${facts.wifi.eduroam_ssid} gibt es kaum einen Grund dafür, außer etwas verlangt

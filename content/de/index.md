@@ -1,37 +1,98 @@
 ---
 layout: home
-title: Linux und macOS an der THI
+# navbar.css hides the site title here: a landing page is home, so the link
+# back home in the corner is the second time in one screen it says where you are.
+pageClass: is-landing
+title: 'Linux und macOS an der THI: WLAN, VPN, Drucken, Netzlaufwerke'
 titleTemplate: false
-translatedFrom: e206b28a475fbcd260975cbef809ef2c79bd6553
-description: Von der Community gepflegte Anleitungen für Linux und macOS an der Technischen Hochschule Ingolstadt. Drucken, WLAN, VPN, Netzlaufwerke. Inoffiziell.
+description: Die dokumentierten Werte für WLAN, VPN, Drucken und Netzlaufwerke unter Linux und macOS an der Technischen Hochschule Ingolstadt. Inoffiziell.
+translatedFrom: f63279a410c94a4f9cc4a075aa37d5b3deabcf34
 
 hero:
-  name: Linux und macOS an der THI
-  tagline: Anleitungen aus der Community für Drucken, WLAN, VPN und Netzlaufwerke am Campus. Inoffiziell und kein THI-Support.
+  # Siehe die englische Seite: die Überschrift steht fest, damit sie ohne CSS
+  # lesbar bleibt und den Namen der Hochschule enthält.
+  name: 'Linux & macOS'
+  text: an der Technischen Hochschule Ingolstadt
+  tagline: Wie du Campus-Dienste auf deinem Rechner zum Laufen bringst. Von der Community gepflegt.
   actions:
     - theme: brand
-      text: WLAN einrichten
-      link: /de/wifi/
+      text: Neu hier? Gerät einrichten
+      link: /de/start/new-machine
     - theme: alt
-      text: English version
-      link: /en/
-
-features:
-  - title: WLAN
-    details: eduroam und @thi, mit den Zertifikatseinstellungen, die verhindern, dass ein gefälschter Accesspoint dein Passwort abgreift.
-    link: /de/wifi/
-  - title: Drucken
-    details: Die MARB-Farbwarteschlange aus CUPS, mit Duplex, Lochen und Heften, und warum ohne Karte nichts herauskommt.
-    link: /de/printing/marb-color
-  - title: VPN
-    details: openfortivpn mit SSO, inklusive der Zertifikatskette, die das Gateway nicht mitliefert.
-    link: /de/vpn/openfortivpn
+      text: Wie diese Seiten gepflegt werden
+      link: /de/about/how-this-works
 ---
 
-## Warum es das gibt
+## Alle Einstellungen auf einen Blick
 
-Campus-Systeme sind für Windows dokumentiert. Das meiste läuft auch unter Linux und macOS, aber die Details liegen verstreut in alten Mails, Forenbeiträgen und privaten Notizen.
+<FactDeck>
+<FactCard title="WLAN" link="/de/wifi/">
 
-Hier stehen sie an einem Ort, öffentlich, damit die nächste Person sie nicht neu herausfinden muss.
+| | |
+|---|---|
+| SSID | `${facts.wifi.eduroam_ssid}` |
+| Methode | ${facts.wifi.eduroam_eap} / ${facts.wifi.eduroam_phase2} |
+| CA-Zertifikat | `${facts.wifi.eduroam_ca}` |
+| Server-Domain | `${facts.wifi.eduroam_domain_suffix}` |
+| Identität | `<kennung>@${facts.wifi.eduroam_realm}` |
 
-**Das hier ist nicht offiziell.** Niemand spricht hier für die Hochschul-IT, nichts ist zugesichert, und es steht kein Support dahinter. Für Konten, Guthaben und Hardware: [THI IT service](${facts.official.service_url}). Was dieses Projekt stattdessen bietet, ist eine Rückmeldeschleife: Wenn etwas falsch ist, [sag Bescheid](https://github.com/hutzelmann/thi-linux-macos-setup/issues), dann wird es korrigiert.
+${facts.wifi.thi_ssid} wird anders konfiguriert.
+
+</FactCard>
+
+<FactCard title="VPN" link="/de/vpn/openfortivpn">
+
+| | |
+|---|---|
+| Gateway | `${facts.vpn.host}` |
+| Port | `${facts.vpn.port}` |
+| Anmeldung | SSO im Browser |
+| CA-Bundle | `${facts.vpn.ca_bundle}` |
+
+Das Gateway liefert sein Zwischenzertifikat nicht mit, deshalb wird das Bundle einmal
+von Hand gebaut. Der Schritt steht auf der Seite.
+
+</FactCard>
+
+<FactCard title="Drucken" link="/de/printing/">
+
+| | |
+|---|---|
+| Druckserver | `${facts.printing.server}` |
+| Warteschlange, Beschäftigte | `${facts.printing.queue}` |
+| Warteschlange, Studierende | `${facts.printing.queue_students}` |
+| Windows-Domäne | `${facts.printing.smb_domain}` |
+
+Ohne Treiber: [${facts.printing.webprint_url}](${facts.printing.webprint_url}) druckt aus
+dem Browser, ohne die Optionen zum Lochen und Heften.
+
+</FactCard>
+
+<FactCard title="Netzlaufwerke" link="/de/shares/smb">
+
+| | |
+|---|---|
+| Home-Verzeichnis | `${facts.shares.home_server}` |
+| Gruppenlaufwerke | `${facts.shares.file_server}` |
+| Forschungslaufwerke | `${facts.shares.research_server}` |
+| Windows-Domäne | `${facts.shares.domain}` |
+
+Nur im Campusnetz oder über VPN.
+
+</FactCard>
+
+<FactCard title="LAN (Kabel)" link="/de/network/ethernet-802-1x">
+
+| | |
+|---|---|
+| Methode | ${facts.network.wired_eap} / ${facts.network.wired_phase2} |
+| Identität | die Kennung, ohne Realm |
+| CA-Zertifikat | **nicht dokumentiert** |
+| Registrierung gültig | ${facts.network.registration_validity} |
+
+Das offizielle Dokument schaltet die Zertifikatsprüfung ein und nennt keine
+Zertifizierungsstelle, deshalb steht hier auch kein Wert. Die Seite sagt, was damit
+offen bleibt.
+
+</FactCard>
+</FactDeck>

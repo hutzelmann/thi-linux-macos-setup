@@ -1,14 +1,15 @@
 ---
-title: Wi-Fi on campus, eduroam and @thi
+title: eduroam and @thi Wi-Fi on Linux and macOS
 description: Connect to eduroam and @thi from Linux and macOS, with the certificate checks that stop a fake access point from stealing your campus password.
-status: structured
 os: [arch, debian, macos]
 ---
 
 # Wi-Fi on campus
 
 Gets you online. Use **${facts.wifi.eduroam_ssid}**. It works here and at every other
-university in the world with the same profile.
+university in the world with the same profile. The steps below cover the eduroam CAT
+installer, NetworkManager (`nmcli`) and `wpa_supplicant` on Linux, and a configuration
+profile on macOS.
 
 Official documentation: [THI Wi-Fi service](${facts.wifi.official_url}).
 
@@ -142,8 +143,8 @@ Hand configuration on macOS cannot be made safe through the UI alone.
 A campus-only network using ${facts.wifi.thi_eap} instead of
 ${facts.wifi.eduroam_eap}. It needs the device to be registered first, and you receive
 separate credentials for it. See
-[wired ports and device registration](/en/network/ethernet-802-1x) for the registration
-process; the same form covers Wi-Fi.
+[Ethernet: 802.1X and device registration](/en/network/ethernet-802-1x) for the
+registration process; the same form covers Wi-Fi.
 
 There is little reason to prefer it over ${facts.wifi.eduroam_ssid} unless something
 specifically requires it. eduroam needs no registration and works everywhere.
