@@ -6,7 +6,7 @@ pageClass: is-landing
 title: 'Linux und macOS an der THI: WLAN, VPN, Drucken, Netzlaufwerke'
 titleTemplate: false
 description: Die dokumentierten Werte für WLAN, VPN, Drucken und Netzlaufwerke unter Linux und macOS an der Technischen Hochschule Ingolstadt. Inoffiziell.
-translatedFrom: f63279a410c94a4f9cc4a075aa37d5b3deabcf34
+translatedFrom: 4173095424e4776b5a541bd72f6ed0b5015fc2a3
 
 hero:
   # Siehe die englische Seite: die Überschrift steht fest, damit sie ohne CSS
@@ -87,12 +87,12 @@ Nur im Campusnetz oder über VPN.
 |---|---|
 | Methode | ${facts.network.wired_eap} / ${facts.network.wired_phase2} |
 | Identität | die Kennung, ohne Realm |
-| CA-Zertifikat | **nicht dokumentiert** |
+| CA-Zertifikat | `${facts.network.wired_ca}` |
+| Server-Domain | `${facts.network.wired_domain_suffix}` |
 | Registrierung gültig | ${facts.network.registration_validity} |
 
-Das offizielle Dokument schaltet die Zertifikatsprüfung ein und nennt keine
-Zertifizierungsstelle, deshalb steht hier auch kein Wert. Die Seite sagt, was damit
-offen bleibt.
+Derselbe Anmeldeserver wie bei ${facts.wifi.eduroam_ssid}. Das offizielle Dokument nennt
+keinen der beiden Werte.
 
 </FactCard>
 </FactDeck>

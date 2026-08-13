@@ -88,11 +88,12 @@ Campus network or VPN only.
 |---|---|
 | Method | ${facts.network.wired_eap} / ${facts.network.wired_phase2} |
 | Identity | the campus login, no realm |
-| CA certificate | **not documented** |
+| CA certificate | `${facts.network.wired_ca}` |
+| Server domain | `${facts.network.wired_domain_suffix}` |
 | Registration valid | ${facts.network.registration_validity} |
 
-The official document turns certificate checking on and names no authority, so this
-project records no value either. The page says what that leaves open.
+Same authentication server as ${facts.wifi.eduroam_ssid}. The official document names
+neither value.
 
 </FactCard>
 </FactDeck>
