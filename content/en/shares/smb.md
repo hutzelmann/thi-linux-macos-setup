@@ -6,8 +6,9 @@ os: [arch, debian, macos]
 
 # Network shares (SMB)
 
-Gets you your campus home directory and any group shares as folders on your machine, over SMB: an `smb://` address in Files or Finder, or `mount -t cifs` and
-`mount_smbfs` for a fixed path.
+Gets you your campus home directory and any group shares as folders on your machine, over
+SMB: an `smb://` address in your file manager, or a mount command for a fixed path. Both
+routes are below, for the system you picked at the top of this page.
 
 Official documentation: [connecting a network drive](${facts.shares.official_url}).
 
@@ -98,10 +99,26 @@ mount_smbfs "//${facts.shares.domain};<kennung>@${facts.shares.home_server}/<ken
 
 :::
 
-`uid` and `gid` matter on Linux: without them the mount belongs to root and your editor
-cannot write to it.
+::: os arch
 
-Unmount with `sudo umount ~/mnt/thi-home` (`umount` without `sudo` on macOS).
+`uid` and `gid` matter: without them the mount belongs to root and your editor cannot
+write to it. Unmount with `sudo umount ~/mnt/thi-home`.
+
+:::
+
+::: os debian
+
+`uid` and `gid` matter: without them the mount belongs to root and your editor cannot
+write to it. Unmount with `sudo umount ~/mnt/thi-home`.
+
+:::
+
+::: os macos
+
+The mount belongs to you already, so there is no `uid` to pass. Unmount with
+`umount ~/mnt/thi-home`, no `sudo`.
+
+:::
 
 ## Verify
 
@@ -112,9 +129,29 @@ credentials are used and nothing is mounted.
 
 By hand:
 
+::: os arch
+
 ```bash
 getent hosts ${facts.shares.home_server}
 ```
+
+:::
+
+::: os debian
+
+```bash
+getent hosts ${facts.shares.home_server}
+```
+
+:::
+
+::: os macos
+
+```bash
+dscacheutil -q host -a name ${facts.shares.home_server}
+```
+
+:::
 
 No output means the name does not resolve, which means you are not on the campus network
 and the VPN is not up.
@@ -126,8 +163,25 @@ mode `600`, and it still writes your SSO password to disk in clear text, the pas
 that also reaches your mail and your grades. Mount on demand instead, or use a keyring.
 
 **A stale mount hangs everything that touches it.** If the VPN drops while a share is
-mounted, `ls` in that directory can block for minutes. `sudo umount -l ~/mnt/thi-home`
-detaches it immediately.
+mounted, `ls` in that directory can block for minutes.
+
+::: os arch
+
+`sudo umount -l ~/mnt/thi-home` detaches it immediately.
+
+:::
+
+::: os debian
+
+`sudo umount -l ~/mnt/thi-home` detaches it immediately.
+
+:::
+
+::: os macos
+
+`umount -f ~/mnt/thi-home` forces it loose. There is no lazy unmount here.
+
+:::
 
 **Share names beyond the servers above are not documented here.** If you know the layout
 of the group shares, that is a genuinely useful addition.

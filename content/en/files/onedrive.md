@@ -1,20 +1,40 @@
 ---
-title: OneDrive and Microsoft 365 on Linux
+title: OneDrive and Microsoft 365 files
 lastChecked:
   arch: 2026-08-09
-description: What works for OneDrive on Linux, why third-party clients cannot sign in, and what to use instead.
+description: What works for OneDrive on each system, why third-party clients cannot sign in, and what to use instead.
 os: [arch, debian, macos]
 ---
 
 # OneDrive and Microsoft 365 files
 
-Short version: **the browser works everywhere, the native client works only on macOS, and
-third-party Linux clients cannot sign in at all.** The reason is a tenant policy rather
-than a packaging problem, so it is worth understanding before spending an evening on it.
+::: os arch
+
+Short version: **the browser works, and third-party clients cannot sign in at all.** The
+reason is a tenant policy rather than a packaging problem, so it is worth understanding
+before spending an evening on it.
+
+:::
+
+::: os debian
+
+Short version: **the browser works, and third-party clients cannot sign in at all.** The
+reason is a tenant policy rather than a packaging problem, so it is worth understanding
+before spending an evening on it.
+
+:::
+
+::: os macos
+
+Short version: **Microsoft's own client works, and so does the browser.** The section
+below is about the clients that cannot sign in, which is worth reading if you also use a
+Linux machine.
+
+:::
 
 Official documentation: [${facts.official.department}](${facts.official.service_url}).
 
-## Why Linux clients fail
+## Why third-party clients cannot sign in
 
 Applications that want access to the university's Microsoft 365 tenant must be approved by
 IT before they can complete sign-in. Open-source OneDrive clients register as exactly such

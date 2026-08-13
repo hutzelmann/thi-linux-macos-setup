@@ -51,8 +51,26 @@ and the finishing recipes will be rejected.
 ## Install the driver
 
 The vendor ships one tarball for all models, roughly 250 MB, from the
-[Kyocera download page](${facts.printing.driver_url}). There is no stable direct link,
-so the download is a manual step on Debian and macOS. On Arch the AUR package wraps it.
+[Kyocera download page](${facts.printing.driver_url}). There is no stable direct link, so
+nothing can fetch it for you unattended.
+
+::: os arch
+
+The AUR package wraps the download, so it is one command below rather than a browser trip.
+
+:::
+
+::: os debian
+
+Downloading it is a manual step: open the page in a browser and take the tarball.
+
+:::
+
+::: os macos
+
+Downloading it is a manual step: open the page in a browser and take the tarball.
+
+:::
 
 ::: os arch
 
@@ -280,9 +298,28 @@ lpstat -p    # the queue is no longer listed
 lpstat -v    # no smb:// device points at the print server
 ```
 
-The password you typed at the first job is not held by CUPS. It sits in your desktop
-keyring (GNOME Keyring, KWallet) or, on macOS, in the login keychain, filed under the
-print server name. Remove it there if you want it gone.
+The password you typed at the first job is not held by CUPS.
+
+::: os arch
+
+It sits in your desktop keyring (GNOME Keyring, KWallet), filed under the print server
+name. Remove it there if you want it gone.
+
+:::
+
+::: os debian
+
+It sits in your desktop keyring (GNOME Keyring, KWallet), filed under the print server
+name. Remove it there if you want it gone.
+
+:::
+
+::: os macos
+
+It sits in the login keychain, filed under the print server name. Remove it there if you
+want it gone.
+
+:::
 
 Then the driver, which is separate from the queue and is worth keeping if you print
 elsewhere on the same model.
@@ -339,8 +376,19 @@ vendor's own route and it removes the parts an `rm` would miss.
 
 :::
 
+::: os arch
+
 An empty `/etc/samba/smb.conf`, if the install step created one, can stay. Other SMB
 tooling expects the file to exist.
+
+:::
+
+::: os debian
+
+An empty `/etc/samba/smb.conf`, if the install step created one, can stay. Other SMB
+tooling expects the file to exist.
+
+:::
 
 ## Known quirks
 
@@ -348,8 +396,13 @@ tooling expects the file to exist.
 it looks like. Use a `for` loop.
 
 **Rapid loops hit authentication delays.** Jobs submitted back-to-back can stall in SMB
-authentication. A `sleep 1` between jobs avoids it. If jobs seem stuck, refresh the queue
-in `system-config-printer` and retry.
+authentication. A `sleep 1` between jobs avoids it. If jobs seem stuck, reopen the print
+queue and retry.
+
+**Nothing comes out and the queue is empty.** Expected. Go to the device and release the
+job with your card. Unreleased jobs expire after ${facts.printing.job_retention}.
+
+::: os arch
 
 **CUPS may need restarting twice** after adding the queue before the first job goes
 through. Reported on Debian with KDE; harmless, if baffling.
@@ -364,5 +417,25 @@ is enough:
 sudo mkdir -p /etc/samba && sudo touch /etc/samba/smb.conf
 ```
 
-**Nothing comes out and the queue is empty.** Expected. Go to the device and release the
-job with your card. Unreleased jobs expire after ${facts.printing.job_retention}.
+The queue window is `system-config-printer` if your desktop does not offer one.
+
+:::
+
+::: os debian
+
+**CUPS may need restarting twice** after adding the queue before the first job goes
+through. Reported on Debian with KDE; harmless, if baffling.
+
+**On KDE, the first job may need explicit authentication.** If it sits in the queue, open
+the print queue, right-click the job and choose *Authentifizieren* (Authenticate).
+
+**Missing `/etc/samba/smb.conf` breaks the SMB backend** on some systems. An empty file
+is enough:
+
+```bash
+sudo mkdir -p /etc/samba && sudo touch /etc/samba/smb.conf
+```
+
+The queue window is `system-config-printer` if your desktop does not offer one.
+
+:::

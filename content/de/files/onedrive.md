@@ -1,22 +1,41 @@
 ---
-title: OneDrive und Microsoft 365 unter Linux
+title: OneDrive und Microsoft-365-Dateien
 lastChecked:
   arch: 2026-08-09
-description: Was bei OneDrive unter Linux funktioniert, warum Drittanbieter-Clients sich nicht anmelden können, und was du stattdessen nutzt.
+description: Was bei OneDrive auf deinem System funktioniert, warum Drittanbieter-Clients sich nicht anmelden können, und was du stattdessen nutzt.
 os: [arch, debian, macos]
-translatedFrom: 8cd4c6c4bb54e14909707a27163f571c7f4c80f2
+translatedFrom: 829c2f7cb5ef200460058345e0b8a4b804ab92b1
 ---
 
 # OneDrive und Microsoft-365-Dateien
 
-Kurzfassung: **der Browser funktioniert überall, der native Client nur unter macOS, und
-Drittanbieter-Clients unter Linux können sich gar nicht anmelden.** Der Grund ist eine
-Tenant-Richtlinie und kein Paketierungsproblem, es lohnt sich also, das zu verstehen,
-bevor du einen Abend investierst.
+::: os arch
+
+Kurzfassung: **der Browser funktioniert, Drittanbieter-Clients können sich gar nicht
+anmelden.** Der Grund ist eine Tenant-Richtlinie und kein Paketierungsproblem, es lohnt
+sich also, das zu verstehen, bevor du einen Abend investierst.
+
+:::
+
+::: os debian
+
+Kurzfassung: **der Browser funktioniert, Drittanbieter-Clients können sich gar nicht
+anmelden.** Der Grund ist eine Tenant-Richtlinie und kein Paketierungsproblem, es lohnt
+sich also, das zu verstehen, bevor du einen Abend investierst.
+
+:::
+
+::: os macos
+
+Kurzfassung: **der Client von Microsoft funktioniert, der Browser ebenfalls.** Der
+Abschnitt unten handelt von den Clients, die sich nicht anmelden können, und lohnt sich,
+wenn du auch einen Linux-Rechner benutzt.
+
+:::
 
 Offizielle Dokumentation: [${facts.official.department}](${facts.official.service_url}).
 
-## Warum Linux-Clients scheitern
+## Warum Drittanbieter-Clients sich nicht anmelden können
 
 Anwendungen, die Zugriff auf den Microsoft-365-Tenant der Hochschule wollen, müssen von
 der IT freigegeben werden, bevor sie die Anmeldung abschließen können. Quelloffene

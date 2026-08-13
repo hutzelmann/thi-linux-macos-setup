@@ -2,14 +2,15 @@
 title: Netzlaufwerke (SMB) unter Linux und macOS
 description: Das Homeverzeichnis am Campus und Gruppenlaufwerke unter Arch, Debian und macOS über SMB einbinden, im Dateimanager oder mit mount, am Campus oder über VPN.
 os: [arch, debian, macos]
-translatedFrom: a82bb889f8fc9a032f25a707ccea1fdc8f8d0800
+translatedFrom: 0253e58000d2363c38643786cdb4d1c6549563e9
 ---
 
 # Netzlaufwerke (SMB)
 
 Bringt dir dein Homeverzeichnis am Campus und alle Gruppenlaufwerke als Ordner auf den
-Rechner, über SMB: eine `smb://`-Adresse in Dateien oder im Finder, oder `mount -t cifs`
-und `mount_smbfs` für einen festen Pfad.
+Rechner, über SMB: eine `smb://`-Adresse im Dateimanager, oder ein Mount-Befehl für einen
+festen Pfad. Beide Wege stehen unten, für das System, das du oben auf dieser Seite
+gewählt hast.
 
 Offizielle Dokumentation: [Netzlaufwerk verbinden](${facts.shares.official_url}).
 
@@ -101,10 +102,26 @@ mount_smbfs "//${facts.shares.domain};<kennung>@${facts.shares.home_server}/<ken
 
 :::
 
-`uid` und `gid` sind unter Linux wichtig: ohne sie gehört der Mount root, und dein Editor
-kann nicht hineinschreiben.
+::: os arch
 
-Aushängen mit `sudo umount ~/mnt/thi-home` (unter macOS `umount` ohne `sudo`).
+`uid` und `gid` sind wichtig: ohne sie gehört der Mount root, und dein Editor kann nicht
+hineinschreiben. Aushängen mit `sudo umount ~/mnt/thi-home`.
+
+:::
+
+::: os debian
+
+`uid` und `gid` sind wichtig: ohne sie gehört der Mount root, und dein Editor kann nicht
+hineinschreiben. Aushängen mit `sudo umount ~/mnt/thi-home`.
+
+:::
+
+::: os macos
+
+Der Mount gehört ohnehin dir, es gibt also keine `uid` zu übergeben. Aushängen mit
+`umount ~/mnt/thi-home`, ohne `sudo`.
+
+:::
 
 ## Prüfen
 
@@ -115,9 +132,29 @@ Server?* Es werden keine Anmeldedaten verwendet und nichts eingebunden.
 
 Von Hand:
 
+::: os arch
+
 ```bash
 getent hosts ${facts.shares.home_server}
 ```
+
+:::
+
+::: os debian
+
+```bash
+getent hosts ${facts.shares.home_server}
+```
+
+:::
+
+::: os macos
+
+```bash
+dscacheutil -q host -a name ${facts.shares.home_server}
+```
+
+:::
 
 Keine Ausgabe heißt, der Name löst nicht auf, du bist also nicht im Campusnetz und das VPN
 steht nicht.
@@ -131,7 +168,26 @@ Bedarf ein, oder nutze einen Schlüsselbund.
 
 **Ein hängengebliebener Mount blockiert alles, was ihn berührt.** Fällt das VPN aus,
 während ein Laufwerk eingebunden ist, kann `ls` in diesem Verzeichnis minutenlang
-blockieren. `sudo umount -l ~/mnt/thi-home` löst ihn sofort ab.
+blockieren.
+
+::: os arch
+
+`sudo umount -l ~/mnt/thi-home` löst ihn sofort ab.
+
+:::
+
+::: os debian
+
+`sudo umount -l ~/mnt/thi-home` löst ihn sofort ab.
+
+:::
+
+::: os macos
+
+`umount -f ~/mnt/thi-home` löst ihn mit Gewalt. Ein verzögertes Aushängen gibt es hier
+nicht.
+
+:::
 
 **Laufwerksnamen jenseits der obigen Server sind hier nicht dokumentiert.** Wenn du den
 Aufbau der Gruppenlaufwerke kennst, ist das eine wirklich nützliche Ergänzung.

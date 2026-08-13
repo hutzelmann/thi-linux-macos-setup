@@ -2,7 +2,7 @@
 title: Drucken am Campus unter Linux und macOS
 description: Die Warteschlange ${facts.printing.queue} oder ${facts.printing.queue_students} unter Arch, Debian und macOS in CUPS einrichten, mit den lp-Rezepten für Duplex, Lochung und Heftung.
 os: [arch, debian, macos]
-translatedFrom: 34b9a938d4dd4156806a19ab096e8c76be5d82e4
+translatedFrom: f68d55677bef39cd377a19d078d50ca8d9ac3a2a
 ---
 
 # Drucken
@@ -56,8 +56,26 @@ Finishing-Rezepte werden abgelehnt.
 
 Der Hersteller liefert ein Archiv für alle Modelle, rund 250 MB, über die
 [Kyocera-Downloadseite](${facts.printing.driver_url}). Einen stabilen Direktlink gibt es
-nicht, unter Debian und macOS bleibt der Download also ein Handgriff. Unter Arch nimmt
-ihn das AUR-Paket auf.
+nicht, unbeaufsichtigt holen kann ihn also nichts.
+
+::: os arch
+
+Das AUR-Paket nimmt den Download auf, es bleibt also bei einem Befehl statt einem Weg
+über den Browser.
+
+:::
+
+::: os debian
+
+Der Download ist ein Handgriff: Seite im Browser öffnen und das Archiv holen.
+
+:::
+
+::: os macos
+
+Der Download ist ein Handgriff: Seite im Browser öffnen und das Archiv holen.
+
+:::
 
 ::: os arch
 
@@ -286,9 +304,28 @@ lpstat -p    # die Warteschlange taucht nicht mehr auf
 lpstat -v    # kein smb://-Gerät zeigt mehr auf den Druckserver
 ```
 
-Das Passwort vom ersten Druckauftrag liegt nicht bei CUPS, sondern im Schlüsselbund der
-Arbeitsumgebung (GNOME Keyring, KWallet), unter macOS im Login-Schlüsselbund, abgelegt
-unter dem Namen des Druckservers. Wer es loswerden will, löscht es dort.
+Das Passwort vom ersten Druckauftrag liegt nicht bei CUPS.
+
+::: os arch
+
+Es liegt im Schlüsselbund der Arbeitsumgebung (GNOME Keyring, KWallet), abgelegt unter
+dem Namen des Druckservers. Wer es loswerden will, löscht es dort.
+
+:::
+
+::: os debian
+
+Es liegt im Schlüsselbund der Arbeitsumgebung (GNOME Keyring, KWallet), abgelegt unter
+dem Namen des Druckservers. Wer es loswerden will, löscht es dort.
+
+:::
+
+::: os macos
+
+Es liegt im Login-Schlüsselbund, abgelegt unter dem Namen des Druckservers. Wer es
+loswerden will, löscht es dort.
+
+:::
 
 Danach der Treiber. Er hängt nicht an der Warteschlange und lohnt sich zu behalten, wenn
 anderswo auf demselben Modell gedruckt wird.
@@ -345,8 +382,19 @@ diesen Weg des Herstellers; er erwischt auch die Teile, die ein `rm` übersieht.
 
 :::
 
+::: os arch
+
 Eine leere `/etc/samba/smb.conf`, falls sie beim Einrichten angelegt wurde, kann bleiben.
 Andere SMB-Werkzeuge erwarten die Datei ohnehin.
+
+:::
+
+::: os debian
+
+Eine leere `/etc/samba/smb.conf`, falls sie beim Einrichten angelegt wurde, kann bleiben.
+Andere SMB-Werkzeuge erwarten die Datei ohnehin.
+
+:::
 
 ## Bekannte Eigenheiten
 
@@ -355,8 +403,13 @@ das, wonach es aussieht. Nimm eine `for`-Schleife.
 
 **Schnelle Schleifen laufen in Anmeldeverzögerungen.** Direkt aufeinanderfolgende Aufträge
 können in der SMB-Authentifizierung hängen bleiben. Ein `sleep 1` dazwischen hilft. Wenn
-Aufträge feststecken: Warteschlange in `system-config-printer` aktualisieren und erneut
-versuchen.
+Aufträge feststecken: Warteschlange erneut öffnen und noch einmal versuchen.
+
+**Es kommt nichts heraus und die Warteschlange ist leer.** Genau so ist es gedacht. Geh
+zum Gerät und gib den Auftrag mit deiner Karte frei. Nicht freigegebene Aufträge verfallen
+nach ${facts.printing.job_retention}.
+
+::: os arch
 
 **CUPS braucht nach dem Anlegen manchmal zwei Neustarts**, bevor der erste Auftrag
 durchgeht. Unter Debian mit KDE beobachtet; harmlos, aber verwirrend.
@@ -372,6 +425,28 @@ leere Datei genügt:
 sudo mkdir -p /etc/samba && sudo touch /etc/samba/smb.conf
 ```
 
-**Es kommt nichts heraus und die Warteschlange ist leer.** Genau so ist es gedacht. Geh
-zum Gerät und gib den Auftrag mit deiner Karte frei. Nicht freigegebene Aufträge verfallen
-nach ${facts.printing.job_retention}.
+Das Fenster für die Warteschlange ist `system-config-printer`, falls die Arbeitsumgebung
+keines mitbringt.
+
+:::
+
+::: os debian
+
+**CUPS braucht nach dem Anlegen manchmal zwei Neustarts**, bevor der erste Auftrag
+durchgeht. Unter Debian mit KDE beobachtet; harmlos, aber verwirrend.
+
+**Unter KDE muss der erste Auftrag eventuell ausdrücklich authentifiziert werden.** Bleibt
+er in der Warteschlange stehen: Warteschlange öffnen, Rechtsklick auf den Auftrag,
+*Authentifizieren*.
+
+**Eine fehlende `/etc/samba/smb.conf` bricht das SMB-Backend** auf manchen Systemen. Eine
+leere Datei genügt:
+
+```bash
+sudo mkdir -p /etc/samba && sudo touch /etc/samba/smb.conf
+```
+
+Das Fenster für die Warteschlange ist `system-config-printer`, falls die Arbeitsumgebung
+keines mitbringt.
+
+:::
