@@ -1,8 +1,10 @@
 ---
 title: 'Ethernet am Campus: 802.1X und MAC-Registrierung'
+lastChecked:
+  arch: 2026-08-13
 description: 'Ein Linux- oder Mac-Gerät an eine Netzwerkdose am Campus bringen: Anmeldung per 802.1X, oder den Adapter per MAC-Adresse registrieren, und wie du erkennst, was eine Dose will.'
 os: [arch, debian, macos]
-translatedFrom: da5cfb6b2b0e60c26692087bf78a9e29af3e2acf
+translatedFrom: 60c3ff363646910d188a8e4258955136ecfbf6b2
 ---
 
 # Ethernet am Campus
@@ -49,28 +51,23 @@ Anmeldedaten nie zu sehen.
 | Innere Methode | ${facts.network.wired_phase2} |
 | Identität | `<kennung>`, ohne Realm und ohne Domäne |
 | Authentifizierungsmodus | Benutzer, nicht Maschine |
-| CA-Zertifikat | nicht dokumentiert, siehe unten |
-| Zu prüfender Servername | nicht dokumentiert, siehe unten |
+| CA-Zertifikat | ${facts.network.wired_ca} |
+| Zu prüfender Servername | `${facts.network.wired_domain_suffix}` |
+| Anmeldeserver | `${facts.network.wired_server_name}` |
 
-::: warning Die beiden Zertifikatseinstellungen fehlen in der dokumentierten Konfiguration
-Beide Campuswege tragen deine Hochschulkennung, dasselbe Passwort, das auch an deine Mail
-und an alles andere kommt. [WLAN am Campus](/de/wifi/) erklärt ausführlich, warum ein
-Profil, das das Zertifikat des Anmeldeservers nicht prüft, dieses Passwort an alles
-weitergibt, was danach fragt, und warum eine CA ohne zusätzlich geprüften Servernamen den
-Angriff nur eingrenzt statt ihn zu schließen.
+Beide Zertifikatseinstellungen sind nötig. Deine Hochschulkennung ist dasselbe Passwort,
+das auch an deine Mail und an alles andere kommt, und ein Profil, das das Zertifikat des
+Anmeldeservers nicht prüft, gibt es an alles weiter, was danach fragt.
+[WLAN am Campus](/de/wifi/) erklärt das ausführlich, auch warum eine CA ohne zusätzlich
+geprüften Servernamen den Angriff nur eingrenzt statt ihn zu schließen.
 
-Das offizielle Dokument setzt das Häkchen bei *Serverzertifikat überprüfen* und lässt dann
-die vertrauenswürdige Stelle unausgewählt und *Verbindung mit folgenden Servern
-herstellen* leer. Ein am Campus untersuchtes funktionierendes Profil trug ebenfalls keinen
-der beiden Werte. Diese Seite kann dir also nicht sagen, was dort einzutragen ist, und sie
-rät nicht: an Netzwerkdosen wird das Zertifikat gegen nichts Bestimmtes geprüft.
-
-Die Funknetze prüfen `${facts.wifi.eduroam_domain_suffix}` gegen
-${facts.wifi.eduroam_ca}. Ob die Netzwerkdosen denselben Anmeldeserver nutzen, ist genau
-die offene Frage, und eine Annahme hier wäre der plausibel aussehende Wert, der schlimmer
-ist als eine eingestandene Lücke. Wenn du das auf anderem Weg bestätigst, ist das ein
-Issue wert.
-:::
+Die offizielle Anleitung setzt das Häkchen bei *Serverzertifikat überprüfen* und lässt
+dann die vertrauenswürdige Stelle unausgewählt und *Verbindung mit folgenden Servern
+herstellen* leer, die beiden Werte oben stammen also nicht von dort. Sie wurden am
+2026-08-13 an einer Campusdose abgelesen und vor dem Aufschreiben auf anderem Weg
+bestätigt. Die Netzwerkdose und ${facts.wifi.eduroam_ssid} zeigten an diesem Tag dieselbe
+Zertifikatskette samt Fingerabdrücken, die WLAN-CA in `facts/wifi.yaml` und die
+kabelgebundene hier benennen also einen Server.
 
 ### Der Klickweg
 
@@ -84,8 +81,12 @@ Hochschulpasswort.
 **KDE:** Systemeinstellungen → WLAN & Netzwerk → die Kabelverbindung →
 **802.1x-Sicherheit**, dieselben vier Werte.
 
-Anonyme Identität leer lassen. Das Feld für das CA-Zertifikat ist die Stelle, an die der
-oben fehlende Wert gehören würde.
+Dann die beiden Zertifikatseinstellungen: **CA-Zertifikat** →
+`${facts.wifi.eduroam_ca_path_arch}`, das ist ${facts.network.wired_ca}, wie das Paket
+`ca-certificates` es ablegt, und **Domäne** (GNOME) beziehungsweise **Domain-Suffix**
+(KDE) → `${facts.network.wired_domain_suffix}`.
+
+Anonyme Identität leer lassen.
 
 :::
 
@@ -99,8 +100,12 @@ Hochschulpasswort.
 **KDE:** Systemeinstellungen → WLAN & Netzwerk → die Kabelverbindung →
 **802.1x-Sicherheit**, dieselben vier Werte.
 
-Anonyme Identität leer lassen. Das Feld für das CA-Zertifikat ist die Stelle, an die der
-oben fehlende Wert gehören würde.
+Dann die beiden Zertifikatseinstellungen: **CA-Zertifikat** →
+`${facts.wifi.eduroam_ca_path_debian}`, das ist ${facts.network.wired_ca}, wie das Paket
+`ca-certificates` es ablegt, und **Domäne** (GNOME) beziehungsweise **Domain-Suffix**
+(KDE) → `${facts.network.wired_domain_suffix}`.
+
+Anonyme Identität leer lassen.
 
 :::
 
@@ -111,8 +116,9 @@ Anmeldeabfrage für den Ethernet-Dienst; trag `<kennung>` und dein Hochschulpass
 
 macOS zeigt dann das Zertifikat des Anmeldeservers und fragt, ob ihm vertraut werden soll.
 Dieser Dialog ist die einzige Serverprüfung, die du hier bekommst, und er ist eine
-einmalige menschliche Entscheidung statt einer Einstellung: lies den Namen im Zertifikat,
-bevor du zustimmst, denn Zustimmen speichert es dauerhaft.
+einmalige menschliche Entscheidung statt einer Einstellung: zu erwarten ist der Name
+`${facts.network.wired_server_name}`, ausgestellt unter ${facts.network.wired_ca}. Lies
+ihn, bevor du zustimmst, denn Zustimmen speichert es dauerhaft.
 
 Vorab konfigurieren: Systemeinstellungen → Netzwerk → Ethernet → Details → **802.1X**.
 
@@ -127,6 +133,8 @@ nmcli connection add type ethernet con-name "THI 802.1X" ifname enp0s31f6 \
   802-1x.eap peap \
   802-1x.phase2-auth mschapv2 \
   802-1x.identity "<kennung>" \
+  802-1x.ca-cert "${facts.wifi.eduroam_ca_path_arch}" \
+  802-1x.domain-suffix-match "${facts.network.wired_domain_suffix}" \
   802-1x.password-flags 2
 nmcli connection up "THI 802.1X" --ask
 ```
@@ -147,6 +155,8 @@ nmcli connection add type ethernet con-name "THI 802.1X" ifname enp0s31f6 \
   802-1x.eap peap \
   802-1x.phase2-auth mschapv2 \
   802-1x.identity "<kennung>" \
+  802-1x.ca-cert "${facts.wifi.eduroam_ca_path_debian}" \
+  802-1x.domain-suffix-match "${facts.network.wired_domain_suffix}" \
   802-1x.password-flags 2
 nmcli connection up "THI 802.1X" --ask
 ```
@@ -205,9 +215,10 @@ Eine Adresse aus dem Campusnetz heißt, die Anmeldung wurde akzeptiert. Eine Adr
 `169.254.x.x`, oder gar keine, heißt, sie wurde es nicht, oder diese Dose will
 stattdessen eine registrierte MAC-Adresse.
 
-Der zweite Befehl gibt die beiden Zertifikatsfelder aus. Beide sind in einem Profil aus
-den dokumentierten Werten leer, und das ist die oben beschriebene Lücke und kein Fehler
-von dir.
+Der zweite Befehl gibt die beiden Zertifikatsfelder aus. Beide müssen gefüllt sein, und
+das Suffix muss `${facts.network.wired_domain_suffix}` lauten. Ein Profil, das nur der
+offiziellen Anleitung folgt, hat keines von beiden und meldet sich genauso erfolgreich an
+wie eines, das beide hat, deshalb lohnt sich der Blick statt der Annahme.
 
 ---
 
@@ -217,13 +228,36 @@ von dir.
 
 Wo eine Dose Hardwareadressen prüft, beruht die Authentifizierung auf einer Positivliste.
 Der dokumentierte Weg auf diese Liste führt über ein eigenes Onboarding-Netz und den
-Onboarding-Client des Herstellers, der Windows und macOS unterstützt und Linux nur sehr
-eingeschränkt.
+Onboarding-Client des Herstellers.
 
-Für Systeme, die er nicht abdeckt, rät die IT selbst dazu, das Gerät von Hand über das
-Formular für IoT-Geräte zu registrieren. Das ist nicht bloß ein Umweg: es bedeutet, dass
-keine zusätzliche Software mit Administratorrechten auf deinem Rechner läuft, was ein
-echter Vorteil ist.
+::: os arch
+
+Dieser Client unterstützt Windows und macOS, Linux nur sehr eingeschränkt. Für Systeme,
+die er nicht abdeckt, rät die IT selbst dazu, das Gerät von Hand über das Formular für
+IoT-Geräte zu registrieren. Das ist nicht bloß ein Umweg: es bedeutet, dass keine
+zusätzliche Software mit Administratorrechten auf deinem Rechner läuft, was ein echter
+Vorteil ist.
+
+:::
+
+::: os debian
+
+Dieser Client unterstützt Windows und macOS, Linux nur sehr eingeschränkt. Für Systeme,
+die er nicht abdeckt, rät die IT selbst dazu, das Gerät von Hand über das Formular für
+IoT-Geräte zu registrieren. Das ist nicht bloß ein Umweg: es bedeutet, dass keine
+zusätzliche Software mit Administratorrechten auf deinem Rechner läuft, was ein echter
+Vorteil ist.
+
+:::
+
+::: os macos
+
+Dieser Client deckt macOS ab, dir steht er also offen. Die Alternative ist die
+Registrierung von Hand über das Formular für IoT-Geräte, und sie ist der Weg, den diese
+Seite beschreibt: es läuft keine zusätzliche Software mit Administratorrechten auf deinem
+Rechner, was ein echter Vorteil ist.
+
+:::
 
 Der Preis ist, dass eine manuelle Registrierung nach
 ${facts.network.registration_validity} abläuft und erneuert werden muss.
@@ -235,7 +269,7 @@ ${facts.network.registration_validity} abläuft und erneuert werden muss.
 | Registrierungsformular | [Formular für IoT-Geräte](${facts.network.registration_form_url}) |
 | Gültig für | ${facts.network.registration_validity} |
 | Zusätzlich abgedecktes WLAN | `${facts.wifi.thi_ssid}` |
-| Onboarding-Netz (nicht für Linux) | `${facts.wifi.onboard_ssid}` |
+| Onboarding-Netz, für den offiziellen Client | `${facts.wifi.onboard_ssid}` |
 
 ### Schritt 1: die MAC-Adressen sammeln
 
@@ -249,6 +283,9 @@ sind zwei Einreichungen.
 ip -brief link show
 ```
 
+Schnittstellen mit Namen wie `enp…` oder `eth…` sind kabelgebunden, `wlp…` oder `wlan…`
+sind Funk.
+
 :::
 
 ::: os debian
@@ -256,6 +293,9 @@ ip -brief link show
 ```bash
 ip -brief link show
 ```
+
+Schnittstellen mit Namen wie `enp…` oder `eth…` sind kabelgebunden, `wlp…` oder `wlan…`
+sind Funk.
 
 :::
 
@@ -265,11 +305,13 @@ ip -brief link show
 networksetup -listallhardwareports
 ```
 
+Jeder Block nennt einen Hardware-Port und seine Adresse. **Ethernet** und **Thunderbolt
+Ethernet** sind die kabelgebundenen, **Wi-Fi** ist der Funkanschluss.
+
 :::
 
-Schnittstellen mit Namen wie `enp…` oder `eth…` sind kabelgebunden, `wlp…` oder `wlan…`
-sind Funk. Wenn du nicht erkennst, welcher Eintrag das Dock ist, zieh es ab, führ den
-Befehl erneut aus und vergleiche.
+Wenn du nicht erkennst, welcher Eintrag das Dock ist, zieh es ab, führ den Befehl erneut
+aus und vergleiche.
 
 ### Schritt 2: das Formular einreichen
 
@@ -284,7 +326,8 @@ also in genau einer Einreichung auf.
 3. *Gerätename* → `<hostname>`
 4. *MAC-Adresse* → die Adresse der Kabelschnittstelle
 5. *Beschreibung* → wofür es gebraucht wird, etwa Zugang für Lehre oder Forschung
-6. *Betriebssystem inkl. Buildversion* → etwa "Arch Linux (Rolling Release)"
+6. *Betriebssystem inkl. Buildversion* → das System, das du benutzt, mit Version, so wie
+   du es selbst nennen würdest
 7. *Freischaltung Bereich* → der Netzbereich, den du brauchst
 
 **Für das WLAN `${facts.wifi.thi_ssid}`:** dasselbe Formular, mit *Benötigen Sie für das
@@ -330,9 +373,9 @@ ifconfig en0 | grep 'inet '
 
 :::
 
-Eine Adresse in `169.254.x.x` (oder `link/ether` ganz ohne `inet`) heißt, die
-Authentifizierung war nicht erfolgreich: die Registrierung ist noch nicht aktiv, oder
-diese MAC wurde nie eingereicht.
+Eine Adresse in `169.254.x.x`, oder gar keine Adresse, heißt, die Authentifizierung war
+nicht erfolgreich: die Registrierung ist noch nicht aktiv, oder diese MAC wurde nie
+eingereicht.
 
 ---
 

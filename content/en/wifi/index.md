@@ -1,5 +1,7 @@
 ---
 title: eduroam and @thi Wi-Fi on Linux and macOS
+lastChecked:
+  arch: 2026-08-13
 description: Connect to eduroam and @thi from Linux and macOS, with the certificate checks that stop a fake access point from stealing your campus password.
 os: [arch, debian, macos]
 ---
@@ -7,9 +9,9 @@ os: [arch, debian, macos]
 # Wi-Fi on campus
 
 Gets you online. Use **${facts.wifi.eduroam_ssid}**. It works here and at every other
-university in the world with the same profile. The steps below cover the eduroam CAT
-installer, NetworkManager (`nmcli`) and `wpa_supplicant` on Linux, and a configuration
-profile on macOS.
+university in the world with the same profile. Two routes below: the eduroam
+configuration assistant, which fills the certificate settings in for you, and hand
+configuration for the system you picked at the top of this page.
 
 Official documentation: [THI Wi-Fi service](${facts.wifi.official_url}).
 
@@ -48,7 +50,26 @@ which is why it is the recommended route below.
 | Device registration needed | no | yes |
 
 The CA ships with the standard certificate bundle on all three systems, so there is
-nothing to download. On Linux it is at `${facts.wifi.eduroam_ca_path}`.
+nothing to download. Where your system keeps it:
+
+::: os arch
+
+`${facts.wifi.eduroam_ca_path_arch}`
+
+:::
+
+::: os debian
+
+`${facts.wifi.eduroam_ca_path_debian}`
+
+:::
+
+::: os macos
+
+In the system keychain, under the certificate's name rather than a path. A profile
+refers to it by name, so there is no file to point at.
+
+:::
 
 ::: warning Older notes name the wrong CA
 Notes written before 2026 name a USERTrust certificate. THI has moved to
@@ -111,7 +132,7 @@ nmcli connection add type wifi con-name eduroam ssid ${facts.wifi.eduroam_ssid} 
   802-1x.eap peap \
   802-1x.phase2-auth mschapv2 \
   802-1x.identity "<kennung>@${facts.wifi.eduroam_realm}" \
-  802-1x.ca-cert "${facts.wifi.eduroam_ca_path}" \
+  802-1x.ca-cert "${facts.wifi.eduroam_ca_path_arch}" \
   802-1x.domain-suffix-match "${facts.wifi.eduroam_domain_suffix}"
 ```
 
@@ -125,7 +146,7 @@ nmcli connection add type wifi con-name eduroam ssid ${facts.wifi.eduroam_ssid} 
   802-1x.eap peap \
   802-1x.phase2-auth mschapv2 \
   802-1x.identity "<kennung>@${facts.wifi.eduroam_realm}" \
-  802-1x.ca-cert "/etc/ssl/certs/HARICA_TLS_RSA_Root_CA_2021.pem" \
+  802-1x.ca-cert "${facts.wifi.eduroam_ca_path_debian}" \
   802-1x.domain-suffix-match "${facts.wifi.eduroam_domain_suffix}"
 ```
 
@@ -164,6 +185,10 @@ profile validates the server. By hand:
 nmcli -f 802-1x.ca-cert,802-1x.domain-suffix-match connection show eduroam
 ```
 
+Both fields must be non-empty, and the second must read
+`${facts.wifi.eduroam_domain_suffix}`. An empty `domain-suffix-match` is the single most
+common problem, and it is invisible: the network works perfectly either way.
+
 :::
 
 ::: os debian
@@ -171,6 +196,10 @@ nmcli -f 802-1x.ca-cert,802-1x.domain-suffix-match connection show eduroam
 ```bash
 nmcli -f 802-1x.ca-cert,802-1x.domain-suffix-match connection show eduroam
 ```
+
+Both fields must be non-empty, and the second must read
+`${facts.wifi.eduroam_domain_suffix}`. An empty `domain-suffix-match` is the single most
+common problem, and it is invisible: the network works perfectly either way.
 
 :::
 
@@ -180,15 +209,37 @@ nmcli -f 802-1x.ca-cert,802-1x.domain-suffix-match connection show eduroam
 security find-certificate -c "${facts.wifi.eduroam_ca}" /Library/Keychains/System.keychain
 ```
 
-:::
+This says the authority is present, not that your profile matches a server name against
+it. macOS keeps that inside the profile, so the answer is whether the profile came from
+the configuration assistant: **System Settings → General → VPN & Device Management**.
 
-Both fields must be non-empty. An empty `domain-suffix-match` is the single most common
-problem, and it is invisible: the network works perfectly either way.
+:::
 
 ## Known quirks
 
-**`${facts.wifi.onboard_ssid}` is not a network you stay on.** It exists for the official onboarding
-client, which supports Windows and macOS. On Linux, register the device instead.
+**`${facts.wifi.onboard_ssid}` is not a network you stay on.** It exists for the official
+onboarding client.
+
+::: os arch
+
+That client supports Windows and macOS, and its Linux support is very limited. Register
+the device instead: [Ethernet: 802.1X and MAC registration](/en/network/ethernet-802-1x).
+
+:::
+
+::: os debian
+
+That client supports Windows and macOS, and its Linux support is very limited. Register
+the device instead: [Ethernet: 802.1X and MAC registration](/en/network/ethernet-802-1x).
+
+:::
+
+::: os macos
+
+That client supports macOS, so this network is the route it uses. Registering the device
+by hand works too: [Ethernet: 802.1X and MAC registration](/en/network/ethernet-802-1x).
+
+:::
 
 **Roaming between buildings can drop the session** on some drivers. Usually a
 `wpa_supplicant` matter rather than anything campus-specific.

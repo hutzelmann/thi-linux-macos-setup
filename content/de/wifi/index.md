@@ -1,16 +1,18 @@
 ---
 title: eduroam und @thi WLAN unter Linux und macOS
+lastChecked:
+  arch: 2026-08-13
 description: eduroam und @thi unter Linux und macOS einrichten, mit den Zertifikatsprüfungen, die verhindern, dass ein gefälschter Accesspoint das Hochschulpasswort abgreift.
 os: [arch, debian, macos]
-translatedFrom: f7717e2278ddf2e4f304c98a8c2ad689defc0497
+translatedFrom: 833bc6786e4dead28dcc26d2ce316d52286893ac
 ---
 
 # WLAN am Campus
 
 Bringt dich ins Netz. Nimm **${facts.wifi.eduroam_ssid}**. Das funktioniert hier und mit
-demselben Profil an jeder anderen Hochschule weltweit. Die Schritte unten decken den
-eduroam-CAT-Installer, NetworkManager (`nmcli`) und wpa_supplicant unter Linux sowie ein
-Konfigurationsprofil unter macOS ab.
+demselben Profil an jeder anderen Hochschule weltweit. Unten stehen zwei Wege: der
+eduroam-Konfigurationsassistent, der die Zertifikatseinstellungen für dich einträgt, und
+die Konfiguration von Hand für das System, das du oben auf dieser Seite gewählt hast.
 
 Offizielle Dokumentation: [WLAN-Service der THI](${facts.wifi.official_url}).
 
@@ -50,7 +52,26 @@ deshalb ist es unten der empfohlene Weg.
 | Geräteregistrierung nötig | nein | ja |
 
 Die CA ist auf allen drei Systemen im Standard-Zertifikatspaket enthalten, es gibt nichts
-herunterzuladen. Unter Linux liegt sie unter `${facts.wifi.eduroam_ca_path}`.
+herunterzuladen. Wo dein System sie ablegt:
+
+::: os arch
+
+`${facts.wifi.eduroam_ca_path_arch}`
+
+:::
+
+::: os debian
+
+`${facts.wifi.eduroam_ca_path_debian}`
+
+:::
+
+::: os macos
+
+Im Systemschlüsselbund, unter dem Namen des Zertifikats statt unter einem Pfad. Ein
+Profil verweist über den Namen darauf, es gibt also keine Datei zum Angeben.
+
+:::
 
 ::: warning Ältere Notizen nennen die falsche CA
 Notizen von vor 2026 nennen ein USERTrust-Zertifikat. Die THI hat auf
@@ -115,7 +136,7 @@ nmcli connection add type wifi con-name eduroam ssid ${facts.wifi.eduroam_ssid} 
   802-1x.eap peap \
   802-1x.phase2-auth mschapv2 \
   802-1x.identity "<kennung>@${facts.wifi.eduroam_realm}" \
-  802-1x.ca-cert "${facts.wifi.eduroam_ca_path}" \
+  802-1x.ca-cert "${facts.wifi.eduroam_ca_path_arch}" \
   802-1x.domain-suffix-match "${facts.wifi.eduroam_domain_suffix}"
 ```
 
@@ -129,7 +150,7 @@ nmcli connection add type wifi con-name eduroam ssid ${facts.wifi.eduroam_ssid} 
   802-1x.eap peap \
   802-1x.phase2-auth mschapv2 \
   802-1x.identity "<kennung>@${facts.wifi.eduroam_realm}" \
-  802-1x.ca-cert "/etc/ssl/certs/HARICA_TLS_RSA_Root_CA_2021.pem" \
+  802-1x.ca-cert "${facts.wifi.eduroam_ca_path_debian}" \
   802-1x.domain-suffix-match "${facts.wifi.eduroam_domain_suffix}"
 ```
 
@@ -168,6 +189,10 @@ prüft. Von Hand:
 nmcli -f 802-1x.ca-cert,802-1x.domain-suffix-match connection show eduroam
 ```
 
+Beide Felder müssen gefüllt sein, und das zweite muss
+`${facts.wifi.eduroam_domain_suffix}` lauten. Ein leeres `domain-suffix-match` ist das mit
+Abstand häufigste Problem, und es ist unsichtbar, weil das Netz so oder so funktioniert.
+
 :::
 
 ::: os debian
@@ -175,6 +200,10 @@ nmcli -f 802-1x.ca-cert,802-1x.domain-suffix-match connection show eduroam
 ```bash
 nmcli -f 802-1x.ca-cert,802-1x.domain-suffix-match connection show eduroam
 ```
+
+Beide Felder müssen gefüllt sein, und das zweite muss
+`${facts.wifi.eduroam_domain_suffix}` lauten. Ein leeres `domain-suffix-match` ist das mit
+Abstand häufigste Problem, und es ist unsichtbar, weil das Netz so oder so funktioniert.
 
 :::
 
@@ -184,16 +213,39 @@ nmcli -f 802-1x.ca-cert,802-1x.domain-suffix-match connection show eduroam
 security find-certificate -c "${facts.wifi.eduroam_ca}" /Library/Keychains/System.keychain
 ```
 
-:::
+Das sagt, dass die Stelle vorhanden ist, nicht dass dein Profil einen Servernamen dagegen
+prüft. macOS hält das im Profil, die Frage lautet also, ob das Profil vom
+Konfigurationsassistenten stammt: **Systemeinstellungen → Allgemein → VPN &
+Geräteverwaltung**.
 
-Beide Felder müssen gefüllt sein. Ein leeres `domain-suffix-match` ist das mit Abstand
-häufigste Problem, und es ist unsichtbar, weil das Netz so oder so funktioniert.
+:::
 
 ## Bekannte Eigenheiten
 
-**`${facts.wifi.onboard_ssid}` ist kein Netz zum Bleiben.** Es existiert für den offiziellen
-Onboarding-Client, der Windows und macOS unterstützt. Unter Linux registrierst du das
-Gerät stattdessen manuell.
+**`${facts.wifi.onboard_ssid}` ist kein Netz zum Bleiben.** Es existiert für den
+offiziellen Onboarding-Client.
+
+::: os arch
+
+Dieser Client unterstützt Windows und macOS, Linux nur sehr eingeschränkt. Registriere das
+Gerät stattdessen: [Ethernet: 802.1X und MAC-Registrierung](/de/network/ethernet-802-1x).
+
+:::
+
+::: os debian
+
+Dieser Client unterstützt Windows und macOS, Linux nur sehr eingeschränkt. Registriere das
+Gerät stattdessen: [Ethernet: 802.1X und MAC-Registrierung](/de/network/ethernet-802-1x).
+
+:::
+
+::: os macos
+
+Dieser Client deckt macOS ab, dieses Netz ist also der Weg, den er nimmt. Die
+Registrierung von Hand funktioniert ebenfalls:
+[Ethernet: 802.1X und MAC-Registrierung](/de/network/ethernet-802-1x).
+
+:::
 
 **Der Wechsel zwischen Gebäuden kann die Sitzung abreißen lassen**, abhängig vom Treiber.
 Das ist meist eine Sache von `wpa_supplicant` und nicht campusspezifisch.

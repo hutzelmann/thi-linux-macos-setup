@@ -13,7 +13,12 @@ eduroam_phase2: MSCHAPv2
 # the standard ca-certificates package on Arch, Debian and macOS, so there is
 # nothing to download.
 eduroam_ca: HARICA TLS RSA Root CA 2021
-eduroam_ca_path: /etc/ca-certificates/extracted/cadir/HARICA_TLS_RSA_Root_CA_2021.pem
+
+# The same certificate, in the place each distribution's bundle puts it. Two
+# entries because a profile names a file: a page that offered one path would be
+# wrong on the other system, and the reader has no way to tell which.
+eduroam_ca_path_arch: /etc/ca-certificates/extracted/cadir/HARICA_TLS_RSA_Root_CA_2021.pem
+eduroam_ca_path_debian: /etc/ssl/certs/HARICA_TLS_RSA_Root_CA_2021.pem
 
 # The RADIUS server's certificate must match this domain. Without this check a
 # rogue access point holding any certificate from the same CA is accepted.

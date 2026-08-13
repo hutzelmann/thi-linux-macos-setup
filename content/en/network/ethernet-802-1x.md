@@ -1,5 +1,7 @@
 ---
 title: 'Ethernet on campus: 802.1X and MAC registration'
+lastChecked:
+  arch: 2026-08-13
 description: 'Get a Linux or Mac device onto a campus Ethernet port: 802.1X login, or registering the adapter by MAC address, and how to tell which one a port wants.'
 os: [arch, debian, macos]
 ---
@@ -47,28 +49,23 @@ Trying 802.1X first costs nothing. A port that does not ask never sees the crede
 | Inner method | ${facts.network.wired_phase2} |
 | Identity | `<kennung>`, with no realm and no domain |
 | Authentication mode | user, not machine |
-| CA certificate | not documented, see below |
-| Server name to match | not documented, see below |
+| CA certificate | ${facts.network.wired_ca} |
+| Server name to match | `${facts.network.wired_domain_suffix}` |
+| Authentication server | `${facts.network.wired_server_name}` |
 
-::: warning The two certificate settings are missing from the documented configuration
-Both campus paths carry your campus login, the password that also reaches your mail and
-everything else. [Wi-Fi on campus](/en/wifi/) explains at length why a profile that does
-not check the authentication server's certificate hands that password to anything willing
-to ask for it, and why naming a CA without also matching a server name only narrows the
-attack rather than closing it.
+Both certificate settings are required. Your campus login is the password that also
+reaches your mail and everything else, and a profile that does not check the
+authentication server's certificate hands it to anything willing to ask.
+[Wi-Fi on campus](/en/wifi/) explains that at length, including why naming a CA without
+also matching a server name only narrows the attack rather than closing it.
 
-The official document ticks *Serverzertifikat überprüfen* (check the server certificate)
-and then leaves the trusted authority unselected and *Verbindung mit folgenden Servern
-herstellen* (connect to these servers) empty. A working profile inspected on campus
-carried neither value either. So this page cannot tell you what to fill in, and will not
-guess: on wired ports the certificate is checked against nothing in particular.
-
-The wireless networks match `${facts.wifi.eduroam_domain_suffix}` against
-${facts.wifi.eduroam_ca}. Whether the wired ports use the same authentication server is
-exactly the question, and an assumption here would be the kind of plausible-looking
-value that is worse than an admitted gap. If you confirm it out of band, that is worth an
-issue.
-:::
+The official configuration guide ticks *Serverzertifikat überprüfen* (check the server
+certificate) and then leaves the trusted authority unselected and *Verbindung mit
+folgenden Servern herstellen* (connect to these servers) empty, so the two values above
+do not come from it. They were read off a campus port on 2026-08-13 and confirmed out of
+band before being written down. The wired port and ${facts.wifi.eduroam_ssid} presented
+the same certificate chain that day, fingerprints included, so the wireless CA in
+`facts/wifi.yaml` and the wired one here name one server.
 
 ### The click path
 
@@ -81,8 +78,12 @@ authentication `${facts.network.wired_phase2}`, username `<kennung>`, password y
 **KDE:** System Settings → Wi-Fi & Networking → the wired connection → **802.1x
 Security**, same four values.
 
-Leave anonymous identity empty. The CA certificate field is where the missing value
-above would go.
+Then the two certificate settings: **CA certificate** →
+`${facts.wifi.eduroam_ca_path_arch}`, which is ${facts.network.wired_ca} as the
+`ca-certificates` package installs it, and **Domain** (GNOME) or **Domain suffix match**
+(KDE) → `${facts.network.wired_domain_suffix}`.
+
+Leave anonymous identity empty.
 
 :::
 
@@ -95,8 +96,12 @@ authentication `${facts.network.wired_phase2}`, username `<kennung>`, password y
 **KDE:** System Settings → Wi-Fi & Networking → the wired connection → **802.1x
 Security**, same four values.
 
-Leave anonymous identity empty. The CA certificate field is where the missing value
-above would go.
+Then the two certificate settings: **CA certificate** →
+`${facts.wifi.eduroam_ca_path_debian}`, which is ${facts.network.wired_ca} as the
+`ca-certificates` package installs it, and **Domain** (GNOME) or **Domain suffix match**
+(KDE) → `${facts.network.wired_domain_suffix}`.
+
+Leave anonymous identity empty.
 
 :::
 
@@ -107,8 +112,9 @@ for the Ethernet service; enter `<kennung>` and your campus password.
 
 macOS then shows the authentication server's certificate and asks whether to trust it.
 That dialogue is the only server check you get here, and it is a one-time human decision
-rather than a setting: read the certificate's name before you accept it, because
-accepting stores it for good.
+rather than a setting: the name to expect is `${facts.network.wired_server_name}`, issued
+under ${facts.network.wired_ca}. Read it before you accept it, because accepting stores
+it for good.
 
 To configure it before plugging in: System Settings → Network → Ethernet → Details →
 **802.1X**.
@@ -124,6 +130,8 @@ nmcli connection add type ethernet con-name "THI 802.1X" ifname enp0s31f6 \
   802-1x.eap peap \
   802-1x.phase2-auth mschapv2 \
   802-1x.identity "<kennung>" \
+  802-1x.ca-cert "${facts.wifi.eduroam_ca_path_arch}" \
+  802-1x.domain-suffix-match "${facts.network.wired_domain_suffix}" \
   802-1x.password-flags 2
 nmcli connection up "THI 802.1X" --ask
 ```
@@ -143,6 +151,8 @@ nmcli connection add type ethernet con-name "THI 802.1X" ifname enp0s31f6 \
   802-1x.eap peap \
   802-1x.phase2-auth mschapv2 \
   802-1x.identity "<kennung>" \
+  802-1x.ca-cert "${facts.wifi.eduroam_ca_path_debian}" \
+  802-1x.domain-suffix-match "${facts.network.wired_domain_suffix}" \
   802-1x.password-flags 2
 nmcli connection up "THI 802.1X" --ask
 ```
@@ -200,9 +210,10 @@ An address from the campus network means the login was accepted. An address in
 `169.254.x.x`, or none at all, means it was not, or that this port wants a registered MAC
 address instead.
 
-The second command prints the two certificate fields. Both are empty on a profile built
-from the documented values, which is the gap described above rather than a mistake you
-made.
+The second command prints the two certificate fields. Both must be non-empty, and the
+suffix must read `${facts.network.wired_domain_suffix}`. A profile built by following
+only the official guide has neither, and it authenticates exactly as well as one that
+does, which is why this is worth looking at rather than assuming.
 
 ---
 
@@ -212,11 +223,34 @@ made.
 
 Where a port checks hardware addresses, authentication is based on a whitelist. The
 documented route to get onto that list is a dedicated onboarding network and the vendor's
-onboarding client, which supports Windows and macOS and has very limited Linux support.
+onboarding client.
 
-For systems it does not cover, IT's own advice is to register the device manually with the
+::: os arch
+
+That client supports Windows and macOS, and its Linux support is very limited. For the
+systems it does not cover, IT's own advice is to register the device manually with the
 form for IoT devices. That is not merely a workaround: it means no additional software
 runs with administrative rights on your machine, which is a genuine advantage.
+
+:::
+
+::: os debian
+
+That client supports Windows and macOS, and its Linux support is very limited. For the
+systems it does not cover, IT's own advice is to register the device manually with the
+form for IoT devices. That is not merely a workaround: it means no additional software
+runs with administrative rights on your machine, which is a genuine advantage.
+
+:::
+
+::: os macos
+
+That client covers macOS, so it is available to you. Registering the device manually with
+the form for IoT devices is the alternative, and it is the route this page describes: no
+additional software runs with administrative rights on your machine, which is a genuine
+advantage.
+
+:::
 
 The trade-off is that a manual registration expires after
 ${facts.network.registration_validity} and has to be renewed.
@@ -228,7 +262,7 @@ ${facts.network.registration_validity} and has to be renewed.
 | Registration form | [IoT device form](${facts.network.registration_form_url}) |
 | Valid for | ${facts.network.registration_validity} |
 | Wi-Fi network it also covers | `${facts.wifi.thi_ssid}` |
-| Onboarding network (not for Linux) | `${facts.wifi.onboard_ssid}` |
+| Onboarding network, for the official client | `${facts.wifi.onboard_ssid}` |
 
 ### Step 1: collect the MAC addresses
 
@@ -241,6 +275,8 @@ separate registration**. A laptop with a built-in port and a dock is two submiss
 ip -brief link show
 ```
 
+Interfaces named `enp…` or `eth…` are wired, `wlp…` or `wlan…` are wireless.
+
 :::
 
 ::: os debian
@@ -248,6 +284,8 @@ ip -brief link show
 ```bash
 ip -brief link show
 ```
+
+Interfaces named `enp…` or `eth…` are wired, `wlp…` or `wlan…` are wireless.
 
 :::
 
@@ -257,10 +295,12 @@ ip -brief link show
 networksetup -listallhardwareports
 ```
 
+Each block names a hardware port and its address. **Ethernet** and **Thunderbolt
+Ethernet** are the wired ones; **Wi-Fi** is the wireless one.
+
 :::
 
-Interfaces named `enp…` or `eth…` are wired, `wlp…` or `wlan…` are wireless. If you cannot
-tell which entry is the dock, unplug it, run the command again, and compare.
+If you cannot tell which entry is the dock, unplug it, run the command again, and compare.
 
 ### Step 2: submit the form
 
@@ -275,8 +315,8 @@ Each address can be enabled for one area only, so it appears in exactly one subm
 3. *Gerätename* (Device name) → `<hostname>`
 4. *MAC-Adresse* → the wired interface's address
 5. *Beschreibung* (Description) → what it is for, e.g. teaching or research access
-6. *Betriebssystem inkl. Buildversion* (Operating system and build) → e.g. "Arch Linux
-   (rolling release)"
+6. *Betriebssystem inkl. Buildversion* (Operating system and build) → the system you run
+   and its version, as you would name it yourself
 7. *Freischaltung Bereich* (Area to enable) → the network area you need
 
 **For `${facts.wifi.thi_ssid}` Wi-Fi:** the same form, with *Benötigen Sie für das Gerät
@@ -324,8 +364,8 @@ ifconfig en0 | grep 'inet '
 
 :::
 
-An address in `169.254.x.x` (or `link/ether` with no `inet` at all) means authentication
-did not succeed: the registration is not active yet, or that MAC was never submitted.
+An address in `169.254.x.x`, or no address at all, means authentication did not succeed:
+the registration is not active yet, or that MAC was never submitted.
 
 ---
 

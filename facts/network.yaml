@@ -17,5 +17,23 @@ wired_eap: PEAP
 # Inner authentication for that method.
 wired_phase2: MSCHAPv2
 
+# Certificate authority that issues the wired authentication server's
+# certificate, and the domain its name must end in. The same server answers the
+# wireless networks, so these repeat facts/wifi.yaml rather than differing from
+# it; they are separate keys because they are separate claims, and a wired port
+# could be moved to another server without the Wi-Fi following.
+#
+# The official configuration guide leaves both fields unset. These were read off
+# a campus port on 2026-08-13 and confirmed out of band before being written
+# here (AGENTS.md rule 4); the certificate chain was identical on the wired port
+# and on eduroam, down to the fingerprints.
+wired_ca: HARICA TLS RSA Root CA 2021
+wired_domain_suffix: rz.fh-ingolstadt.de
+
+# The authentication server's own name, as it appears in the certificate. macOS
+# shows this name in a trust dialogue and stores the answer for good, so it is
+# the one place a reader has to compare a hostname by eye.
+wired_server_name: rz-radius-01.rz.fh-ingolstadt.de
+
 # The university's own configuration guide for wired 802.1X, in German.
 wired_official_pdf: https://mythi.de/kcdownload/kc_13/fileid_285/802.1X-Konfiguration-LAN.pdf

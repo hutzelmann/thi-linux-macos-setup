@@ -126,8 +126,14 @@ inspect_profile() {
 
   _ca_set=no
   [ -n "$_ca" ] && _ca_set=yes
+
+  # Three answers, not two. A suffix that is set but says something else is a
+  # profile that will refuse the real server, and it fails in a way an empty
+  # field never does: the port stops working rather than quietly accepting
+  # anybody. Reporting both as `no` would send the reader to the wrong page.
   _suffix_set=no
-  [ -n "$_suffix" ] && _suffix_set=yes
+  [ -n "$_suffix" ] && _suffix_set=other
+  [ "$_suffix" = "$(fact network wired_domain_suffix)" ] && _suffix_set=yes
 
   printf '%s %s %s %s %s\n' \
     "$_eap_ok" "$_phase2_ok" "$_identity_ok" "$_ca_set" "$_suffix_set"
@@ -235,6 +241,12 @@ main() {
   [ "$_profile_count" -gt 0 ] && [ "$_eap_ok" = no ] && _status=misconfigured
   [ "$_profile_count" -gt 0 ] && [ "$_phase2_ok" = no ] && _status=misconfigured
 
+  # Last, so it wins. A profile can be several kinds of wrong at once and the
+  # detail lines say which; this is the one that decides whether the campus
+  # password can be collected, so it is the one the single word should carry.
+  [ "$_profile_count" -gt 0 ] && [ "$_ca_set" = no ] && _status=insecure
+  [ "$_profile_count" -gt 0 ] && [ "$_suffix_set" != yes ] && _status=insecure
+
   # Built once, whoever asked for it. --json prints it, --report puts it in the
   # form, and both are the same observation so they cannot disagree.
   _json=$(json_result "$_status" "network check" \
@@ -284,9 +296,20 @@ main() {
 
   if [ "$_profile_count" -gt 0 ] && [ "$_ca_set" = no ]; then
     log ""
-    log "The certificate fields are empty, which is what the page documents rather"
-    log "than a mistake here: the official configuration leaves them unset and no"
-    log "confirmed value exists to put in them."
+    log "No CA certificate on this profile. The port authenticates either way, and"
+    log "so would one impersonating it, which is why this is worth setting rather"
+    log "than leaving as the official guide leaves it. Documented: $(fact network wired_ca)."
+  fi
+
+  if [ "$_profile_count" -gt 0 ] && [ "$_suffix_set" = no ]; then
+    log ""
+    log "No server name to match. Naming a CA without one accepts any server that"
+    log "authority ever signed. Documented: $(fact network wired_domain_suffix)."
+  elif [ "$_profile_count" -gt 0 ] && [ "$_suffix_set" = other ]; then
+    log ""
+    log "The server name on this profile is not the documented one"
+    log "($(fact network wired_domain_suffix)). A port that stopped working after"
+    log "a change here is the expected result, not a coincidence."
   fi
 
   # After the advice, not instead of it: a report of what did not work is worth
