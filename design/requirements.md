@@ -129,8 +129,12 @@ A check that reaches the campus has three outcomes and not two. `check-vpn-chain
 exits 2 when it could not reach the gateway at all, and the workflow then files nothing
 and closes nothing: an issue saying the chain changed, written from a run that never saw
 a certificate, is a claim about something nobody looked at. It said exactly that once,
-as issue #2. Everything else about campus still needs a person on the
-network, which is R18.
+as issue #2. `check-fact-urls.sh` and `check-content-urls.sh` draw the same line now, for
+the same reason: eight of the fifteen addresses in `facts/` are hosted on campus, they go
+unreached together on the weeks a runner cannot get there, and the check had no way to
+report that apart from the way it reports an address answering with a 404. It filed and
+reopened issue #8 saying they had stopped answering. Everything else about campus still
+needs a person on the network, which is R18.
 
 **R18 not built.** It needs a host that sits on the campus network permanently. Who owns
 that machine is still open, in §6.

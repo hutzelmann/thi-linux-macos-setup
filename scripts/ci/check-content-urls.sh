@@ -15,9 +15,21 @@
 # An address that refuses automated clients is reported and does not fail the
 # run. Several of the pages link to forums that answer a browser and reject
 # curl, and a check that cries every Monday is a check people learn to ignore.
+#
+# Exit codes, because the caller files a public issue from them:
+#
+#   0  every address that answered a script answered with a page
+#   1  an address answered, and what it answered differs from the page
+#   2  no status was seen, so there is nothing to say
+#
+# The difference between 1 and 2 is the same one check-vpn-chain.sh draws. A
+# request that never reached a server has not seen a status, and filing that as
+# a link that stopped answering is a claim about something nobody looked at.
 set -euo pipefail
 
 cd "$(dirname "$0")/../.."
+
+work=
 
 # Every http(s) address in the pages, with the file it appears in.
 #
@@ -36,15 +48,31 @@ where() {
     sed 's|^|         |'
 }
 
+# One request, keeping both halves of what curl says: the status, on stdout,
+# and the reason there is no status, on stderr.
+#
+# The status is read from stdout and never reconstructed from the exit code.
+# curl writes its `--write-out` output before exiting non-zero, so the
+# `|| echo 000` this used to carry appended a second 000 to a status that
+# already said 000. The result was `000000`, which matched no case below.
+probe() {
+  code=$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 20 \
+    -A 'thi-setup-notes link check' "$1" 2>"$work/reason") || true
+  [ -n "$code" ] || code=000
+  reason=$(tr -d '\r' <"$work/reason" | tail -n 1)
+}
+
 main() {
-  local fail=0 checked=0 refused=0 url code
+  local url code reason checked=0 refused=0 differs=0 unreached=0
+
+  work=$(mktemp -d)
+  trap 'rm -rf "$work"' EXIT
 
   while read -r url; do
     [ -n "$url" ] || continue
     checked=$((checked + 1))
 
-    code=$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 20 \
-      -A 'thi-setup-notes link check' "$url" 2>/dev/null || echo 000)
+    probe "$url"
 
     case "$code" in
       2* | 3*)
@@ -57,30 +85,43 @@ main() {
         refused=$((refused + 1))
         ;;
       000)
-        printf '  ✗     %s  (no answer)\n' "$url"
-        where "$url"
-        fail=1
+        # No status at all, so this run saw nothing about this address. The
+        # pages naming it are not listed: there is nothing yet to act on.
+        printf '  ?     %s  (not reached)\n' "$url"
+        if [ -n "$reason" ]; then
+          printf '        %s\n' "$reason"
+        fi
+        unreached=$((unreached + 1))
         ;;
       *)
         printf '  ✗     %s  (%s)\n' "$url" "$code"
         where "$url"
-        fail=1
+        differs=$((differs + 1))
         ;;
     esac
   done < <(collect)
 
   echo
-  printf '%s address(es) checked, %s refused automated clients.\n' "$checked" "$refused"
+  printf '%s address(es) checked, %s refused automated clients, %s not reached.\n' \
+    "$checked" "$refused" "$unreached"
 
-  if [ "$fail" -eq 0 ]; then
-    echo "Every address that answered a script answered with a page."
-  else
+  if [ "$differs" -gt 0 ]; then
     echo
     echo "An address that stopped answering is an observation, not a fault."
     echo "Find the current one, then edit the page and its counterpart."
+    return 1
   fi
 
-  return "$fail"
+  if [ "$unreached" -gt 0 ]; then
+    echo
+    echo "No status was seen for $unreached of them, so nothing was observed about"
+    echo "those. That is an account of the network this run had, not of the"
+    echo "pages, and there is nothing to report from it."
+    return 2
+  fi
+
+  echo "Every address that answered a script answered with a page."
+  return 0
 }
 
 # Entry point. Guarded so the functions above can be sourced and called.

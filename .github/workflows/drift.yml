@@ -77,32 +77,47 @@ jobs:
 
       - id: run
         continue-on-error: true
-        # Steps run under `bash -e`, so the exit code has to be captured on the
-        # same line or the step dies before anything records it.
+        # Three outcomes, not two: 0 every documented address answered, 1 one
+        # of them answered with something else, 2 no status was seen at all.
+        # The script's own header spells them out. Steps run under `bash -e`,
+        # so the code has to be captured on the same line or the step dies
+        # before anything records it.
         run: |
-          if bash scripts/ci/check-fact-urls.sh > result.txt 2>&1; then
-            echo "ok=0" >> "$GITHUB_OUTPUT"
-          else
-            echo "ok=1" >> "$GITHUB_OUTPUT"
-          fi
+          code=0
+          bash scripts/ci/check-fact-urls.sh > result.txt 2>&1 || code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
 
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ steps.run.outputs.ok }}" = "0" ]; then
-            : | node tools/upsert-issue.mjs --title='A documented URL stopped answering' --label=drift --close-if-ok
-          else
-            {
-              echo "Observed on $(date -u +%Y-%m-%d)."
-              echo
-              echo '```'
+          case "${{ steps.run.outputs.code }}" in
+            0)
+              : | node tools/upsert-issue.mjs --title='A documented URL stopped answering' --label=drift --close-if-ok
+              ;;
+            2)
+              # Nothing is filed and nothing is closed. No status was seen, so
+              # an issue saying an address stopped answering would be a claim
+              # about something nobody looked at, and the runner's own network
+              # is the likelier subject: the campus-hosted addresses fail
+              # together on the weeks a runner cannot reach the campus. An open
+              # issue from a week when a status was seen is still true and
+              # stays open.
+              echo 'Nothing was observed this week:'
               cat result.txt
-              echo '```'
-              echo
-              echo 'Find the current address, then update facts/. Values are never changed'
-              echo 'here automatically: an observed value is not a verified one.'
-            } | node tools/upsert-issue.mjs --title='A documented URL stopped answering' --label=drift
-          fi
+              ;;
+            *)
+              {
+                echo "Observed on $(date -u +%Y-%m-%d)."
+                echo
+                echo '```'
+                cat result.txt
+                echo '```'
+                echo
+                echo 'Find the current address, then update facts/. Values are never changed'
+                echo 'here automatically: an observed value is not a verified one.'
+              } | node tools/upsert-issue.mjs --title='A documented URL stopped answering' --label=drift
+              ;;
+          esac
 
   content-urls:
     runs-on: ubuntu-latest
@@ -114,33 +129,45 @@ jobs:
 
       - id: run
         continue-on-error: true
-        # Steps run under `bash -e`, so the exit code has to be captured on the
-        # same line or the step dies before anything records it.
+        # Three outcomes, not two: 0 every address that answered a script
+        # answered with a page, 1 one of them answered with something else, 2
+        # no status was seen at all. The script's own header spells them out.
+        # Steps run under `bash -e`, so the code has to be captured on the same
+        # line or the step dies before anything records it.
         run: |
-          if bash scripts/ci/check-content-urls.sh > result.txt 2>&1; then
-            echo "ok=0" >> "$GITHUB_OUTPUT"
-          else
-            echo "ok=1" >> "$GITHUB_OUTPUT"
-          fi
+          code=0
+          bash scripts/ci/check-content-urls.sh > result.txt 2>&1 || code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
 
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ steps.run.outputs.ok }}" = "0" ]; then
-            : | node tools/upsert-issue.mjs --title='A link in the pages stopped answering' --label=drift --close-if-ok
-          else
-            {
-              echo "Observed on $(date -u +%Y-%m-%d)."
-              echo
-              echo '```'
+          case "${{ steps.run.outputs.code }}" in
+            0)
+              : | node tools/upsert-issue.mjs --title='A link in the pages stopped answering' --label=drift --close-if-ok
+              ;;
+            2)
+              # Nothing is filed and nothing is closed, for the same reason the
+              # job above says nothing: a request that never reached a server
+              # has not seen a status, and a link that could not be tried is
+              # not a link that stopped answering.
+              echo 'Nothing was observed this week:'
               cat result.txt
-              echo '```'
-              echo
-              echo 'The pages naming the address are listed under it. Find where the'
-              echo 'material moved to, then edit the English page and its German'
-              echo 'counterpart in the same commit.'
-            } | node tools/upsert-issue.mjs --title='A link in the pages stopped answering' --label=drift
-          fi
+              ;;
+            *)
+              {
+                echo "Observed on $(date -u +%Y-%m-%d)."
+                echo
+                echo '```'
+                cat result.txt
+                echo '```'
+                echo
+                echo 'The pages naming the address are listed under it. Find where the'
+                echo 'material moved to, then edit the English page and its German'
+                echo 'counterpart in the same commit.'
+              } | node tools/upsert-issue.mjs --title='A link in the pages stopped answering' --label=drift
+              ;;
+          esac
 
   staleness:
     runs-on: ubuntu-latest
