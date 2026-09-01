@@ -8,22 +8,22 @@
 # Only URLs already written down in facts/, one request each, no crawling and no
 # guessing at addresses nobody documented.
 #
-# Exit codes, because the caller files a public issue from them:
+# What counts as an answer, and the exit codes the workflow reads, are in
+# lib/url-check.sh, next to the same decision for the addresses in the pages.
+# What is here is the list, how a line reads, and what a person does about it.
 #
-#   0  every documented address answered with a page
-#   1  an address answered, and what it answered differs from the documentation
-#   2  no status was seen, so there is nothing to say
-#
-# The difference between 1 and 2 is the whole point, and it is the distinction
-# check-vpn-chain.sh already draws. A request that never reached a server has
-# not seen a status, and filing that as an address that stopped answering is a
-# claim about something nobody looked at. The runner's own network is the
-# likelier subject: ci.yml already records that a GitHub runner usually cannot
-# reach the campus inside the timeout, and the campus-hosted addresses here
-# fail together on the weeks it cannot.
+# The runner's own network is worth keeping in mind before reading a run: ci.yml
+# already records that a GitHub runner usually cannot reach the campus inside a
+# timeout, and the campus-hosted addresses here go unreached together on the
+# weeks it cannot.
 set -euo pipefail
 
-cd "$(dirname "$0")/../.."
+# $0 is the shell when this file is sourced rather than run, and the guard at
+# the foot exists so that it can be. BASH_SOURCE is this file either way.
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
+
+# shellcheck source=lib/url-check.sh
+. scripts/ci/lib/url-check.sh
 
 work=
 
@@ -37,19 +37,24 @@ collect() {
   done
 }
 
-# One request, keeping both halves of what curl says: the status, on stdout,
-# and the reason there is no status, on stderr.
-#
-# The status is read from stdout and never reconstructed from the exit code.
-# curl writes its `--write-out` output before exiting non-zero, so the
-# `|| echo 000` this used to carry appended a second 000 to a status that
-# already said 000. The result was `000000`, which matched no case below and
-# was printed into a public issue as though a server had sent it.
-probe() {
-  code=$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 20 \
-    -A 'thi-setup-notes link check' "$1" 2>"$work/reason") || true
-  [ -n "$code" ] || code=000
-  reason=$(tr -d '\r' <"$work/reason" | tail -n 1)
+# The values are read from facts/ by both the pages and the checks, so the edit
+# is one file and never a page. Addresses that were never reached are named
+# again here: the run has something to say and they are not part of it.
+report_differs() {
+  echo
+  echo "An address that stopped answering is an observation, not a fault."
+  echo "Find the current one, then update facts/."
+  if [ ${#unreached[@]} -gt 0 ]; then
+    echo
+    echo "Not reached at all on this run, so nothing is claimed about them:"
+    printf '  %s\n' "${unreached[@]}"
+  fi
+}
+
+# Not "all documented URLs answered": a host that declined to answer a script
+# did not answer, and this line runs with those present.
+report_ok() {
+  echo "Every documented address that answered a script answered with a page."
 }
 
 main() {
@@ -64,13 +69,14 @@ main() {
 
     probe "$url"
 
-    case "$code" in
-      2* | 3*)
+    case "$(classify "$code")" in
+      ok)
         printf '  ok   %-32s %s\n' "$key" "$code"
         ;;
-      000)
-        # No status at all. Printed so the run can be read afterwards, and
-        # counted apart from the rest, because nothing was observed here.
+      refused)
+        printf '  skip %-32s %s  (refuses automated clients)\n' "$key" "$code"
+        ;;
+      unreached)
         printf '  ?    %-32s not reached\n' "$key"
         printf '       documented: %s\n' "$url"
         if [ -n "$reason" ]; then
@@ -78,7 +84,7 @@ main() {
         fi
         unreached+=("$key")
         ;;
-      *)
+      differs)
         printf '  ✗    %-32s %s\n' "$key" "$code"
         printf '       documented: %s\n' "$url"
         differs+=("$key")
@@ -86,28 +92,7 @@ main() {
     esac
   done < <(collect)
 
-  if [ ${#differs[@]} -gt 0 ]; then
-    echo
-    echo "An address that stopped answering is an observation, not a fault."
-    echo "Find the current one, then update facts/."
-    if [ ${#unreached[@]} -gt 0 ]; then
-      echo
-      echo "Not reached at all on this run, so nothing is claimed about them:"
-      printf '  %s\n' "${unreached[@]}"
-    fi
-    return 1
-  fi
-
-  if [ ${#unreached[@]} -gt 0 ]; then
-    echo
-    echo "No status was seen for ${#unreached[@]} documented address(es), so nothing was"
-    echo "observed about them. That is an account of the network this run had,"
-    echo "not of the documentation, and there is nothing to report from it."
-    return 2
-  fi
-
-  echo "All documented URLs answered."
-  return 0
+  verdict ${#differs[@]} ${#unreached[@]}
 }
 
 # Entry point. Guarded so the functions above can be sourced and called.

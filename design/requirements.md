@@ -133,8 +133,17 @@ as issue #2. `check-fact-urls.sh` and `check-content-urls.sh` draw the same line
 the same reason: eight of the fifteen addresses in `facts/` are hosted on campus, they go
 unreached together on the weeks a runner cannot get there, and the check had no way to
 report that apart from the way it reports an address answering with a 404. It filed and
-reopened issue #8 saying they had stopped answering. Everything else about campus still
-needs a person on the network, which is R18.
+reopened issue #8 saying they had stopped answering.
+
+Both read that decision from `scripts/ci/lib/url-check.sh` now instead of each holding a
+copy, which is R22 applied to what a check concludes rather than to the shape it prints.
+The copies had already disagreed: one filed a public issue on the status the other
+recorded as the host's bot policy and passed over. A refusal is an answer, so 401, 403,
+405 and 429 are reported and move no exit code, since an address whose material moved
+answers 404 or 301, and a host that declines curl every week would otherwise stop every
+future run from closing anything. An absence is not an answer, so a run that reached
+nothing closes nothing. Everything else about campus still needs a person on the network,
+which is R18.
 
 **R18 not built.** It needs a host that sits on the campus network permanently. Who owns
 that machine is still open, in §6.

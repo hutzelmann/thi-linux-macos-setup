@@ -12,22 +12,19 @@
 # nobody linked. Anything holding a ${facts...} reference is skipped: it is
 # checked by the other script, at the value it actually resolves to.
 #
-# An address that refuses automated clients is reported and does not fail the
-# run. Several of the pages link to forums that answer a browser and reject
-# curl, and a check that cries every Monday is a check people learn to ignore.
-#
-# Exit codes, because the caller files a public issue from them:
-#
-#   0  every address that answered a script answered with a page
-#   1  an address answered, and what it answered differs from the page
-#   2  no status was seen, so there is nothing to say
-#
-# The difference between 1 and 2 is the same one check-vpn-chain.sh draws. A
-# request that never reached a server has not seen a status, and filing that as
-# a link that stopped answering is a claim about something nobody looked at.
+# What counts as an answer, and the exit codes the workflow reads, are in
+# lib/url-check.sh, next to the same decision for the values in facts/. What is
+# here is the list, how a line reads, and what a person does about it. Several
+# of these pages link to forums that answer a browser and decline curl, which
+# is why a refusal is an answer there and not a finding.
 set -euo pipefail
 
-cd "$(dirname "$0")/../.."
+# $0 is the shell when this file is sourced rather than run, and the guard at
+# the foot exists so that it can be. BASH_SOURCE is this file either way.
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
+
+# shellcheck source=lib/url-check.sh
+. scripts/ci/lib/url-check.sh
 
 work=
 
@@ -43,23 +40,27 @@ collect() {
 }
 
 # Which pages link to an address, for a report somebody has to act on.
+#
+# A miss is tolerated rather than fatal. The addresses come out of these files,
+# so there should always be one, but `set -e` and a pipeline that reports grep's
+# status would end the run at the first address that somehow had none, halfway
+# through the report and with no line saying why.
 where() {
   grep -rlF "$1" content/en content/de --include='*.md' |
-    sed 's|^|         |'
+    sed 's|^|         |' || true
 }
 
-# One request, keeping both halves of what curl says: the status, on stdout,
-# and the reason there is no status, on stderr.
-#
-# The status is read from stdout and never reconstructed from the exit code.
-# curl writes its `--write-out` output before exiting non-zero, so the
-# `|| echo 000` this used to carry appended a second 000 to a status that
-# already said 000. The result was `000000`, which matched no case below.
-probe() {
-  code=$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 20 \
-    -A 'thi-setup-notes link check' "$1" 2>"$work/reason") || true
-  [ -n "$code" ] || code=000
-  reason=$(tr -d '\r' <"$work/reason" | tail -n 1)
+# An address in prose is written into two pages, so the edit is a page and its
+# counterpart rather than a value. The pages naming it were printed under it as
+# each one was reached.
+report_differs() {
+  echo
+  echo "An address that stopped answering is an observation, not a fault."
+  echo "Find the current one, then edit the page and its counterpart."
+}
+
+report_ok() {
+  echo "Every address that answered a script answered with a page."
 }
 
 main() {
@@ -74,26 +75,23 @@ main() {
 
     probe "$url"
 
-    case "$code" in
-      2* | 3*)
+    case "$(classify "$code")" in
+      ok)
         printf '  ok    %s\n' "$url"
         ;;
-      401 | 403 | 405 | 429)
-        # Answered, and declined to answer a script. That is a fact about the
-        # host's bot policy, not about whether the link works for a reader.
+      refused)
         printf '  skip  %s  (%s, refuses automated clients)\n' "$url" "$code"
         refused=$((refused + 1))
         ;;
-      000)
-        # No status at all, so this run saw nothing about this address. The
-        # pages naming it are not listed: there is nothing yet to act on.
+      unreached)
+        # The pages naming it are not listed: there is nothing yet to act on.
         printf '  ?     %s  (not reached)\n' "$url"
         if [ -n "$reason" ]; then
           printf '        %s\n' "$reason"
         fi
         unreached=$((unreached + 1))
         ;;
-      *)
+      differs)
         printf '  ✗     %s  (%s)\n' "$url" "$code"
         where "$url"
         differs=$((differs + 1))
@@ -105,23 +103,7 @@ main() {
   printf '%s address(es) checked, %s refused automated clients, %s not reached.\n' \
     "$checked" "$refused" "$unreached"
 
-  if [ "$differs" -gt 0 ]; then
-    echo
-    echo "An address that stopped answering is an observation, not a fault."
-    echo "Find the current one, then edit the page and its counterpart."
-    return 1
-  fi
-
-  if [ "$unreached" -gt 0 ]; then
-    echo
-    echo "No status was seen for $unreached of them, so nothing was observed about"
-    echo "those. That is an account of the network this run had, not of the"
-    echo "pages, and there is nothing to report from it."
-    return 2
-  fi
-
-  echo "Every address that answered a script answered with a page."
-  return 0
+  verdict "$differs" "$unreached"
 }
 
 # Entry point. Guarded so the functions above can be sourced and called.
