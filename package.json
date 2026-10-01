@@ -29,9 +29,9 @@
     "check:drift": "npm run check:vpn-chain; npm run check:fact-urls; npm run check:content-urls; npm run check:staleness"
   },
   "devDependencies": {
-    "@types/markdown-it-container": "^4.0.0",
+    "@types/markdown-it-container": "^4.0.1",
     "markdown-it-container": "^4.0.0",
     "vitepress": "1.6.4",
-    "yaml": "^2.6.0"
+    "yaml": "^2.9.1"
   }
 }
